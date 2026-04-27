@@ -1,0 +1,78 @@
+{
+  "auth": {
+    "login": {
+      "title": "Вход в системата",
+      "email": "Имейл адрес",
+      "password": "Парола",
+      "submit": "Влез",
+      "noAccount": "Нямате акаунт?",
+      "register": "Регистрирайте се",
+      "error": {
+        "invalid": "Невалиден имейл или парола.",
+        "required": "Полето е задължително."
+      }
+    },
+    "register": {
+      "title": "Създай акаунт",
+      "email": "Имейл адрес",
+      "password": "Парола",
+      "egn": "ЕГН (незадължително)",
+      "egnHint": "Използва се само за определяне на възраст. Не се съхранява.",
+      "gdpr": "Съгласявам се данните ми да се обработват за ТЕЛК анализ.",
+      "submit": "Регистрирай се",
+      "hasAccount": "Вече имате акаунт?",
+      "login": "Влезте тук"
+    }
+  },
+  "dashboard": {
+    "title": "Моят ТЕЛК случай",
+    "modules": {
+      "analysis": "Анализ на документи",
+      "cases": "Управление на случаи",
+      "rights": "Калкулатор на права",
+      "deadlines": "Проследяване на срокове",
+      "scorePredictor": "Прогнозиране на решение",
+      "lifelongChecker": "Проверка за пожизнено",
+      "appealAssistant": "Асистент за обжалване",
+      "employerLetter": "Писмо до работодател"
+    }
+  },
+  "analysis": {
+    "documentsOnFile": "Налични документи",
+    "missingDocuments": "Липсващи документи",
+    "incompleteDocuments": "Непълни документи",
+    "patientView": "Пациент",
+    "doctorView": "Лекар",
+    "disclaimer": "Анализът е информативен. Не замества консултация с лекар.",
+    "analyze": "Анализирай",
+    "analyzing": "Проверяваме НМЕ...",
+    "shareWithDoctor": "Сподели с лекар"
+  },
+  "rights": {
+    "title": "Калкулатор на права",
+    "percentage": "Процент трайна неработоспособност",
+    "monthlySupport": "Месечна подкрепа",
+    "extraLeave": "Допълнителен отпуск",
+    "taxRelief": "Данъчно облекчение",
+    "freeMeds": "Безплатни лекарства",
+    "jobProtection": "Закрила при уволнение КТ чл.333",
+    "vignette": "Винетка и паркиране",
+    "generatePdf": "Генерирай PDF доклад"
+  },
+  "deadlines": {
+    "title": "Проследяване на срокове",
+    "addDeadline": "Добави срок",
+    "daysRemaining": "дни оставащи",
+    "proofOfSubmission": "Proof-of-Submission"
+  },
+  "admin": {
+    "title": "Администрация",
+    "users": "Потребители",
+    "promptModules": "НМЕ модули",
+    "stats": {
+      "totalUsers": "Общо потребители",
+      "casesThisMonth": "Случаи този месец",
+      "analysesThisMonth": "Анализи този месец"
+    }
+  }
+}
