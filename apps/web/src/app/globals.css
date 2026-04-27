@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @theme {
   --color-medical-navy: #1A4A6B;
@@ -16,4 +17,22 @@
   --color-ocean-hero: #061424;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Cormorant Garamond', Georgia, serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-dark-text);
+    background-color: var(--color-medical-surface);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    color: var(--color-medical-navy);
+  }
 }
