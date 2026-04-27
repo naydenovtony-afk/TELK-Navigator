@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-medical-navy: #1A4A6B;
+  --color-medical-teal: #0A7C7C;
+  --color-medical-slate: #3D5A73;
+  --color-medical-surface: #E8F4F8;
+  --color-medical-border: #B8CDD8;
+  --color-vital-green: #1A6B3C;
+  --color-vital-green-bg: #E8F4ED;
+  --color-clinical-amber: #7A5200;
+  --color-clinical-amber-bg: #FDF4E3;
+  --color-critical-red: #8B1A1A;
+  --color-critical-red-bg: #FDF0F0;
+  --color-dark-text: #1C2B3A;
+  --color-ocean-hero: #061424;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+}
