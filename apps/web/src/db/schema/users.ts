@@ -1,5 +1,6 @@
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
-import { boolean, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, jsonb, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import type { AdapterAccountType } from 'next-auth/adapters'
 
 export const userRoleEnum = pgEnum('user_role', ['patient', 'admin'])
 
@@ -24,7 +25,12 @@ export const diagnosisCategoryEnum = pgEnum('diagnosis_category', [
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
+  // Auth.js required fields
+  name: text('name'),
   email: text('email').notNull().unique(),
+  emailVerified: timestamp('emailVerified', { mode: 'date' }),
+  image: text('image'),
+  // App-specific fields
   role: userRoleEnum('role').notNull().default('patient'),
   birthDate: text('birth_date'),
   isMinor: boolean('is_minor').notNull().default(false),
@@ -49,15 +55,25 @@ export const userPreferences = pgTable('user_preferences', {
   updatedAt: timestamp('updated_at', { withTimezone: true }),
 })
 
-export const accounts = pgTable('accounts', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  provider: text('provider').notNull(),
-  providerAccountId: text('provider_account_id').notNull(),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  expiresAt: timestamp('expires_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-})
+// Auth.js-compatible accounts table (compound PK: provider + providerAccountId)
+export const accounts = pgTable(
+  'accounts',
+  {
+    userId: uuid('userId')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    type: text('type').$type<AdapterAccountType>().notNull(),
+    provider: text('provider').notNull(),
+    providerAccountId: text('providerAccountId').notNull(),
+    refresh_token: text('refresh_token'),
+    access_token: text('access_token'),
+    expires_at: integer('expires_at'),
+    token_type: text('token_type'),
+    scope: text('scope'),
+    id_token: text('id_token'),
+    session_state: text('session_state'),
+  },
+  (account) => [
+    primaryKey({ columns: [account.provider, account.providerAccountId] }),
+  ]
+)

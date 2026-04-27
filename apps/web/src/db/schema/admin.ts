@@ -43,6 +43,16 @@ export const promptModules = pgTable('prompt_modules', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const userPasswords = pgTable('user_passwords', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  hash: text('hash').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const referrals = pgTable('referrals', {
   id: uuid('id').primaryKey().defaultRandom(),
   referrerId: uuid('referrer_id')
