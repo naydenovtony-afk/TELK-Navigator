@@ -1,14 +1,10 @@
 import { auth } from '@/auth'
 import createIntlMiddleware from 'next-intl/middleware'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { routing } from '@/i18n/routing'
 
-const intlMiddleware = createIntlMiddleware({
-  locales: ['bg'],
-  defaultLocale: 'bg',
-})
+const intlMiddleware = createIntlMiddleware(routing)
 
-export default auth((req: NextRequest & { auth: unknown }) => {
+export default auth((req) => {
   return intlMiddleware(req)
 })
 
