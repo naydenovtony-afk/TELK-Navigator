@@ -49,6 +49,58 @@ const SYSTEM_PROMPT = `Ти си медицински анализатор за 
 - D009: Препоръки за бъдещо лечение
 - D010: Подпис и печат на лекар / лечебно заведение`
 
+export interface EmployerLetterInput {
+  percent: number
+  employeeName: string
+  employerName: string
+  accommodations: string[]
+  notes?: string
+}
+
+const EMPLOYER_LETTER_PROMPT = `Ти си правен асистент, специализиран в трудовото право на България.
+Генерирай официално писмо до работодател от служител с трайно намалена работоспособност, установена от ТЕЛК.
+
+Правилата за форматиране:
+- Официален делови стил на български
+- Цитирай конкретни членове от Кодекса на труда (КТ) и Закона за хората с увреждания (ЗИХУ)
+- Структура: град/дата горе вдясно → До: → Относно: → Уважаеми/а, → основен текст → С уважение
+- Не добавяй markdown, само чист текст
+- Датата да е: ${new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
+
+Правни основания за включване според процента:
+- 50%+: КТ чл.319 (25 дни отпуск), КТ чл.333 (закрила при уволнение), ЗИХУ чл.35
+- 71%+: горните + КТ чл.137 (намалено работно време), КТ чл.140 (нощен труд)
+- 91%+: горните + ЗИХУ чл.39 (адаптация на работното място)`
+
+export async function generateEmployerLetter(input: EmployerLetterInput): Promise<string> {
+  const accommodationLabels: Record<string, string> = {
+    leave: 'допълнителен платен отпуск от минимум 25 работни дни (КТ чл.319)',
+    hours: 'намалено работно време (КТ чл.137)',
+    dismissal: 'писмено потвърждение на закрилата срещу уволнение (КТ чл.333)',
+    adaptation: 'адаптация на работното място (ЗИХУ чл.39)',
+    parking: 'достъп до паркомясто за хора с увреждания на територията на предприятието',
+  }
+
+  const requestedItems = input.accommodations
+    .map((a) => `- ${accommodationLabels[a] ?? a}`)
+    .join('\n')
+
+  const prompt = `${EMPLOYER_LETTER_PROMPT}
+
+Данни:
+- Служител: ${input.employeeName}
+- Работодател: ${input.employerName}
+- Процент трайна неработоспособност: ${input.percent}%
+- Исканите облекчения:
+${requestedItems}
+${input.notes ? `- Допълнителни обстоятелства: ${input.notes}` : ''}
+
+Генерирай пълното писмо:`
+
+  const result = await model.generateContent(prompt)
+  return result.response.text().trim()
+}
+
 export async function analyseDocument(text: string): Promise<AnalysisResult> {
   const prompt = `${SYSTEM_PROMPT}\n\nАнализирай следния медицински документ:\n\n${text.slice(0, 12000)}`
 
