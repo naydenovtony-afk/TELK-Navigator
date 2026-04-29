@@ -1,7 +1,10 @@
 import { Stack } from 'expo-router'
+import { AuthProvider } from '../lib/auth'
 
 export default function RootLayout(): React.JSX.Element {
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </AuthProvider>
   )
 }
