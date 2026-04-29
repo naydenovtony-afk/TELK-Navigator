@@ -1,0 +1,99 @@
+import { redirect } from 'next/navigation'
+import { auth, signOut } from '@/auth'
+import { db } from '@/db'
+import { users } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+
+export const dynamic = 'force-dynamic'
+
+export default async function SettingsPage() {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) redirect('/bg/sign-in')
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { id: true, name: true, email: true, image: true, role: true, createdAt: true },
+  })
+
+  if (!user) redirect('/bg/sign-in')
+
+  return (
+    <div className="p-8 max-w-2xl">
+      <div className="mb-8">
+        <h1 className="font-display text-3xl text-medical-navy">Настройки</h1>
+        <p className="text-sm text-medical-slate mt-1">Профил и предпочитания</p>
+      </div>
+
+      {/* Profile card */}
+      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6">
+        <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
+          Профил
+        </h2>
+        <div className="flex items-center gap-4 mb-6">
+          {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.image}
+              alt={user.name ?? 'Потребител'}
+              className="w-14 h-14 rounded-full border border-medical-border"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-medical-surface border border-medical-border flex items-center justify-center text-medical-navy font-medium text-lg">
+              {(user.name ?? user.email ?? '?')[0].toUpperCase()}
+            </div>
+          )}
+          <div>
+            <p className="font-medium text-dark-text">{user.name ?? '—'}</p>
+            <p className="text-sm text-medical-slate">{user.email}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 text-sm">
+          <Row label="Имейл" value={user.email} />
+          <Row label="Роля" value={user.role === 'admin' ? 'Администратор' : 'Пациент'} />
+          <Row
+            label="Регистриран на"
+            value={new Date(user.createdAt).toLocaleDateString('bg-BG', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          />
+        </div>
+      </div>
+
+      {/* Sign-out */}
+      <div className="bg-white rounded-2xl border border-medical-border p-6">
+        <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
+          Сесия
+        </h2>
+        <p className="text-sm text-medical-slate mb-4">
+          Излизането ще приключи текущата ви сесия на това устройство.
+        </p>
+        <form
+          action={async () => {
+            'use server'
+            await signOut({ redirectTo: '/bg' })
+          }}
+        >
+          <button
+            type="submit"
+            className="border border-medical-border text-dark-text text-sm font-medium px-5 py-2.5 rounded-lg hover:border-medical-navy hover:text-medical-navy transition-colors"
+          >
+            Изход от профила
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-medical-border last:border-0">
+      <span className="text-medical-slate">{label}</span>
+      <span className="text-dark-text font-medium">{value}</span>
+    </div>
+  )
+}
