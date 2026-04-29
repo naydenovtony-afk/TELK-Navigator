@@ -72,6 +72,78 @@ const EMPLOYER_LETTER_PROMPT = `Ти си правен асистент, спе�
 - 71%+: горните + КТ чл.137 (намалено работно време), КТ чл.140 (нощен труд)
 - 91%+: горните + ЗИХУ чл.39 (адаптация на работното място)`
 
+export interface LifelongCheckInput {
+  percent: number
+  age: number
+  diagnosisDescription: string
+  isIrreversible: boolean
+  isProgressive: boolean
+  previousTelkYears?: number
+}
+
+export interface LifelongCriterion {
+  met: boolean
+  label: string
+  detail: string
+}
+
+export interface LifelongCheckResult {
+  verdict: 'likely' | 'possible' | 'unlikely'
+  verdictLabel: string
+  explanation: string
+  criteria: LifelongCriterion[]
+  recommendation: string
+  legalBasis: string
+}
+
+const LIFELONG_PROMPT = `Ти си експерт по медицинска експертиза в България, специализиран в Наредбата за медицинска експертиза (НМЕ).
+
+Анализирай дали пациентът отговаря на критериите за пожизнено ТЕЛК решение (без срок за преосвидетелстване) съгласно НМЕ.
+
+Критерии за пожизнено решение:
+1. Лице в пенсионна възраст (жени 60г.+, мъже 65г.+) с 50%+ увреждане
+2. Необратими морфологични увреждания (ампутации, вродени аномалии, Синдром на Даун и др.)
+3. Прогресиращи дегенеративни заболявания (Паркинсон, БАС, множествена склероза — напреднал стадий)
+4. 91%+ с ясно необратими увреждания
+5. Онкологично заболяване в ремисия 5+ години с остатъчни увреждания 71%+
+
+Върни САМО валиден JSON без markdown:
+{
+  "verdict": "likely" | "possible" | "unlikely",
+  "verdictLabel": "<Вероятно отговаря | Частично отговаря | Малко вероятно>",
+  "explanation": "<2-3 изречения на ясен български>",
+  "criteria": [
+    { "met": true/false, "label": "<критерий>", "detail": "<кратко обяснение>" }
+  ],
+  "recommendation": "<Какво да поиска пациентът от ТЕЛК комисията>",
+  "legalBasis": "<Конкретни членове от НМЕ или ЗИХУ>"
+}`
+
+export async function checkLifelongEligibility(input: LifelongCheckInput): Promise<LifelongCheckResult> {
+  const prompt = `${LIFELONG_PROMPT}
+
+Данни за пациента:
+- Процент трайна неработоспособност: ${input.percent}%
+- Възраст: ${input.age} години
+- Описание на диагнозата: ${input.diagnosisDescription}
+- Увреждането е необратимо: ${input.isIrreversible ? 'Да' : 'Не'}
+- Увреждането е прогресиращо: ${input.isProgressive ? 'Да' : 'Не'}
+${input.previousTelkYears ? `- Брой години с ТЕЛК решение: ${input.previousTelkYears}` : ''}
+
+Анализирай и върни JSON:`
+
+  const result = await model.generateContent(prompt)
+  const raw = result.response.text()
+
+  try {
+    const jsonStart = raw.indexOf('{')
+    const jsonEnd = raw.lastIndexOf('}')
+    return JSON.parse(raw.slice(jsonStart, jsonEnd + 1)) as LifelongCheckResult
+  } catch {
+    throw new Error('Невалиден отговор от AI: ' + raw.slice(0, 200))
+  }
+}
+
 export async function generateEmployerLetter(input: EmployerLetterInput): Promise<string> {
   const accommodationLabels: Record<string, string> = {
     leave: 'допълнителен платен отпуск от минимум 25 работни дни (КТ чл.319)',
