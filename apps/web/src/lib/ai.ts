@@ -144,6 +144,128 @@ ${input.previousTelkYears ? `- Брой години с ТЕЛК решение:
   }
 }
 
+// ── Score Predictor ──────────────────────────────────────────────────────────
+
+export interface ScorePredictorInput {
+  diagnosisDescription: string
+  functionalLimitations: string[]
+  age: number
+  previousPercent?: number
+  additionalContext?: string
+}
+
+export interface ScorePredictorResult {
+  rangeMin: number
+  rangeMax: number
+  rangeLabel: string
+  keyFactors: { positive: string[]; negative: string[] }
+  documentationTips: string[]
+  summary: string
+}
+
+const SCORE_PREDICTOR_PROMPT = `Ти си експерт по медицинска експертиза в България с дълбоки познания по Наредбата за медицинска експертиза (НМЕ) и практиката на ТЕЛК комисиите.
+
+Анализирай описаното увреждане и оцени очаквания диапазон на трайна неработоспособност, който ТЕЛК комисия би могла да присъди.
+
+Върни САМО валиден JSON без markdown:
+{
+  "rangeMin": <долна граница, цяло число 0-100>,
+  "rangeMax": <горна граница, цяло число 0-100>,
+  "rangeLabel": "<напр. '50–70%' или 'под 50%'>",
+  "keyFactors": {
+    "positive": ["<фактор в полза на по-висока оценка>", ...],
+    "negative": ["<фактор, който може да намали оценката>", ...]
+  },
+  "documentationTips": ["<какво да включи в документацията>", ...],
+  "summary": "<2-3 изречения резюме на ясен български>"
+}
+
+Важно: Не използвай думите 'шанс', 'вероятност', 'резултат'. Използвай 'очаквана оценка' или 'диапазон'.`
+
+export async function predictScore(input: ScorePredictorInput): Promise<ScorePredictorResult> {
+  const limitationsText = input.functionalLimitations.length > 0
+    ? input.functionalLimitations.join(', ')
+    : 'не са посочени'
+
+  const prompt = `${SCORE_PREDICTOR_PROMPT}
+
+Данни:
+- Диагноза: ${input.diagnosisDescription}
+- Функционални ограничения: ${limitationsText}
+- Възраст: ${input.age} години
+${input.previousPercent ? `- Предишна ТЕЛК оценка: ${input.previousPercent}%` : ''}
+${input.additionalContext ? `- Допълнително: ${input.additionalContext}` : ''}
+
+Анализирай:`
+
+  const result = await model.generateContent(prompt)
+  const raw = result.response.text()
+  try {
+    const jsonStart = raw.indexOf('{')
+    const jsonEnd = raw.lastIndexOf('}')
+    return JSON.parse(raw.slice(jsonStart, jsonEnd + 1)) as ScorePredictorResult
+  } catch {
+    throw new Error('Невалиден отговор от AI: ' + raw.slice(0, 200))
+  }
+}
+
+// ── Appeal Assistant ──────────────────────────────────────────────────────────
+
+export interface AppealInput {
+  receivedPercent: number
+  expectedPercent: number
+  diagnosisDescription: string
+  groundsForAppeal: string
+  missingDocuments?: string
+  applicantName: string
+  telkCity: string
+}
+
+const APPEAL_PROMPT = `Ти си правен асистент, специализиран в административното право и медицинската експертиза в България.
+
+Генерирай официална жалба против решение на ТЕЛК комисия до Районен съд.
+
+Правна рамка за цитиране:
+- АПК чл.145 и следващите — обжалване на административни актове
+- НМЕ (Наредба за медицинска експертиза) — критерии за оценка
+- ЗИХУ чл.68-72 — права при обжалване
+- ЗЗ (Закон за здравето) чл.112 — медицинска експертиза
+
+Структура на жалбата:
+До: [съд по местоживеене]
+Чрез: ТЕЛК при [лечебно заведение]
+От: [жалбоподател]
+ЕГН: _______________
+Адрес: _______________
+
+ЖАЛБА
+против Решение № ___ / ___ г. на ТЕЛК
+
+Правила:
+- Официален правен стил
+- Конкретни правни основания с членове
+- Ясно формулирани искания
+- Само чист текст, без markdown
+- Дата: ${new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}`
+
+export async function generateAppeal(input: AppealInput): Promise<string> {
+  const prompt = `${APPEAL_PROMPT}
+
+Данни:
+- Жалбоподател: ${input.applicantName}
+- Град на ТЕЛК комисията: ${input.telkCity}
+- Получена оценка: ${input.receivedPercent}%
+- Очаквана справедлива оценка: ${input.expectedPercent}%
+- Диагноза: ${input.diagnosisDescription}
+- Основания за обжалване: ${input.groundsForAppeal}
+${input.missingDocuments ? `- Непризнати документи/обстоятелства: ${input.missingDocuments}` : ''}
+
+Генерирай пълната жалба:`
+
+  const result = await model.generateContent(prompt)
+  return result.response.text().trim()
+}
+
 export async function generateEmployerLetter(input: EmployerLetterInput): Promise<string> {
   const accommodationLabels: Record<string, string> = {
     leave: 'допълнителен платен отпуск от минимум 25 работни дни (КТ чл.319)',
