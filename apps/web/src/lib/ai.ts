@@ -3,6 +3,16 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
+function extractJson(raw: string): string {
+  // Strip markdown code fences if present
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fenced) return fenced[1].trim()
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start === -1 || end === -1) throw new Error('No JSON object found')
+  return raw.slice(start, end + 1)
+}
+
 export interface AnalysisResult {
   nmeModuleVersion: string
   documentsOnFile: number
@@ -136,9 +146,7 @@ ${input.previousTelkYears ? `- Брой години с ТЕЛК решение:
   const raw = result.response.text()
 
   try {
-    const jsonStart = raw.indexOf('{')
-    const jsonEnd = raw.lastIndexOf('}')
-    return JSON.parse(raw.slice(jsonStart, jsonEnd + 1)) as LifelongCheckResult
+    return JSON.parse(extractJson(raw)) as LifelongCheckResult
   } catch {
     throw new Error('Невалиден отговор от AI: ' + raw.slice(0, 200))
   }
@@ -201,9 +209,7 @@ ${input.additionalContext ? `- Допълнително: ${input.additionalConte
   const result = await model.generateContent(prompt)
   const raw = result.response.text()
   try {
-    const jsonStart = raw.indexOf('{')
-    const jsonEnd = raw.lastIndexOf('}')
-    return JSON.parse(raw.slice(jsonStart, jsonEnd + 1)) as ScorePredictorResult
+    return JSON.parse(extractJson(raw)) as ScorePredictorResult
   } catch {
     throw new Error('Невалиден отговор от AI: ' + raw.slice(0, 200))
   }
@@ -302,9 +308,7 @@ export async function analyseDocument(text: string): Promise<AnalysisResult> {
   const raw = result.response.text()
 
   try {
-    const jsonStart = raw.indexOf('{')
-    const jsonEnd = raw.lastIndexOf('}')
-    return JSON.parse(raw.slice(jsonStart, jsonEnd + 1)) as AnalysisResult
+    return JSON.parse(extractJson(raw)) as AnalysisResult
   } catch {
     throw new Error('Gemini returned invalid JSON: ' + raw.slice(0, 200))
   }

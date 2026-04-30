@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const [updated] = await db
     .update(promptModules)
-    .set({ content: parsed.data.content, version: db.$count(promptModules) })
+    .set({ content: parsed.data.content, updatedAt: new Date() })
     .where(eq(promptModules.id, id))
     .returning()
 

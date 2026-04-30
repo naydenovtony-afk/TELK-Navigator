@@ -1,4 +1,4 @@
-const BASE_URL = 'https://telk-navigator-web.vercel.app'
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://telk-navigator-web.vercel.app'
 
 export type Case = {
   id: string

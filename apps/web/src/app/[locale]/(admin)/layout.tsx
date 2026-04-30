@@ -6,7 +6,7 @@ import Link from 'next/link'
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!isAdmin(session)) {
-    redirect('/bg/dashboard')
+    redirect('/bg/sign-in')
   }
 
   return (
