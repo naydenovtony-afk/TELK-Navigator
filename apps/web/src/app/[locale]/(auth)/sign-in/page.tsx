@@ -1,5 +1,6 @@
 import { signIn } from '@/auth'
 import { getTranslations } from 'next-intl/server'
+import { CredentialsForm } from './credentials-form'
 
 export async function generateMetadata() {
   const t = await getTranslations('telk.auth.login')
@@ -23,14 +24,15 @@ export default async function SignInPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl border border-medical-border shadow-sm p-8">
+        <div className="bg-white rounded-2xl border border-medical-border p-8">
           <h2 className="font-display text-2xl text-medical-navy mb-1">
             {t('title')}
           </h2>
           <p className="text-sm text-medical-slate mb-6">
-            Използвайте вашия Google акаунт за бърз и сигурен вход.
+            Влезте с Google или с демо акаунт.
           </p>
 
+          {/* Google */}
           <form
             action={async () => {
               'use server'
@@ -45,6 +47,16 @@ export default async function SignInPage() {
               Вход с Google
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-medical-border" />
+            <span className="text-xs text-medical-slate">или</span>
+            <div className="flex-1 h-px bg-medical-border" />
+          </div>
+
+          {/* Email / password */}
+          <CredentialsForm />
 
           <p className="text-xs text-medical-slate text-center mt-6">
             С влизането си приемате условията за обработка на лични данни

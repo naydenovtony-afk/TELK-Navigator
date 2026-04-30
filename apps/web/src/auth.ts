@@ -1,9 +1,11 @@
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
+import Credentials from 'next-auth/providers/credentials'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/db'
-import { users, accounts } from '@/db/schema'
+import { users, accounts, userPasswords } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import bcrypt from 'bcryptjs'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
@@ -14,6 +16,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Credentials({
+      credentials: { email: {}, password: {} },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null
+        const user = await db.query.users.findFirst({
+          where: eq(users.email, credentials.email as string),
+        })
+        if (!user) return null
+        const pw = await db.query.userPasswords.findFirst({
+          where: eq(userPasswords.userId, user.id),
+        })
+        if (!pw) return null
+        const valid = await bcrypt.compare(credentials.password as string, pw.hash)
+        if (!valid) return null
+        return { id: user.id, email: user.email, name: user.name }
+      },
     }),
   ],
   session: { strategy: 'jwt' },
