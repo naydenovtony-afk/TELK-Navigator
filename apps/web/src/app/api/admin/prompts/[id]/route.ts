@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 import { isAdmin } from '@/lib/session'
 import { db } from '@/db'
 import { promptModules } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const [updated] = await db
     .update(promptModules)
-    .set({ content: parsed.data.content, updatedAt: new Date() })
+    .set({ content: parsed.data.content, updatedAt: new Date(), version: sql`${promptModules.version} + 1` })
     .where(eq(promptModules.id, id))
     .returning()
 
