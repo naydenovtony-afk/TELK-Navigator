@@ -28,9 +28,9 @@ telk-navigator/
 | Database | Neon PostgreSQL + Drizzle ORM | Migrations required |
 | Auth | Auth.js v5 (web) + raw JWT (mobile) | NOT Supabase Auth |
 | Storage | Cloudflare R2 | S3-compatible API |
-| AI | claude-sonnet-4-20250514 | Server-side ONLY |
+| AI | gemini-1.5-flash | Server-side ONLY |
 | Icons | Lucide React | NOT FontAwesome, NOT emoji |
-| Font | Inter (UI) + Cormorant Garamond (display) | Inter Cyrillic subset required |
+| Font | DM Sans (UI) + DM Serif Display (display) | Довери.се brand fonts |
 | i18n | next-intl | bg + en — bg from day one |
 
 ---
@@ -90,10 +90,23 @@ Example:
 
 ## Color Palette
 
+### Довери.се Brand Core
 | Token | Hex | Usage |
 |---|---|---|
-| medical-navy | #1A4A6B | Header, NavBar, primary button |
-| medical-teal | #0A7C7C | Actions, links, progress, focus |
+| ocean-hero | #0d1623 | Sidebar, hero, dark backgrounds |
+| navy-mid | #162033 | Secondary dark surfaces |
+| navy-light | #1e2d44 | Tertiary dark surfaces |
+| medical-teal | #1da89a | ТЕЛК primary — actions, links, focus |
+| teal-dark | #167d73 | Teal hover state |
+| amber | #d4963a | Accent — lighthouse dot, highlights |
+| amber-light | #e8b45a | Amber hover / lighter accent |
+| white-text | #f0f4f8 | Text on dark backgrounds |
+| gray-subtitle | #8a9ab0 | Subtitles, secondary text on dark |
+
+### App Semantic Colours
+| Token | Hex | Usage |
+|---|---|---|
+| medical-navy | #1A4A6B | Primary buttons, headings on light bg |
 | medical-slate | #3D5A73 | Secondary text, icons |
 | medical-surface | #E8F4F8 | Card backgrounds |
 | medical-border | #B8CDD8 | All borders — always 0.5px |
@@ -103,8 +116,7 @@ Example:
 | clinical-amber-bg | #FDF4E3 | Amber badge background |
 | critical-red | #8B1A1A | Status: missing |
 | critical-red-bg | #FDF0F0 | Red badge background |
-| dark-text | #1C2B3A | Body text, headings |
-| ocean-hero | #061424 | Hero, dark backgrounds |
+| dark-text | #1C2B3A | Body text on light backgrounds |
 
 ---
 

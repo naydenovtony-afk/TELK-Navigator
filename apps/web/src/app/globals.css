@@ -1,9 +1,20 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
 
 @theme {
+  /* ── Довери.се brand core ── */
+  --color-ocean-hero: #0d1623;
+  --color-navy-mid: #162033;
+  --color-navy-light: #1e2d44;
+  --color-medical-teal: #1da89a;
+  --color-teal-dark: #167d73;
+  --color-amber: #d4963a;
+  --color-amber-light: #e8b45a;
+  --color-white-text: #f0f4f8;
+  --color-gray-subtitle: #8a9ab0;
+
+  /* ── App semantic colours (unchanged) ── */
   --color-medical-navy: #1A4A6B;
-  --color-medical-teal: #0A7C7C;
   --color-medical-slate: #3D5A73;
   --color-medical-surface: #E8F4F8;
   --color-medical-border: #B8CDD8;
@@ -14,9 +25,9 @@
   --color-critical-red: #8B1A1A;
   --color-critical-red-bg: #FDF0F0;
   --color-dark-text: #1C2B3A;
-  --color-ocean-hero: #061424;
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
 }
 
 @layer base {
