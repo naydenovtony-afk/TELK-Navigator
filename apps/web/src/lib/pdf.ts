@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse')
+const { PDFParse } = require('pdf-parse')
 import { getPublicUrl } from './r2'
 
 export async function extractTextFromKey(fileKey: string): Promise<string> {
@@ -8,6 +8,8 @@ export async function extractTextFromKey(fileKey: string): Promise<string> {
   if (!res.ok) throw new Error(`Failed to fetch file: ${res.status}`)
 
   const buffer = Buffer.from(await res.arrayBuffer())
-  const data = await pdfParse(buffer)
-  return data.text.trim()
+  const parser = new PDFParse({ data: buffer })
+  await parser.load()
+  const result = await parser.getText()
+  return (result.text as string).trim()
 }

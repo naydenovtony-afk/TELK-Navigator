@@ -41,7 +41,9 @@ export async function POST(
 
     if (!text || text.length < 50) {
       await db.update(documents).set({ status: 'error' }).where(eq(documents.id, documentId))
-      return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
+      return NextResponse.json({
+        error: 'Документът не съдържа разпознаваем текст. Моля качете PDF с текстово съдържание (не сканирано изображение).',
+      }, { status: 422 })
     }
 
     // Run AI analysis
