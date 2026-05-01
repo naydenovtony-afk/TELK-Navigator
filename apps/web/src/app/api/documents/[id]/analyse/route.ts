@@ -85,7 +85,8 @@ export async function POST(
     return NextResponse.json(report, { status: 201 })
   } catch (err) {
     await db.update(documents).set({ status: 'error' }).where(eq(documents.id, documentId))
-    const msg = err instanceof Error ? err.message : 'Analysis failed'
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[analyse] failed:', msg)
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
