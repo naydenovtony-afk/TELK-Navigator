@@ -8,20 +8,33 @@ export function NewCaseButton() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [, startTransition] = useTransition()
 
   async function handleCreate() {
     if (!title.trim()) return
-    const res = await fetch('/api/cases', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title.trim() }),
-    })
-    if (!res.ok) return
-    const newCase = await res.json()
-    setOpen(false)
-    setTitle('')
-    startTransition(() => router.push(`/bg/dashboard/cases/${newCase.id}`))
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/cases', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data?.error ?? `Грешка ${res.status}`)
+        return
+      }
+      setOpen(false)
+      setTitle('')
+      startTransition(() => router.push(`/bg/dashboard/cases/${data.id}`))
+    } catch {
+      setError('Мрежова грешка. Опитайте отново.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -48,11 +61,17 @@ export function NewCaseButton() {
               className="w-full px-3 py-2.5 text-sm rounded-xl border border-medical-border focus:outline-none focus:ring-2 focus:ring-medical-teal/40 focus:border-medical-teal mb-4"
             />
 
+            {error && (
+              <p className="text-sm text-critical-red bg-critical-red-bg border border-critical-red/20 rounded-lg px-3 py-2 mb-3">
+                {error}
+              </p>
+            )}
+
             <div className="flex gap-2 justify-end">
-              <Button variant="ghost" onClick={() => { setOpen(false); setTitle('') }}>
+              <Button variant="ghost" onClick={() => { setOpen(false); setTitle(''); setError('') }}>
                 Отказ
               </Button>
-              <Button onClick={handleCreate} loading={isPending} disabled={!title.trim()}>
+              <Button onClick={handleCreate} loading={loading} disabled={!title.trim() || loading}>
                 Създай
               </Button>
             </div>
