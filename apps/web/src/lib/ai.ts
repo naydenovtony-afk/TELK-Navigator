@@ -1,4 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleAIFileManager } from '@google/generative-ai/server'
+import { writeFile, unlink } from 'fs/promises'
+import { tmpdir } from 'os'
+import { join } from 'path'
+import { randomUUID } from 'crypto'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
@@ -314,24 +319,37 @@ export async function analyseDocument(text: string): Promise<AnalysisResult> {
   }
 }
 
-// Analyse a document by passing the raw file buffer directly to Gemini.
-// Works with both text-based and scanned PDFs — no text extraction needed.
+// Analyse a document via the Gemini Files API — handles any file size,
+// works with both text-based and scanned PDFs.
 export async function analyseDocumentBuffer(
   buffer: Buffer,
   mimeType: string
 ): Promise<AnalysisResult> {
-  const base64 = buffer.toString('base64')
+  const ext = mimeType === 'application/pdf' ? 'pdf' : mimeType.split('/')[1] ?? 'bin'
+  const tmpPath = join(tmpdir(), `telk-doc-${randomUUID()}.${ext}`)
 
-  const result = await model.generateContent([
-    { inlineData: { mimeType, data: base64 } },
-    SYSTEM_PROMPT + '\n\nАнализирай прикачения медицински документ:',
-  ])
+  await writeFile(tmpPath, buffer)
 
-  const raw = result.response.text()
+  const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY!)
+  let geminiFileName: string | undefined
 
   try {
-    return JSON.parse(extractJson(raw)) as AnalysisResult
-  } catch {
-    throw new Error('Gemini returned invalid JSON: ' + raw.slice(0, 200))
+    const upload = await fileManager.uploadFile(tmpPath, { mimeType, displayName: 'medical-document' })
+    geminiFileName = upload.file.name
+
+    const result = await model.generateContent([
+      { fileData: { fileUri: upload.file.uri, mimeType } },
+      SYSTEM_PROMPT + '\n\nАнализирай прикачения медицински документ:',
+    ])
+
+    const raw = result.response.text()
+    try {
+      return JSON.parse(extractJson(raw)) as AnalysisResult
+    } catch {
+      throw new Error('Gemini returned invalid JSON: ' + raw.slice(0, 200))
+    }
+  } finally {
+    await unlink(tmpPath).catch(() => {})
+    if (geminiFileName) await fileManager.deleteFile(geminiFileName).catch(() => {})
   }
 }
