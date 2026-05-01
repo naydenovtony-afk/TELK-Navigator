@@ -313,3 +313,25 @@ export async function analyseDocument(text: string): Promise<AnalysisResult> {
     throw new Error('Gemini returned invalid JSON: ' + raw.slice(0, 200))
   }
 }
+
+// Analyse a document by passing the raw file buffer directly to Gemini.
+// Works with both text-based and scanned PDFs — no text extraction needed.
+export async function analyseDocumentBuffer(
+  buffer: Buffer,
+  mimeType: string
+): Promise<AnalysisResult> {
+  const base64 = buffer.toString('base64')
+
+  const result = await model.generateContent([
+    { inlineData: { mimeType, data: base64 } },
+    SYSTEM_PROMPT + '\n\nАнализирай прикачения медицински документ:',
+  ])
+
+  const raw = result.response.text()
+
+  try {
+    return JSON.parse(extractJson(raw)) as AnalysisResult
+  } catch {
+    throw new Error('Gemini returned invalid JSON: ' + raw.slice(0, 200))
+  }
+}

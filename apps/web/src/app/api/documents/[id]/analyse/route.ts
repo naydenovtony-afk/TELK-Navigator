@@ -3,8 +3,8 @@ import { auth } from '@/auth'
 import { db } from '@/db'
 import { documents, cases, analysisReports } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { extractTextFromKey } from '@/lib/pdf'
-import { analyseDocument } from '@/lib/ai'
+import { getPublicUrl } from '@/lib/r2'
+import { analyseDocumentBuffer } from '@/lib/ai'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -13,12 +13,14 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let documentId: string | undefined
+
   try {
     const session = await auth()
     const userId = session?.user?.id
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { id: documentId } = await params
+    documentId = (await params).id
 
     const doc = await db.query.documents.findFirst({
       where: eq(documents.id, documentId),
@@ -30,24 +32,21 @@ export async function POST(
     })
     if (!caseRow) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-    if (doc.mimeType !== 'application/pdf') {
-      return NextResponse.json({ error: 'Only PDF documents can be analysed' }, { status: 400 })
+    const supportedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+    if (!supportedTypes.includes(doc.mimeType)) {
+      return NextResponse.json({ error: 'Неподдържан тип файл за анализ' }, { status: 400 })
     }
 
     await db.update(documents).set({ status: 'processing' }).where(eq(documents.id, documentId))
 
-    // Extract text from R2
-    const text = await extractTextFromKey(doc.fileKey)
+    // Fetch file from R2
+    const url = getPublicUrl(doc.fileKey)
+    const fileRes = await fetch(url)
+    if (!fileRes.ok) throw new Error(`Failed to fetch file from storage: ${fileRes.status}`)
+    const buffer = Buffer.from(await fileRes.arrayBuffer())
 
-    if (!text || text.length < 50) {
-      await db.update(documents).set({ status: 'error' }).where(eq(documents.id, documentId))
-      return NextResponse.json({
-        error: 'Документът не съдържа разпознаваем текст. Моля качете PDF с текстово съдържание (не сканирано изображение).',
-      }, { status: 422 })
-    }
-
-    // Run AI analysis
-    const result = await analyseDocument(text)
+    // Send directly to Gemini — works with text PDFs and scanned images alike
+    const result = await analyseDocumentBuffer(buffer, doc.mimeType)
 
     const confidence =
       result.documentsTotal > 0 ? result.documentsOnFile / result.documentsTotal : 0
@@ -71,13 +70,16 @@ export async function POST(
 
     await db
       .update(documents)
-      .set({ status: 'ready', icd10Code: result.icd10Code ?? null, textContent: text })
+      .set({ status: 'ready', icd10Code: result.icd10Code ?? null })
       .where(eq(documents.id, documentId))
 
     return NextResponse.json(report, { status: 201 })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[analyse] failed:', msg)
+    if (documentId) {
+      await db.update(documents).set({ status: 'ready' }).where(eq(documents.id, documentId)).catch(() => {})
+    }
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
