@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { GoogleAIFileManager } from '@google/generative-ai/server'
+import { GoogleAIFileManager, FileState } from '@google/generative-ai/server'
 import { writeFile, unlink } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
@@ -337,8 +337,18 @@ export async function analyseDocumentBuffer(
     const upload = await fileManager.uploadFile(tmpPath, { mimeType, displayName: 'medical-document' })
     geminiFileName = upload.file.name
 
+    // Poll until the file is fully processed on Gemini's side
+    let geminiFile = upload.file
+    while (geminiFile.state === FileState.PROCESSING) {
+      await new Promise((r) => setTimeout(r, 2000))
+      geminiFile = await fileManager.getFile(geminiFile.name)
+    }
+    if (geminiFile.state !== FileState.ACTIVE) {
+      throw new Error(`Gemini file processing failed with state: ${geminiFile.state}`)
+    }
+
     const result = await model.generateContent([
-      { fileData: { fileUri: upload.file.uri, mimeType } },
+      { fileData: { fileUri: geminiFile.uri, mimeType } },
       SYSTEM_PROMPT + '\n\nАнализирай прикачения медицински документ:',
     ])
 
