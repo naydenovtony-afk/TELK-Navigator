@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
   const [doc] = await db
     .insert(documents)
-    .values({ caseId, fileKey, fileName, mimeType, status: 'uploading' })
+    .values({ caseId, fileKey, fileName, mimeType, status: 'ready' })
     .returning()
 
   return NextResponse.json(doc, { status: 201 })

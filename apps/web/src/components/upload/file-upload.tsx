@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui'
 
 type UploadState = 'idle' | 'uploading' | 'success' | 'error'
@@ -16,6 +17,7 @@ export function FileUpload({
   onSuccess,
   accept = '.pdf,image/jpeg,image/png,image/webp',
 }: FileUploadProps) {
+  const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
   const [state, setState] = useState<UploadState>('idle')
   const [progress, setProgress] = useState(0)
@@ -64,6 +66,7 @@ export function FileUpload({
 
         setState('success')
         onSuccess?.(doc.id, file.name)
+        router.refresh()
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : 'Неочаквана грешка')
         setState('error')
