@@ -13,33 +13,29 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id: documentId } = await params
-
-  // Verify document belongs to the user via case ownership
-  const doc = await db.query.documents.findFirst({
-    where: eq(documents.id, documentId),
-    with: { case: true },
-  })
-
-  if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-
-  const caseRow = await db.query.cases.findFirst({
-    where: and(eq(cases.id, doc.caseId), eq(cases.userId, userId)),
-  })
-  if (!caseRow) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
-  if (doc.mimeType !== 'application/pdf') {
-    return NextResponse.json({ error: 'Only PDF documents can be analysed' }, { status: 400 })
-  }
-
-  // Mark as processing
-  await db.update(documents).set({ status: 'processing' }).where(eq(documents.id, documentId))
-
   try {
+    const session = await auth()
+    const userId = session?.user?.id
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { id: documentId } = await params
+
+    const doc = await db.query.documents.findFirst({
+      where: eq(documents.id, documentId),
+    })
+    if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    const caseRow = await db.query.cases.findFirst({
+      where: and(eq(cases.id, doc.caseId), eq(cases.userId, userId)),
+    })
+    if (!caseRow) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+    if (doc.mimeType !== 'application/pdf') {
+      return NextResponse.json({ error: 'Only PDF documents can be analysed' }, { status: 400 })
+    }
+
+    await db.update(documents).set({ status: 'processing' }).where(eq(documents.id, documentId))
+
     // Extract text from R2
     const text = await extractTextFromKey(doc.fileKey)
 
@@ -51,7 +47,6 @@ export async function POST(
     // Run AI analysis
     const result = await analyseDocument(text)
 
-    // Persist analysis report
     const confidence =
       result.documentsTotal > 0 ? result.documentsOnFile / result.documentsTotal : 0
 
@@ -72,19 +67,13 @@ export async function POST(
       })
       .returning()
 
-    // Update document: mark ready + store ICD-10 and extracted text
     await db
       .update(documents)
-      .set({
-        status: 'ready',
-        icd10Code: result.icd10Code ?? null,
-        textContent: text,
-      })
+      .set({ status: 'ready', icd10Code: result.icd10Code ?? null, textContent: text })
       .where(eq(documents.id, documentId))
 
     return NextResponse.json(report, { status: 201 })
   } catch (err) {
-    await db.update(documents).set({ status: 'error' }).where(eq(documents.id, documentId))
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[analyse] failed:', msg)
     return NextResponse.json({ error: msg }, { status: 500 })
