@@ -14,7 +14,7 @@ export async function GET() {
   // Step 1: simple text generation
   try {
     const genAI = new GoogleGenerativeAI(key!)
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
     const res = await model.generateContent('Reply with the single word: OK')
     results.textGeneration = res.response.text().trim()
   } catch (e) {
