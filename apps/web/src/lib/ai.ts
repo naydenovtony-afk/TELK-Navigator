@@ -6,7 +6,7 @@ import { join } from 'path'
 import { randomUUID } from 'crypto'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' })
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
 function extractJson(raw: string): string {
   // Strip markdown code fences if present
