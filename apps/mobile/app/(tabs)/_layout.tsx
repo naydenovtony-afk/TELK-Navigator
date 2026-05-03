@@ -1,9 +1,13 @@
 import React from 'react'
 import { Tabs } from 'expo-router'
-import { Text } from 'react-native'
+import { Text, View, StyleSheet } from 'react-native'
 
-function Icon({ label }: { label: string }): React.JSX.Element {
-  return <Text style={{ fontSize: 18 }}>{label}</Text>
+function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }): React.JSX.Element {
+  return (
+    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+      <Text style={styles.emoji}>{emoji}</Text>
+    </View>
+  )
 }
 
 export default function TabsLayout(): React.JSX.Element {
@@ -13,21 +17,52 @@ export default function TabsLayout(): React.JSX.Element {
         headerShown: false,
         tabBarActiveTintColor: '#1A4A6B',
         tabBarInactiveTintColor: '#7A95A8',
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '500' },
+        tabBarLabelStyle: { fontSize: 12, fontWeight: '600', marginTop: 2 },
         tabBarStyle: {
           borderTopWidth: 0.5,
           borderTopColor: '#B8CDD8',
           backgroundColor: '#fff',
-          height: 60,
-          paddingBottom: 6,
+          height: 80,
+          paddingBottom: 10,
+          paddingTop: 6,
         },
+        tabBarHideOnKeyboard: true,
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Случаи', tabBarIcon: () => <Icon label="📁" /> }} />
-      <Tabs.Screen name="deadlines" options={{ title: 'Срокове', tabBarIcon: () => <Icon label="📅" /> }} />
-      <Tabs.Screen name="documents" options={{ title: 'Документи', tabBarIcon: () => <Icon label="📄" /> }} />
-      <Tabs.Screen name="rights" options={{ title: 'Права', tabBarIcon: () => <Icon label="⚖️" /> }} />
-      <Tabs.Screen name="more" options={{ title: 'Още', tabBarIcon: () => <Icon label="☰" /> }} />
+      <Tabs.Screen
+        name="index"
+        options={{ title: 'Случаи', tabBarIcon: ({ focused }) => <TabIcon emoji="📁" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="deadlines"
+        options={{ title: 'Срокове', tabBarIcon: ({ focused }) => <TabIcon emoji="📅" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="documents"
+        options={{ title: 'Документи', tabBarIcon: ({ focused }) => <TabIcon emoji="📄" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="rights"
+        options={{ title: 'Права', tabBarIcon: ({ focused }) => <TabIcon emoji="⚖️" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{ title: 'Настройки', tabBarIcon: ({ focused }) => <TabIcon emoji="☰" focused={focused} /> }}
+      />
     </Tabs>
   )
 }
+
+const styles = StyleSheet.create({
+  iconWrap: {
+    width: 40,
+    height: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  iconWrapActive: {
+    backgroundColor: '#1A4A6B15',
+  },
+  emoji: { fontSize: 22 },
+})

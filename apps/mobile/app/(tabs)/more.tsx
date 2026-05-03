@@ -22,30 +22,31 @@ export default function MoreScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Инструменти</Text>
+        <Text style={styles.headerTitle}>Настройки</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      {/* Sign-out always visible at top — no scrolling required */}
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut} activeOpacity={0.7}>
+        <Text style={styles.signOutIcon}>🚪</Text>
+        <Text style={styles.signOutText}>Изход от профила</Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider} />
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.sectionLabel}>ИНСТРУМЕНТИ</Text>
         <View style={styles.grid}>
           {TOOLS.map((tool) => (
             <TouchableOpacity
               key={tool.route}
               style={styles.toolCard}
               onPress={() => router.push(tool.route)}
+              activeOpacity={0.75}
             >
               <Text style={styles.toolIcon}>{tool.icon}</Text>
               <Text style={styles.toolLabel}>{tool.label}</Text>
             </TouchableOpacity>
           ))}
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.profileCard}>
-          <Text style={styles.profileLabel}>Акаунт</Text>
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-            <Text style={styles.signOutText}>🚪  Изход от профила</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -55,30 +56,55 @@ export default function MoreScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52 },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
-  content: { padding: 16, gap: 16 },
+  headerTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
+
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 14,
+    padding: 18,
+    gap: 14,
+    borderWidth: 1.5,
+    borderColor: '#CC2A2A40',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  signOutIcon: { fontSize: 26 },
+  signOutText: { fontSize: 18, fontWeight: '700', color: '#CC2A2A' },
+
+  divider: { height: 1, backgroundColor: '#B8CDD8', marginHorizontal: 16, marginTop: 16 },
+
+  scrollContent: { padding: 16, gap: 12 },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#7A95A8',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   toolCard: {
     width: '47%',
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 14,
+    paddingVertical: 22,
+    paddingHorizontal: 16,
     alignItems: 'center',
     borderWidth: 0.5,
     borderColor: '#B8CDD8',
     gap: 10,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
-  toolIcon: { fontSize: 32 },
-  toolLabel: { fontSize: 13, fontWeight: '500', color: '#1C2B3A', textAlign: 'center', lineHeight: 18 },
-  divider: { height: 0.5, backgroundColor: '#B8CDD8' },
-  profileCard: {
-    backgroundColor: '#fff', borderRadius: 12, padding: 16,
-    borderWidth: 0.5, borderColor: '#B8CDD8', gap: 12,
-  },
-  profileLabel: { fontSize: 12, fontWeight: '600', color: '#3D5A73', textTransform: 'uppercase', letterSpacing: 0.5 },
-  signOutButton: {
-    borderWidth: 1, borderColor: '#8B1A1A33', borderRadius: 8,
-    padding: 13, alignItems: 'center',
-  },
-  signOutText: { fontSize: 15, color: '#8B1A1A', fontWeight: '500' },
+  toolIcon: { fontSize: 34 },
+  toolLabel: { fontSize: 14, fontWeight: '600', color: '#1C2B3A', textAlign: 'center', lineHeight: 20 },
 })
