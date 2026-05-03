@@ -13,4 +13,11 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Pin react and react-native to mobile's own copies so Metro never
+// picks up the copies from apps/web and creates two React instances.
+config.resolver.extraNodeModules = {
+  react: path.resolve(projectRoot, 'node_modules/react'),
+  'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
+};
+
 module.exports = config;
