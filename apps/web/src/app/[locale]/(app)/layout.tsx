@@ -8,5 +8,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect('/bg/sign-in')
   }
 
-  return <AppShell>{children}</AppShell>
+  const role = (session.user as { role?: string }).role ?? 'patient'
+  return <AppShell role={role}>{children}</AppShell>
 }

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 
 interface NavItem {
   href: string
@@ -85,10 +84,9 @@ const navItems: NavItem[] = [
   },
 ]
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, role }: { children: React.ReactNode; role?: string }) {
   const pathname = usePathname()
-  const { data: session } = useSession()
-  const isAdmin = (session?.user as { role?: string } | undefined)?.role === 'admin'
+  const isAdmin = role === 'admin'
 
   return (
     <div className="flex min-h-screen bg-medical-surface">
