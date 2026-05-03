@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../lib/auth'
@@ -25,14 +26,18 @@ export default function SignIn(): React.JSX.Element {
     setError('')
     setLoading(true)
     try {
-      const { token } = await login(email.trim(), password)
+      const { token, role } = await login(email.trim(), password)
       await setToken(token)
-      router.replace('/(tabs)')
+      router.replace(role === 'admin' ? '/(admin)' : '/(tabs)')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка при вход')
     } finally {
       setLoading(false)
     }
+  }
+
+  function handleGoogle(): void {
+    Linking.openURL('https://telk-navigator-web.vercel.app/bg/sign-in')
   }
 
   return (
@@ -43,6 +48,16 @@ export default function SignIn(): React.JSX.Element {
       <View style={styles.card}>
         <Text style={styles.title}>ТЕЛК Навигатор</Text>
         <Text style={styles.subtitle}>Вход в системата</Text>
+
+        <TouchableOpacity style={styles.googleButton} onPress={handleGoogle}>
+          <Text style={styles.googleText}>🔑  Вход с Google</Text>
+        </TouchableOpacity>
+
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>или с имейл</Text>
+          <View style={styles.dividerLine} />
+        </View>
 
         <TextInput
           style={styles.input}
@@ -65,11 +80,7 @@ export default function SignIn(): React.JSX.Element {
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
         <TouchableOpacity style={styles.button} onPress={handleSignIn} disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Влез</Text>
-          )}
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Влез</Text>}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/register')}>
@@ -81,61 +92,39 @@ export default function SignIn(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E8F4F8',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 24,
-    borderWidth: 0.5,
+  container: { flex: 1, backgroundColor: '#E8F4F8', justifyContent: 'center', padding: 24 },
+  card: { backgroundColor: '#fff', borderRadius: 12, padding: 24, borderWidth: 0.5, borderColor: '#B8CDD8' },
+  title: { fontSize: 22, fontWeight: '600', color: '#1A4A6B', textAlign: 'center', marginBottom: 4 },
+  subtitle: { fontSize: 14, color: '#3D5A73', textAlign: 'center', marginBottom: 20 },
+  googleButton: {
+    borderWidth: 1,
     borderColor: '#B8CDD8',
+    borderRadius: 8,
+    padding: 13,
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '500',
-    color: '#1A4A6B',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#3D5A73',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
+  googleText: { fontSize: 15, color: '#1C2B3A', fontWeight: '500' },
+  divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 8 },
+  dividerLine: { flex: 1, height: 0.5, backgroundColor: '#B8CDD8' },
+  dividerText: { fontSize: 12, color: '#3D5A73' },
   input: {
     borderWidth: 0.5,
     borderColor: '#B8CDD8',
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 14,
     fontSize: 16,
     color: '#1C2B3A',
     marginBottom: 12,
   },
-  error: {
-    color: '#8B1A1A',
-    fontSize: 14,
-    marginBottom: 12,
-  },
+  error: { color: '#8B1A1A', fontSize: 14, marginBottom: 12 },
   button: {
     backgroundColor: '#1A4A6B',
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 14,
     alignItems: 'center',
     marginBottom: 16,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  link: {
-    color: '#0A7C7C',
-    fontSize: 14,
-    textAlign: 'center',
-  },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  link: { color: '#0A7C7C', fontSize: 14, textAlign: 'center' },
 })

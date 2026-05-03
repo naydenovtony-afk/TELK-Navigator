@@ -6,7 +6,7 @@ function Icon({ label }: { label: string }): React.JSX.Element {
   return <Text style={{ fontSize: 18 }}>{label}</Text>
 }
 
-export default function TabsLayout(): React.JSX.Element {
+export default function AdminLayout(): React.JSX.Element {
   return (
     <Tabs
       screenOptions={{
@@ -23,11 +23,8 @@ export default function TabsLayout(): React.JSX.Element {
         },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Случаи', tabBarIcon: () => <Icon label="📁" /> }} />
-      <Tabs.Screen name="deadlines" options={{ title: 'Срокове', tabBarIcon: () => <Icon label="📅" /> }} />
-      <Tabs.Screen name="documents" options={{ title: 'Документи', tabBarIcon: () => <Icon label="📄" /> }} />
-      <Tabs.Screen name="rights" options={{ title: 'Права', tabBarIcon: () => <Icon label="⚖️" /> }} />
-      <Tabs.Screen name="more" options={{ title: 'Още', tabBarIcon: () => <Icon label="☰" /> }} />
+      <Tabs.Screen name="index" options={{ title: 'Потребители', tabBarIcon: () => <Icon label="👥" /> }} />
+      <Tabs.Screen name="profile" options={{ title: 'Профил', tabBarIcon: () => <Icon label="👤" /> }} />
     </Tabs>
   )
 }

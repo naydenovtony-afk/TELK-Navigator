@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -25,7 +25,7 @@ const STATUS_COLOR: Record<Case['status'], string> = {
 }
 
 export default function CasesScreen(): React.JSX.Element {
-  const { token, setToken } = useAuth()
+  const { token } = useAuth()
   const router = useRouter()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
@@ -49,11 +49,6 @@ export default function CasesScreen(): React.JSX.Element {
 
   useEffect(() => { load() }, [token])
 
-  function handleSignOut(): void {
-    setToken(null)
-    router.replace('/sign-in')
-  }
-
   if (loading) {
     return (
       <View style={styles.center}>
@@ -66,9 +61,6 @@ export default function CasesScreen(): React.JSX.Element {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Моите случаи</Text>
-        <TouchableOpacity onPress={handleSignOut}>
-          <Text style={styles.signOut}>Изход</Text>
-        </TouchableOpacity>
       </View>
 
       {error ? (

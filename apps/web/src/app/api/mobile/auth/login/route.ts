@@ -44,5 +44,5 @@ export async function POST(req: NextRequest) {
     .setExpirationTime('30d')
     .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET!))
 
-  return NextResponse.json({ token, userId: user.id })
+  return NextResponse.json({ token, userId: user.id, role: user.role })
 }

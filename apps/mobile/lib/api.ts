@@ -14,9 +14,29 @@ export type Deadline = {
   isCompleted: boolean
 }
 
+export type Document = {
+  id: string
+  caseId: string
+  caseTitle: string
+  fileName: string
+  mimeType: string
+  status: 'uploading' | 'processing' | 'ready' | 'error'
+  uploadedAt: string
+}
+
+export type AdminUser = {
+  id: string
+  name: string | null
+  email: string
+  role: 'patient' | 'admin'
+  createdAt: string
+  caseCount: number
+}
+
 export type AuthResponse = {
   token: string
   userId: string
+  role: string
 }
 
 async function request<T>(path: string, options: RequestInit, token?: string): Promise<T> {
@@ -48,4 +68,12 @@ export function getCases(token: string): Promise<Case[]> {
 
 export function getDeadlines(token: string): Promise<Deadline[]> {
   return request<Deadline[]>('/api/mobile/deadlines', { method: 'GET' }, token)
+}
+
+export function getDocuments(token: string): Promise<Document[]> {
+  return request<Document[]>('/api/mobile/documents', { method: 'GET' }, token)
+}
+
+export function getAdminUsers(token: string): Promise<AdminUser[]> {
+  return request<AdminUser[]>('/api/mobile/admin/users', { method: 'GET' }, token)
 }

@@ -1,9 +1,10 @@
+import React from 'react'
 import { Redirect } from 'expo-router'
 import { View, ActivityIndicator } from 'react-native'
 import { useAuth } from '../lib/auth'
 
 export default function Index(): React.JSX.Element {
-  const { token, loading } = useAuth()
+  const { token, role, loading } = useAuth()
 
   if (loading) {
     return (
@@ -13,5 +14,6 @@ export default function Index(): React.JSX.Element {
     )
   }
 
-  return <Redirect href={token ? '/(tabs)' : '/sign-in'} />
+  if (!token) return <Redirect href="/sign-in" />
+  return <Redirect href={role === 'admin' ? '/(admin)' : '/(tabs)'} />
 }
