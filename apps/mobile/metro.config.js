@@ -13,11 +13,22 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// Pin react and react-native to mobile's own copies so Metro never
-// picks up the copies from apps/web and creates two React instances.
-config.resolver.extraNodeModules = {
-  react: path.resolve(projectRoot, 'node_modules/react'),
-  'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
+// The workspace root has React 18 (for web) and mobile has React 19.
+// Without this, Metro can bundle both and cause "Invalid hook call" crashes.
+// resolveRequest intercepts every import of react/* and hard-routes it to
+// mobile's own node_modules so only one React instance ever enters the bundle.
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === 'react' || moduleName.startsWith('react/')) {
+    try {
+      return {
+        filePath: require.resolve(moduleName, {
+          paths: [path.resolve(projectRoot, 'node_modules')],
+        }),
+        type: 'sourceFile',
+      };
+    } catch (_) {}
+  }
+  return context.resolveRequest(context, moduleName, platform);
 };
 
 module.exports = config;
