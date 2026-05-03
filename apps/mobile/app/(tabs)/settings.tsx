@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
-import { useRouter } from 'expo-router'
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native'
 import { useAuth } from '../../lib/auth'
 import { getProfile, type UserProfile } from '../../lib/api'
+import AppHeader from '../../components/AppHeader'
 
 function Row({ label, value }: { label: string; value: string }): React.JSX.Element {
   return (
@@ -14,8 +14,7 @@ function Row({ label, value }: { label: string; value: string }): React.JSX.Elem
 }
 
 export default function SettingsScreen(): React.JSX.Element {
-  const { token, setToken } = useAuth()
-  const router = useRouter()
+  const { token } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -27,11 +26,6 @@ export default function SettingsScreen(): React.JSX.Element {
       .finally(() => setLoading(false))
   }, [token])
 
-  function handleSignOut(): void {
-    setToken(null)
-    router.replace('/sign-in')
-  }
-
   if (loading) return <View style={s.center}><ActivityIndicator color="#1A4A6B" /></View>
 
   const initial = ((profile?.name ?? profile?.email ?? '?')[0] ?? '?').toUpperCase()
@@ -42,10 +36,7 @@ export default function SettingsScreen(): React.JSX.Element {
 
   return (
     <View style={s.container}>
-      <View style={s.header}>
-        <Text style={s.title}>Настройки</Text>
-        <Text style={s.subtitle}>Профил и предпочитания</Text>
-      </View>
+      <AppHeader title="Настройки" subtitle="Профил и предпочитания" showBack />
 
       <ScrollView contentContainerStyle={s.content}>
         {/* Profile card */}
@@ -69,16 +60,6 @@ export default function SettingsScreen(): React.JSX.Element {
           <Row label="Регистриран на" value={registeredOn} />
         </View>
 
-        {/* Session card */}
-        <View style={s.card}>
-          <Text style={s.cardLabel}>СЕСИЯ</Text>
-          <Text style={s.sessionNote}>
-            Излизането ще приключи текущата ви сесия на това устройство.
-          </Text>
-          <TouchableOpacity style={s.signOutBtn} onPress={handleSignOut} activeOpacity={0.75}>
-            <Text style={s.signOutText}>🚪  Изход от профила</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </View>
   )
@@ -87,10 +68,6 @@ export default function SettingsScreen(): React.JSX.Element {
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
-
-  header: { backgroundColor: '#1A4A6B', paddingTop: 52, paddingBottom: 20, paddingHorizontal: 20 },
-  title: { color: '#fff', fontSize: 26, fontWeight: '800' },
-  subtitle: { color: '#B8D8E8', fontSize: 14, marginTop: 4 },
 
   content: { padding: 16, gap: 14, paddingBottom: 32 },
 
@@ -120,10 +97,4 @@ const s = StyleSheet.create({
   rowLabel: { fontSize: 15, color: '#3D5A73' },
   rowValue: { fontSize: 15, fontWeight: '600', color: '#1C2B3A' },
 
-  sessionNote: { fontSize: 14, color: '#3D5A73', lineHeight: 20 },
-  signOutBtn: {
-    borderWidth: 1.5, borderColor: '#CC2A2A40', borderRadius: 10,
-    padding: 15, alignItems: 'center', marginTop: 4,
-  },
-  signOutText: { fontSize: 16, fontWeight: '700', color: '#CC2A2A' },
 })

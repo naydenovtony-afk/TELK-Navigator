@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
+import AppHeader from '../../components/AppHeader'
 
 type Feature = {
   emoji: string
@@ -26,10 +27,7 @@ export default function DashboardScreen(): React.JSX.Element {
 
   return (
     <View style={s.container}>
-      <View style={s.header}>
-        <Text style={s.appName}>ТЕЛК Навигатор</Text>
-        <Text style={s.welcome}>Изберете функция</Text>
-      </View>
+      <AppHeader subtitle="Изберете функция" />
 
       <ScrollView contentContainerStyle={s.grid} showsVerticalScrollIndicator={false}>
         {FEATURES.map((f) => (
@@ -51,15 +49,6 @@ export default function DashboardScreen(): React.JSX.Element {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
-
-  header: {
-    backgroundColor: '#1A4A6B',
-    paddingTop: 52,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
-  appName: { color: '#fff', fontSize: 24, fontWeight: '800', letterSpacing: 0.5 },
-  welcome: { color: '#B8D8E8', fontSize: 15, marginTop: 4 },
 
   grid: {
     flexDirection: 'row',
