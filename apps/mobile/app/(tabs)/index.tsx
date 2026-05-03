@@ -1,133 +1,92 @@
-import React, { useEffect, useState } from 'react'
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native'
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useAuth } from '../../lib/auth'
-import { getCases, type Case } from '../../lib/api'
 
-const STATUS_LABEL: Record<Case['status'], string> = {
-  active: 'Активен',
-  submitted: 'Подаден',
-  closed: 'Затворен',
+type Feature = {
+  emoji: string
+  title: string
+  subtitle: string
+  route: string
+  color: string
 }
 
-const STATUS_COLOR: Record<Case['status'], string> = {
-  active: '#1A6B3C',
-  submitted: '#7A5200',
-  closed: '#3D5A73',
-}
+const FEATURES: Feature[] = [
+  { emoji: '📁', title: 'Случаи',        subtitle: 'Моите ТЕЛК случаи',        route: '/(tabs)/cases',     color: '#1A4A6B' },
+  { emoji: '📅', title: 'Срокове',       subtitle: 'Важни дати и срокове',      route: '/(tabs)/deadlines', color: '#1A6B3C' },
+  { emoji: '📄', title: 'Документи',     subtitle: 'Медицински документи',      route: '/(tabs)/documents', color: '#5A3D6B' },
+  { emoji: '⚖️', title: 'Права',         subtitle: 'Социални права',            route: '/(tabs)/rights',    color: '#6B3D1A' },
+  { emoji: '✉️', title: 'Писмо',         subtitle: 'До работодател',            route: '/employer-letter',  color: '#1A5A6B' },
+  { emoji: '🏥', title: 'Пожизнено',     subtitle: 'Проверка за помощ',         route: '/lifelong',         color: '#1A6B4A' },
+  { emoji: '📊', title: 'Прогноза',      subtitle: 'Прогноза за оценка',        route: '/score',            color: '#6B5A1A' },
+  { emoji: '🏛️', title: 'Обжалване',    subtitle: 'Стъпки за обжалване',       route: '/appeal',           color: '#6B1A1A' },
+]
 
-export default function CasesScreen(): React.JSX.Element {
-  const { token } = useAuth()
+export default function DashboardScreen(): React.JSX.Element {
   const router = useRouter()
-  const [cases, setCases] = useState<Case[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState('')
-
-  async function load(silent = false): Promise<void> {
-    if (!token) return
-    if (!silent) setLoading(true)
-    try {
-      const data = await getCases(token)
-      setCases(data)
-      setError('')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Грешка')
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }
-
-  useEffect(() => { load() }, [token])
-
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color="#1A4A6B" />
-      </View>
-    )
-  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Моите случаи</Text>
+    <View style={s.container}>
+      <View style={s.header}>
+        <Text style={s.appName}>ТЕЛК Навигатор</Text>
+        <Text style={s.welcome}>Изберете функция</Text>
       </View>
 
-      {error ? (
-        <Text style={styles.error}>{error}</Text>
-      ) : (
-        <FlatList
-          data={cases}
-          keyExtractor={(item) => item.id}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => { setRefreshing(true); load(true) }}
-              tintColor="#1A4A6B"
-            />
-          }
-          contentContainerStyle={cases.length === 0 ? styles.empty : styles.list}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>Нямате добавени случаи. Използвайте уеб приложението, за да създадете случай.</Text>
-          }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.caseTitle}>{item.title}</Text>
-              <View style={styles.row}>
-                <View style={[styles.dot, { backgroundColor: STATUS_COLOR[item.status] }]} />
-                <Text style={[styles.statusText, { color: STATUS_COLOR[item.status] }]}>
-                  {STATUS_LABEL[item.status]}
-                </Text>
-              </View>
-              <Text style={styles.date}>
-                {new Date(item.createdAt).toLocaleDateString('bg-BG')}
-              </Text>
-            </View>
-          )}
-        />
-      )}
+      <ScrollView contentContainerStyle={s.grid} showsVerticalScrollIndicator={false}>
+        {FEATURES.map((f) => (
+          <TouchableOpacity
+            key={f.route}
+            style={[s.card, { borderTopColor: f.color }]}
+            onPress={() => router.push(f.route as never)}
+            activeOpacity={0.75}
+          >
+            <Text style={s.cardEmoji}>{f.emoji}</Text>
+            <Text style={[s.cardTitle, { color: f.color }]}>{f.title}</Text>
+            <Text style={s.cardSub}>{f.subtitle}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
+
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     backgroundColor: '#1A4A6B',
-    padding: 16,
     paddingTop: 52,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
   },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '500' },
-  signOut: { color: '#B8CDD8', fontSize: 14 },
-  list: { padding: 16, gap: 12 },
-  empty: { flex: 1, justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#3D5A73', textAlign: 'center', fontSize: 15, lineHeight: 22 },
+  appName: { color: '#fff', fontSize: 24, fontWeight: '800', letterSpacing: 0.5 },
+  welcome: { color: '#B8D8E8', fontSize: 15, marginTop: 4 },
+
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 14,
+    gap: 12,
+    paddingBottom: 24,
+  },
+
   card: {
+    width: '47%',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
+    paddingTop: 16,
+    alignItems: 'center',
+    gap: 8,
+    borderTopWidth: 4,
     borderWidth: 0.5,
     borderColor: '#B8CDD8',
-    gap: 6,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
-  caseTitle: { fontSize: 16, fontWeight: '500', color: '#1C2B3A' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  statusText: { fontSize: 13 },
-  date: { fontSize: 12, color: '#3D5A73' },
-  error: { color: '#8B1A1A', padding: 16, textAlign: 'center' },
+  cardEmoji: { fontSize: 44 },
+  cardTitle: { fontSize: 18, fontWeight: '800', textAlign: 'center' },
+  cardSub: { fontSize: 12, color: '#7A95A8', textAlign: 'center', lineHeight: 17 },
 })

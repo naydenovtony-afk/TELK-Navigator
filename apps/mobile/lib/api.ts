@@ -74,6 +74,18 @@ export function getDocuments(token: string): Promise<Document[]> {
   return request<Document[]>('/api/mobile/documents', { method: 'GET' }, token)
 }
 
+export type UserProfile = {
+  id: string
+  name: string | null
+  email: string
+  role: string
+  createdAt: string
+}
+
 export function getAdminUsers(token: string): Promise<AdminUser[]> {
   return request<AdminUser[]>('/api/mobile/admin/users', { method: 'GET' }, token)
+}
+
+export function getProfile(token: string): Promise<UserProfile> {
+  return request<UserProfile>('/api/mobile/profile', { method: 'GET' }, token)
 }
