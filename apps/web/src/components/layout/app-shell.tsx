@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { SignOutButton } from './sign-out-button'
 
 interface NavItem {
   href: string
@@ -124,7 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User footer */}
-        <div className="px-3 py-4 border-t border-white/10">
+        <div className="px-3 py-4 border-t border-white/10 space-y-1">
           <Link
             href="/bg/settings"
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
@@ -135,6 +136,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </svg>
             Настройки
           </Link>
+          <SignOutButton className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors" />
         </div>
       </aside>
 
