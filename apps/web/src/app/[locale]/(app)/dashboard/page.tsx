@@ -31,15 +31,19 @@ export default async function DashboardPage() {
   })
 
   const caseIds = rows.map((c) => c.id)
-  const [docCountResult, overdueResult] = await Promise.all([
+  const [docsByCase, overdueResult] = await Promise.all([
     caseIds.length
-      ? db.select({ value: count() }).from(documents).where(inArray(documents.caseId, caseIds))
-      : Promise.resolve([{ value: 0 }]),
+      ? db.select({ caseId: documents.caseId, value: count() })
+          .from(documents)
+          .where(inArray(documents.caseId, caseIds))
+          .groupBy(documents.caseId)
+      : Promise.resolve([] as { caseId: string; value: number }[]),
     db.select({ value: count() }).from(deadlines).where(
       and(eq(deadlines.userId, userId), eq(deadlines.isCompleted, false), lt(deadlines.dueAt, new Date()))
     ),
   ])
-  const docCount = Number(docCountResult[0]?.value ?? 0)
+  const docCountByCaseId = Object.fromEntries(docsByCase.map((r) => [r.caseId, Number(r.value)]))
+  const docCount = Object.values(docCountByCaseId).reduce((s, n) => s + n, 0)
   const overdueCount = Number(overdueResult[0]?.value ?? 0)
 
   return (
@@ -103,13 +107,20 @@ export default async function DashboardPage() {
                   {STATUS_LABEL[c.status] ?? c.status}
                 </Badge>
               </div>
-              <p className="text-xs text-medical-slate">
-                {new Date(c.createdAt).toLocaleDateString('bg-BG', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-medical-slate">
+                  {new Date(c.createdAt).toLocaleDateString('bg-BG', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+                {(docCountByCaseId[c.id] ?? 0) > 0 && (
+                  <p className="text-xs text-medical-teal font-medium">
+                    {docCountByCaseId[c.id]} {docCountByCaseId[c.id] === 1 ? 'документ' : 'документа'}
+                  </p>
+                )}
+              </div>
             </Link>
           ))}
         </div>
