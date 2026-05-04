@@ -12,22 +12,7 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }): React
 
 export default function AdminLayout(): React.JSX.Element {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#1A4A6B',
-        tabBarInactiveTintColor: '#7A95A8',
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '600', marginTop: 2 },
-        tabBarStyle: {
-          borderTopWidth: 0.5,
-          borderTopColor: '#B8CDD8',
-          backgroundColor: '#fff',
-          height: 80,
-          paddingBottom: 10,
-          paddingTop: 6,
-        },
-      }}
-    >
+    <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
       <Tabs.Screen
         name="index"
         options={{ title: 'Потребители', tabBarIcon: ({ focused }) => <TabIcon emoji="👥" focused={focused} /> }}

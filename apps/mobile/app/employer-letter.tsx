@@ -51,8 +51,8 @@ ${name}
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.back}>‹ Назад</Text>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.back}>‹ Табло</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Писмо до работодател</Text>
       </View>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
-  back: { color: '#B8CDD8', fontSize: 16 },
+  back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
   content: { padding: 16, gap: 16, backgroundColor: '#E8F4F8', flexGrow: 1 },
   form: { gap: 12 },

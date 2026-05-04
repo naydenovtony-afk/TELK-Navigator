@@ -45,8 +45,8 @@ export default function LifelongScreen(): React.JSX.Element {
   return (
     <View style={{ flex: 1, backgroundColor: '#E8F4F8' }}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.back}>‹ Назад</Text>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.back}>‹ Табло</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Пожизнена помощ</Text>
       </View>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
-  back: { color: '#B8CDD8', fontSize: 16 },
+  back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
   content: { padding: 16, gap: 14 },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 20, borderWidth: 0.5, borderColor: '#B8CDD8', gap: 14 },

@@ -17,6 +17,9 @@ export default function AdminProfileScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.back}>‹ Потребители</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Профил</Text>
       </View>
 
@@ -46,7 +49,8 @@ export default function AdminProfileScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
-  header: { backgroundColor: '#1A4A6B', padding: 16 },
+  header: { backgroundColor: '#1A4A6B', padding: 16, gap: 4 },
+  back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   content: { padding: 16, gap: 16 },
   adminBadge: {

@@ -89,3 +89,10 @@ export function getAdminUsers(token: string): Promise<AdminUser[]> {
 export function getProfile(token: string): Promise<UserProfile> {
   return request<UserProfile>('/api/mobile/profile', { method: 'GET' }, token)
 }
+
+export function updateProfile(token: string, name: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>('/api/mobile/profile', {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  }, token)
+}

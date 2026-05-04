@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import { getAdminUsers, type AdminUser } from '../../lib/api'
 
 export default function AdminUsersScreen(): React.JSX.Element {
   const { token } = useAuth()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,7 +43,12 @@ export default function AdminUsersScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
-        <Text style={styles.headerTitle}>Администрация</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>Администрация</Text>
+          <TouchableOpacity onPress={() => router.push('/(admin)/profile')} hitSlop={12}>
+            <Text style={styles.profileBtn}>👤</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.stats}>
           <View style={styles.stat}>
             <Text style={styles.statNum}>{patients.length}</Text>
@@ -110,7 +117,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
   header: { backgroundColor: '#1A4A6B', padding: 16, gap: 16 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  profileBtn: { fontSize: 22 },
   stats: { flexDirection: 'row', backgroundColor: '#ffffff15', borderRadius: 10, padding: 12 },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
   statNum: { color: '#fff', fontSize: 22, fontWeight: '700' },

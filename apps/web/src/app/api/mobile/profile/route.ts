@@ -19,3 +19,16 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(user)
 }
+
+export async function PATCH(req: NextRequest) {
+  const userId = await verifyMobileToken(req)
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json().catch(() => ({}))
+  const name = typeof body.name === 'string' ? body.name.trim() : null
+  if (!name) return NextResponse.json({ error: 'Невалидно ime' }, { status: 400 })
+
+  await db.update(users).set({ name }).where(eq(users.id, userId))
+
+  return NextResponse.json({ ok: true })
+}
