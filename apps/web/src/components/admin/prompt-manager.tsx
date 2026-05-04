@@ -21,6 +21,7 @@ export function PromptManager({ initialPrompts }: { initialPrompts: Prompt[] }) 
   const [newKey, setNewKey] = useState('')
   const [newContent, setNewContent] = useState('')
   const [saving, setSaving] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   async function saveEdit(id: string) {
     setSaving(true)
@@ -40,6 +41,7 @@ export function PromptManager({ initialPrompts }: { initialPrompts: Prompt[] }) 
   async function remove(id: string) {
     await fetch(`/api/admin/prompts/${id}`, { method: 'DELETE' })
     setPrompts((prev) => prev.filter((p) => p.id !== id))
+    setConfirmDeleteId(null)
   }
 
   async function createPrompt() {
@@ -85,7 +87,14 @@ export function PromptManager({ initialPrompts }: { initialPrompts: Prompt[] }) 
               ) : (
                 <>
                   <Button size="sm" variant="secondary" onClick={() => { setEditingId(p.id); setEditContent(p.content) }}>Редактирай</Button>
-                  <Button size="sm" variant="destructive" onClick={() => remove(p.id)}>Изтрий</Button>
+                  {confirmDeleteId === p.id ? (
+                    <>
+                      <Button size="sm" variant="destructive" onClick={() => remove(p.id)}>Потвърди</Button>
+                      <Button size="sm" variant="ghost" onClick={() => setConfirmDeleteId(null)}>Отказ</Button>
+                    </>
+                  ) : (
+                    <Button size="sm" variant="destructive" onClick={() => setConfirmDeleteId(p.id)}>Изтрий</Button>
+                  )}
                 </>
               )}
             </div>
