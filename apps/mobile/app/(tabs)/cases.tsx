@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
+  View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity, Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -59,7 +59,22 @@ export default function CasesScreen(): React.JSX.Element {
           keyExtractor={(item) => item.id}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(true) }} tintColor="#1A4A6B" />}
           contentContainerStyle={cases.length === 0 ? s.empty : s.list}
-          ListEmptyComponent={<Text style={s.emptyText}>Нямате добавени случаи.{'\n'}Използвайте уеб приложението, за да създадете случай.</Text>}
+          ListEmptyComponent={
+            <View style={s.emptyCard}>
+              <Text style={s.emptyIcon}>📁</Text>
+              <Text style={s.emptyTitle}>Все още нямате случаи</Text>
+              <Text style={s.emptyBody}>
+                Случаите следят целия ви ТЕЛК процес — документи, срокове и статус на едно място. Създайте първия си случай от уеб приложението.
+              </Text>
+              <TouchableOpacity
+                style={s.emptyBtn}
+                onPress={() => Linking.openURL('https://telk-navigator-web.vercel.app')}
+                activeOpacity={0.75}
+              >
+                <Text style={s.emptyBtnText}>Отвори уеб приложението</Text>
+              </TouchableOpacity>
+            </View>
+          }
           renderItem={({ item }) => (
             <View style={s.card}>
               <Text style={s.caseTitle}>{item.title}</Text>
@@ -83,8 +98,21 @@ const s = StyleSheet.create({
   back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   list: { padding: 16, gap: 12 },
-  empty: { flex: 1, justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#3D5A73', textAlign: 'center', fontSize: 16, lineHeight: 24 },
+  empty: { flex: 1, justifyContent: 'center', padding: 24 },
+  emptyCard: {
+    backgroundColor: '#fff', borderRadius: 20, padding: 28,
+    alignItems: 'center', gap: 12,
+    borderWidth: 0.5, borderColor: '#B8CDD8',
+    elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 },
+  },
+  emptyIcon: { fontSize: 52 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', color: '#1C2B3A', textAlign: 'center' },
+  emptyBody: { fontSize: 15, color: '#3D5A73', textAlign: 'center', lineHeight: 22 },
+  emptyBtn: {
+    marginTop: 4, backgroundColor: '#1A4A6B', borderRadius: 12,
+    paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', width: '100%',
+  },
+  emptyBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, borderWidth: 0.5, borderColor: '#B8CDD8', gap: 6 },
   caseTitle: { fontSize: 16, fontWeight: '600', color: '#1C2B3A' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 6 },

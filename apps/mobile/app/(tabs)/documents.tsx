@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, StyleSheet, ActivityIndicator, RefreshControl, SectionList, TouchableOpacity,
+  View, Text, StyleSheet, ActivityIndicator, RefreshControl, SectionList, TouchableOpacity, Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -76,7 +76,20 @@ export default function DocumentsScreen(): React.JSX.Element {
           }
           contentContainerStyle={sections.length === 0 ? styles.emptyContainer : styles.list}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Няма качени документи.{'\n'}Добавете документи от уеб приложението.</Text>
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyIcon}>📄</Text>
+              <Text style={styles.emptyTitle}>Все още няма документи</Text>
+              <Text style={styles.emptyBody}>
+                Тук ще виждате всичките си медицински документи — епикризи, изследвания и резултати от AI анализ. Качете ги от уеб приложението.
+              </Text>
+              <TouchableOpacity
+                style={styles.emptyBtn}
+                onPress={() => Linking.openURL('https://telk-navigator-web.vercel.app')}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.emptyBtnText}>Отвори уеб приложението</Text>
+              </TouchableOpacity>
+            </View>
           }
           renderSectionHeader={({ section }) => (
             <View style={styles.sectionHeader}>
@@ -111,8 +124,21 @@ const styles = StyleSheet.create({
   back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   list: { paddingBottom: 16 },
-  emptyContainer: { flex: 1, justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#3D5A73', textAlign: 'center', fontSize: 15, lineHeight: 22 },
+  emptyContainer: { flex: 1, justifyContent: 'center', padding: 24 },
+  emptyCard: {
+    backgroundColor: '#fff', borderRadius: 20, padding: 28,
+    alignItems: 'center', gap: 12,
+    borderWidth: 0.5, borderColor: '#B8CDD8',
+    elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 },
+  },
+  emptyIcon: { fontSize: 52 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', color: '#1C2B3A', textAlign: 'center' },
+  emptyBody: { fontSize: 15, color: '#3D5A73', textAlign: 'center', lineHeight: 22 },
+  emptyBtn: {
+    marginTop: 4, backgroundColor: '#1A4A6B', borderRadius: 12,
+    paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', width: '100%',
+  },
+  emptyBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   sectionHeader: { backgroundColor: '#E8F4F8', paddingHorizontal: 16, paddingVertical: 8 },
   sectionTitle: { fontSize: 13, fontWeight: '600', color: '#3D5A73', textTransform: 'uppercase', letterSpacing: 0.5 },
   card: {

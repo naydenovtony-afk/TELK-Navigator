@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
+  View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity, Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -79,7 +79,20 @@ export default function DeadlinesScreen(): React.JSX.Element {
           }
           contentContainerStyle={deadlines.length === 0 ? styles.empty : styles.list}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Няма добавени срокове. Добавете ги от уеб приложението.</Text>
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyIcon}>📅</Text>
+              <Text style={styles.emptyTitle}>Все още няма срокове</Text>
+              <Text style={styles.emptyBody}>
+                Срокове ви напомнят за важни дати — подаване на документи, насрочени прегледи и крайни дати за обжалване. Добавете ги от уеб приложението.
+              </Text>
+              <TouchableOpacity
+                style={styles.emptyBtn}
+                onPress={() => Linking.openURL('https://telk-navigator-web.vercel.app')}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.emptyBtnText}>Отвори уеб приложението</Text>
+              </TouchableOpacity>
+            </View>
           }
           renderItem={({ item }) => {
             const days = daysUntil(item.dueAt)
@@ -120,8 +133,21 @@ const styles = StyleSheet.create({
   back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '500' },
   list: { padding: 16, gap: 12 },
-  empty: { flex: 1, justifyContent: 'center', padding: 32 },
-  emptyText: { color: '#3D5A73', textAlign: 'center', fontSize: 15, lineHeight: 22 },
+  empty: { flex: 1, justifyContent: 'center', padding: 24 },
+  emptyCard: {
+    backgroundColor: '#fff', borderRadius: 20, padding: 28,
+    alignItems: 'center', gap: 12,
+    borderWidth: 0.5, borderColor: '#B8CDD8',
+    elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 },
+  },
+  emptyIcon: { fontSize: 52 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', color: '#1C2B3A', textAlign: 'center' },
+  emptyBody: { fontSize: 15, color: '#3D5A73', textAlign: 'center', lineHeight: 22 },
+  emptyBtn: {
+    marginTop: 4, backgroundColor: '#1A4A6B', borderRadius: 12,
+    paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', width: '100%',
+  },
+  emptyBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
