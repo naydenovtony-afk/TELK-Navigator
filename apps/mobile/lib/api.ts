@@ -82,6 +82,21 @@ export function createCase(token: string, title: string): Promise<Case> {
   }, token)
 }
 
+export function updateCase(
+  token: string,
+  id: string,
+  patch: { title?: string; status?: Case['status'] },
+): Promise<Case> {
+  return request<Case>(`/api/mobile/cases/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(patch),
+  }, token)
+}
+
+export function deleteCase(token: string, id: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/mobile/cases/${id}`, { method: 'DELETE' }, token)
+}
+
 export function getDeadlines(token: string): Promise<Deadline[]> {
   return request<Deadline[]>('/api/mobile/deadlines', { method: 'GET' }, token)
 }
