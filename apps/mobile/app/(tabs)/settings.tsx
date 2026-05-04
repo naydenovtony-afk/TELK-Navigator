@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { useAuth } from '../../lib/auth'
 import { getProfile, updateProfile, type UserProfile } from '../../lib/api'
+import { getTelkPercent, saveTelkPercent, clearTelkPercent } from '../../lib/prefs'
 import AppHeader from '../../components/AppHeader'
 
 function Row({ label, value }: { label: string; value: string }): React.JSX.Element {
@@ -24,13 +25,41 @@ export default function SettingsScreen(): React.JSX.Element {
   const [nameInput, setNameInput] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const [savedPercent, setSavedPercent] = useState<number | null>(null)
+  const [percentInput, setPercentInput] = useState('')
+  const [editingPercent, setEditingPercent] = useState(false)
+  const [savingPercent, setSavingPercent] = useState(false)
+
   useEffect(() => {
     if (!token) return
-    getProfile(token)
-      .then((p) => { setProfile(p); setNameInput(p.name ?? '') })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    Promise.all([
+      getProfile(token).then((p) => { setProfile(p); setNameInput(p.name ?? '') }),
+      getTelkPercent().then((p) => { setSavedPercent(p); setPercentInput(p !== null ? String(p) : '') }),
+    ]).catch(() => {}).finally(() => setLoading(false))
   }, [token])
+
+  async function handleSavePercent(): Promise<void> {
+    const n = parseInt(percentInput, 10)
+    if (isNaN(n) || n < 0 || n > 100) {
+      Alert.alert('Невалидна стойност', 'Въведете число между 0 и 100.')
+      return
+    }
+    setSavingPercent(true)
+    try {
+      await saveTelkPercent(n)
+      setSavedPercent(n)
+      setEditingPercent(false)
+    } finally {
+      setSavingPercent(false)
+    }
+  }
+
+  async function handleClearPercent(): Promise<void> {
+    await clearTelkPercent()
+    setSavedPercent(null)
+    setPercentInput('')
+    setEditingPercent(false)
+  }
 
   async function handleSaveName(): Promise<void> {
     if (!token || !nameInput.trim()) return
@@ -112,6 +141,64 @@ export default function SettingsScreen(): React.JSX.Element {
           <Row label="Роля" value={roleLabel} />
           <Row label="Регистриран на" value={registeredOn} />
         </View>
+
+        {/* TELK percent card */}
+        <View style={s.card}>
+          <Text style={s.cardLabel}>ТЕЛК СТЕПЕН</Text>
+          <Text style={s.cardHint}>
+            Запазете процента от вашето ТЕЛК решение. Екранът „Права" ще покаже само правата, които се отнасят за вас.
+          </Text>
+
+          {editingPercent ? (
+            <View style={s.percentEditRow}>
+              <TextInput
+                style={s.percentInput}
+                keyboardType="number-pad"
+                placeholder="0–100"
+                placeholderTextColor="#9AB0BF"
+                value={percentInput}
+                onChangeText={setPercentInput}
+                maxLength={3}
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleSavePercent}
+              />
+              <Text style={s.percentSymbol}>%</Text>
+              <TouchableOpacity
+                style={[s.saveBtn, { flex: 1 }]}
+                onPress={handleSavePercent}
+                disabled={savingPercent}
+              >
+                {savingPercent
+                  ? <ActivityIndicator color="#fff" size="small" />
+                  : <Text style={s.saveBtnText}>Запази</Text>}
+              </TouchableOpacity>
+              <TouchableOpacity style={s.cancelBtn} onPress={() => { setEditingPercent(false); setPercentInput(savedPercent !== null ? String(savedPercent) : '') }}>
+                <Text style={s.cancelBtnText}>Отказ</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={s.percentRow}>
+              {savedPercent !== null ? (
+                <>
+                  <View style={s.percentBadge}>
+                    <Text style={s.percentBadgeValue}>{savedPercent}%</Text>
+                  </View>
+                  <TouchableOpacity style={s.editBtn} onPress={() => setEditingPercent(true)} hitSlop={10}>
+                    <Text style={s.editBtnText}>✏️</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={s.clearBtn} onPress={handleClearPercent} hitSlop={10}>
+                    <Text style={s.clearBtnText}>Изчисти</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity style={[s.saveBtn, { flex: 1 }]} onPress={() => setEditingPercent(true)}>
+                  <Text style={s.saveBtnText}>Въведете процент</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        </View>
       </ScrollView>
     </View>
   )
@@ -166,6 +253,28 @@ const s = StyleSheet.create({
   cancelBtnText: { color: '#3D5A73', fontSize: 13, fontWeight: '600' },
 
   divider: { height: 0.5, backgroundColor: '#B8CDD8' },
+
+  cardHint: { fontSize: 14, color: '#3D5A73', lineHeight: 20 },
+
+  percentRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  percentBadge: {
+    backgroundColor: '#1A4A6B', borderRadius: 12,
+    paddingVertical: 8, paddingHorizontal: 18,
+  },
+  percentBadgeValue: { color: '#fff', fontSize: 22, fontWeight: '800' },
+
+  percentEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  percentInput: {
+    width: 72, borderWidth: 1.5, borderColor: '#1A4A6B', borderRadius: 10,
+    padding: 10, fontSize: 18, fontWeight: '700', color: '#1C2B3A', textAlign: 'center',
+  },
+  percentSymbol: { fontSize: 18, color: '#1C2B3A', fontWeight: '600' },
+
+  clearBtn: {
+    backgroundColor: '#EDF3F7', borderRadius: 8,
+    paddingVertical: 7, paddingHorizontal: 12,
+  },
+  clearBtnText: { color: '#8B1A1A', fontSize: 13, fontWeight: '600' },
 
   row: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
