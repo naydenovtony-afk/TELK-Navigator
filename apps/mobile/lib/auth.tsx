@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import * as SecureStore from 'expo-secure-store'
+import { setOnUnauthorized } from './api'
 
 const TOKEN_KEY = 'telk_jwt'
 
@@ -38,6 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
         setRole(t ? decodeRole(t) : 'patient')
       })
       .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    setOnUnauthorized(() => setToken(null))
   }, [])
 
   async function setToken(t: string | null): Promise<void> {

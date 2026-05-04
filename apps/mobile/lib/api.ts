@@ -1,5 +1,10 @@
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://telk-navigator-web.vercel.app'
 
+let _onUnauthorized: (() => void) | null = null
+export function setOnUnauthorized(cb: () => void): void {
+  _onUnauthorized = cb
+}
+
 export type Case = {
   id: string
   title: string
@@ -43,6 +48,10 @@ async function request<T>(path: string, options: RequestInit, token?: string): P
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers })
+  if (res.status === 401) {
+    _onUnauthorized?.()
+    throw new Error('Сесията е изтекла. Влезте отново.')
+  }
   const json = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error((json as { error?: string }).error ?? `HTTP ${res.status}`)
   return json as T
