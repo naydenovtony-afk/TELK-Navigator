@@ -29,11 +29,13 @@ const URGENCY_STYLES = {
   upcoming: 'border-medical-border bg-white',
 }
 
-const URGENCY_BADGE = {
-  completed: { text: 'Завършен', cls: 'bg-medical-surface text-medical-slate' },
-  overdue: { text: 'Просрочен', cls: 'bg-critical-red-bg text-critical-red' },
-  soon: { text: 'Скоро', cls: 'bg-clinical-amber-bg text-clinical-amber' },
-  upcoming: { text: 'Предстоящ', cls: 'bg-vital-green-bg text-vital-green' },
+function getBadge(urgency: string, daysLeft: number): { text: string; cls: string } {
+  if (urgency === 'completed') return { text: 'Завършен', cls: 'bg-medical-surface text-medical-slate' }
+  if (urgency === 'overdue') return { text: `−${Math.abs(daysLeft)} дни`, cls: 'bg-critical-red-bg text-critical-red' }
+  if (daysLeft === 0) return { text: 'Днес', cls: 'bg-critical-red-bg text-critical-red font-semibold' }
+  if (daysLeft === 1) return { text: 'Утре', cls: 'bg-clinical-amber-bg text-clinical-amber' }
+  if (urgency === 'soon') return { text: `${daysLeft} дни`, cls: 'bg-clinical-amber-bg text-clinical-amber' }
+  return { text: `${daysLeft} дни`, cls: 'bg-vital-green-bg text-vital-green' }
 }
 
 export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[] }) {
@@ -75,7 +77,7 @@ export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[
       {sorted.map((d) => {
         const daysLeft = getDaysLeft(d.dueAt)
         const urgency = getUrgency(daysLeft, d.isCompleted)
-        const badge = URGENCY_BADGE[urgency]
+        const badge = getBadge(urgency, daysLeft)
 
         return (
           <li
@@ -108,12 +110,6 @@ export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[
                 {new Date(d.dueAt).toLocaleDateString('bg-BG', {
                   day: 'numeric', month: 'long', year: 'numeric',
                 })}
-                {!d.isCompleted && daysLeft >= 0 && (
-                  <span className="ml-2">· {daysLeft === 0 ? 'днес' : `след ${daysLeft} дни`}</span>
-                )}
-                {!d.isCompleted && daysLeft < 0 && (
-                  <span className="ml-2 text-critical-red">· {Math.abs(daysLeft)} дни просрочен</span>
-                )}
               </p>
             </div>
 
