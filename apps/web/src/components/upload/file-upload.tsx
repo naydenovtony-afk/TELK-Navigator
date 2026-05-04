@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui'
 
-type UploadState = 'idle' | 'uploading' | 'success' | 'error'
+type UploadState = 'idle' | 'uploading' | 'analysing' | 'success' | 'analysis_failed' | 'error'
 
 interface FileUploadProps {
   caseId: string
@@ -64,15 +64,25 @@ export function FileUpload({
         if (!docRes.ok) throw new Error('Грешка при регистриране на документа')
         const doc = await docRes.json()
 
-        setState('success')
         onSuccess?.(doc.id, file.name)
-        router.refresh()
+
+        // 4. Trigger AI analysis
+        setState('analysing')
+        try {
+          const analyseRes = await fetch(`/api/documents/${doc.id}/analyse`, { method: 'POST' })
+          if (!analyseRes.ok) throw new Error('analysis failed')
+          setState('success')
+        } catch {
+          setState('analysis_failed')
+        } finally {
+          router.refresh()
+        }
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : 'Неочаквана грешка')
         setState('error')
       }
     },
-    [caseId, onSuccess]
+    [caseId, onSuccess, router]
   )
 
   const handleFiles = useCallback(
@@ -120,10 +130,29 @@ export function FileUpload({
               />
             </div>
           </>
+        ) : state === 'analysing' ? (
+          <>
+            <Spinner size="lg" />
+            <p className="text-sm text-medical-slate">Анализира се с AI…</p>
+            <p className="text-xs text-medical-slate/60">Може да отнеме до минута</p>
+          </>
         ) : state === 'success' ? (
           <>
             <CheckIcon />
+            <p className="text-sm font-medium text-medical-navy">Анализът е готов</p>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setState('idle'); setProgress(0) }}
+              className="text-xs text-medical-teal underline"
+            >
+              Качи друг
+            </button>
+          </>
+        ) : state === 'analysis_failed' ? (
+          <>
+            <CheckIcon />
             <p className="text-sm font-medium text-medical-navy">Файлът е качен успешно</p>
+            <p className="text-xs text-clinical-amber">AI анализът не успя — опитайте от документите</p>
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); setState('idle'); setProgress(0) }}
