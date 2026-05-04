@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { db } from '@/db'
-import { cases } from '@/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { cases, documents, deadlines } from '@/db/schema'
+import { eq, desc, count, inArray, and, lt } from 'drizzle-orm'
 import { Badge } from '@/components/ui'
 import { NewCaseButton } from '@/components/cases/new-case-button'
 
@@ -30,6 +30,18 @@ export default async function DashboardPage() {
     orderBy: [desc(cases.createdAt)],
   })
 
+  const caseIds = rows.map((c) => c.id)
+  const [docCountResult, overdueResult] = await Promise.all([
+    caseIds.length
+      ? db.select({ value: count() }).from(documents).where(inArray(documents.caseId, caseIds))
+      : Promise.resolve([{ value: 0 }]),
+    db.select({ value: count() }).from(deadlines).where(
+      and(eq(deadlines.userId, userId), eq(deadlines.isCompleted, false), lt(deadlines.dueAt, new Date()))
+    ),
+  ])
+  const docCount = Number(docCountResult[0]?.value ?? 0)
+  const overdueCount = Number(overdueResult[0]?.value ?? 0)
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
@@ -41,6 +53,28 @@ export default async function DashboardPage() {
         </div>
         <NewCaseButton />
       </div>
+
+      {rows.length > 0 && (
+        <div className="flex items-center gap-6 mb-6 text-sm">
+          <span>
+            <span className="font-medium text-medical-navy">{rows.length}</span>
+            <span className="text-medical-slate ml-1">{rows.length === 1 ? 'случай' : 'случая'}</span>
+          </span>
+          <span className="text-medical-border">·</span>
+          <span>
+            <span className="font-medium text-medical-navy">{docCount}</span>
+            <span className="text-medical-slate ml-1">{docCount === 1 ? 'документ' : 'документа'}</span>
+          </span>
+          {overdueCount > 0 && (
+            <>
+              <span className="text-medical-border">·</span>
+              <span className="font-medium text-critical-red">
+                {overdueCount} просрочени {overdueCount === 1 ? 'срок' : 'срока'}
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
       {rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
