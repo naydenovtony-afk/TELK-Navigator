@@ -81,7 +81,7 @@ export default function AppealPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6 space-y-5">
+      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6 space-y-5" data-print-hide>
         <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide">Данни за жалбата</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -196,7 +196,7 @@ export default function AppealPage() {
       </div>
 
       {appeal && (
-        <div className="bg-white rounded-2xl border border-medical-border overflow-hidden">
+        <div className="bg-white rounded-2xl border border-medical-border overflow-hidden" data-print-content>
           <div className="flex items-center justify-between px-6 py-4 border-b border-medical-border">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-dark-text">Жалба до съда</span>
@@ -212,6 +212,12 @@ export default function AppealPage() {
                 className="text-xs text-medical-slate hover:text-critical-red transition-colors"
               >
                 Изчисти
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="text-sm text-medical-slate hover:text-medical-navy transition-colors font-medium"
+              >
+                Принтирай
               </button>
               <button
                 onClick={handleCopy}

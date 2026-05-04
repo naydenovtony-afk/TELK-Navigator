@@ -47,3 +47,16 @@
     color: var(--color-medical-navy);
   }
 }
+
+@media print {
+  nav, aside, header, [data-print-hide] {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  [data-print-content] {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
