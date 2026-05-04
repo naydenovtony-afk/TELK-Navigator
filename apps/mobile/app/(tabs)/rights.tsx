@@ -1,12 +1,8 @@
 import React, { useState } from 'react'
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 
 type Benefit = { id: string; label: string; detail: string; category: string }
 
@@ -51,6 +47,7 @@ function getAllowance(percent: number): number | null {
 }
 
 export default function RightsScreen(): React.JSX.Element {
+  const router = useRouter()
   const [input, setInput] = useState('')
   const [result, setResult] = useState<{ percent: number; benefits: Benefit[] } | null>(null)
 
@@ -68,6 +65,9 @@ export default function RightsScreen(): React.JSX.Element {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.back}>‹ Табло</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Калкулатор на права</Text>
       </View>
 
@@ -131,11 +131,8 @@ export default function RightsScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   content: { paddingBottom: 32 },
-  header: {
-    backgroundColor: '#1A4A6B',
-    padding: 16,
-    paddingTop: 52,
-  },
+  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52, gap: 4 },
+  back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '500' },
   card: {
     margin: 16,

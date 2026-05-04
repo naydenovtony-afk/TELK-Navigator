@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, KeyboardAvoidingView, Platform, Alert, Clipboard,
+  ScrollView, KeyboardAvoidingView, Platform, Alert,
 } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
 
 export default function EmployerLetterScreen(): React.JSX.Element {
@@ -40,8 +41,8 @@ ${name}
     setGenerated(letter)
   }
 
-  function copyToClipboard(): void {
-    Clipboard.setString(generated)
+  async function copyToClipboard(): Promise<void> {
+    await Clipboard.setStringAsync(generated)
     Alert.alert('Копирано', 'Писмото е копирано в клипборда.')
   }
 

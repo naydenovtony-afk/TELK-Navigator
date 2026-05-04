@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
+  View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 import { useAuth } from '../../lib/auth'
 import { getDeadlines, type Deadline } from '../../lib/api'
 
@@ -23,6 +19,7 @@ function urgencyColor(days: number): string {
 
 export default function DeadlinesScreen(): React.JSX.Element {
   const { token } = useAuth()
+  const router = useRouter()
   const [deadlines, setDeadlines] = useState<Deadline[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -59,6 +56,9 @@ export default function DeadlinesScreen(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.back}>‹ Табло</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Срокове</Text>
       </View>
 
@@ -114,11 +114,8 @@ export default function DeadlinesScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
-  header: {
-    backgroundColor: '#1A4A6B',
-    padding: 16,
-    paddingTop: 52,
-  },
+  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52, gap: 4 },
+  back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '500' },
   list: { padding: 16, gap: 12 },
   empty: { flex: 1, justifyContent: 'center', padding: 32 },

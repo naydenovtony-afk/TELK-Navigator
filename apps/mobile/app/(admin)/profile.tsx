@@ -7,8 +7,8 @@ export default function AdminProfileScreen(): React.JSX.Element {
   const { setToken } = useAuth()
   const router = useRouter()
 
-  function handleSignOut(): void {
-    setToken(null)
+  async function handleSignOut(): Promise<void> {
+    await setToken(null)
     router.replace('/sign-in')
   }
 
