@@ -66,6 +66,13 @@ export function getCases(token: string): Promise<Case[]> {
   return request<Case[]>('/api/mobile/cases', { method: 'GET' }, token)
 }
 
+export function createCase(token: string, title: string): Promise<Case> {
+  return request<Case>('/api/mobile/cases', {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  }, token)
+}
+
 export function getDeadlines(token: string): Promise<Deadline[]> {
   return request<Deadline[]>('/api/mobile/deadlines', { method: 'GET' }, token)
 }
@@ -118,6 +125,26 @@ export function createDocument(
 
 export function triggerAnalysis(token: string, documentId: string): Promise<unknown> {
   return request<unknown>(`/api/mobile/documents/${documentId}/analyse`, { method: 'POST' }, token)
+}
+
+export type AnalysisReport = {
+  id: string
+  documentId: string
+  nmeModuleVersion: string
+  documentsOnFile: number
+  documentsTotal: number
+  confidence: number
+  covered: string[]
+  incomplete: { id: string; label: string; note: string }[]
+  missing: { id: string; label: string; reason: string }[]
+  patientSummary: string
+  doctorSummary: string
+  scorePrediction: { min: number; max: number; note: string }
+  createdAt: string
+}
+
+export function getDocumentAnalysis(token: string, documentId: string): Promise<AnalysisReport | null> {
+  return request<AnalysisReport | null>(`/api/mobile/documents/${documentId}/analyse`, { method: 'GET' }, token)
 }
 
 export type UserProfile = {

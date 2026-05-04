@@ -2,12 +2,38 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyMobileToken } from '@/lib/mobile-auth'
 import { db } from '@/db'
 import { documents, cases, analysisReports } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, desc } from 'drizzle-orm'
 import { getPublicUrl } from '@/lib/r2'
 import { analyseDocumentBuffer } from '@/lib/ai'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const userId = await verifyMobileToken(req)
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id: documentId } = await params
+
+  const doc = await db.query.documents.findFirst({ where: eq(documents.id, documentId) })
+  if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const caseRow = await db.query.cases.findFirst({
+    where: and(eq(cases.id, doc.caseId), eq(cases.userId, userId)),
+  })
+  if (!caseRow) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const report = await db.query.analysisReports.findFirst({
+    where: eq(analysisReports.documentId, documentId),
+    orderBy: [desc(analysisReports.createdAt)],
+  })
+
+  if (!report) return NextResponse.json(null)
+  return NextResponse.json(report)
+}
 
 export async function POST(
   _req: NextRequest,

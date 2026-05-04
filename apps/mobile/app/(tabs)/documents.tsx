@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   View, Text, StyleSheet, ActivityIndicator, RefreshControl, SectionList,
-  TouchableOpacity, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert,
+  TouchableOpacity, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert, TextInput,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import {
-  getDocuments, getCases, presignUpload, createDocument, triggerAnalysis,
+  getDocuments, getCases, presignUpload, createDocument, triggerAnalysis, createCase,
   type Document, type Case,
 } from '../../lib/api'
 
@@ -44,6 +44,9 @@ export default function DocumentsScreen(): React.JSX.Element {
   const [selectedCaseId, setSelectedCaseId] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [showNewCase, setShowNewCase] = useState(false)
+  const [newCaseTitle, setNewCaseTitle] = useState('')
+  const [creatingCase, setCreatingCase] = useState(false)
 
   async function load(silent = false): Promise<void> {
     if (!token) return
@@ -68,11 +71,37 @@ export default function DocumentsScreen(): React.JSX.Element {
 
   useEffect(() => { load() }, [token])
 
+  const hasProcessing = sections.some((sec) => sec.data.some((d) => d.status === 'processing' || d.status === 'uploading'))
+
+  useEffect(() => {
+    if (!hasProcessing) return
+    const timer = setInterval(() => { load(true) }, 5000)
+    return () => clearInterval(timer)
+  }, [hasProcessing, token])
+
   function openModal(): void {
     setPickedAsset(null)
     setSelectedCaseId('')
     setUploadError('')
+    setShowNewCase(false)
+    setNewCaseTitle('')
     setShowModal(true)
+  }
+
+  async function handleCreateCase(): Promise<void> {
+    if (!token || !newCaseTitle.trim()) return
+    setCreatingCase(true)
+    try {
+      const newCase = await createCase(token, newCaseTitle.trim())
+      setCases((prev) => [newCase, ...prev])
+      setSelectedCaseId(newCase.id)
+      setShowNewCase(false)
+      setNewCaseTitle('')
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : 'Грешка при създаване')
+    } finally {
+      setCreatingCase(false)
+    }
   }
 
   function closeModal(): void {
@@ -195,7 +224,11 @@ export default function DocumentsScreen(): React.JSX.Element {
             </View>
           )}
           renderItem={({ item }) => (
-            <View style={s.card}>
+            <TouchableOpacity
+              style={s.card}
+              activeOpacity={0.75}
+              onPress={() => router.push(`/document-detail?id=${item.id}&name=${encodeURIComponent(item.fileName)}` as never)}
+            >
               <View style={s.row}>
                 <Text style={s.fileName} numberOfLines={1}>{item.fileName}</Text>
                 <View style={[s.badge, { backgroundColor: STATUS_COLOR[item.status] + '20' }]}>
@@ -207,7 +240,7 @@ export default function DocumentsScreen(): React.JSX.Element {
               <Text style={s.date}>
                 {new Date(item.uploadedAt).toLocaleDateString('bg-BG')}
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
@@ -259,22 +292,57 @@ export default function DocumentsScreen(): React.JSX.Element {
                   </TouchableOpacity>
                 </View>
 
-                {cases.length === 0 ? (
-                  <Text style={s.noCases}>Нямате случаи. Създайте случай от уеб приложението.</Text>
+                {cases.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={[s.caseOption, selectedCaseId === c.id && s.caseOptionSelected]}
+                    onPress={() => setSelectedCaseId(c.id)}
+                    activeOpacity={0.75}
+                  >
+                    <View style={[s.caseRadio, selectedCaseId === c.id && s.caseRadioSelected]} />
+                    <Text style={[s.caseLabel, selectedCaseId === c.id && s.caseLabelSelected]}>
+                      {c.title}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+
+                {showNewCase ? (
+                  <View style={s.newCaseBox}>
+                    <TextInput
+                      style={s.newCaseInput}
+                      placeholder="Име на случая…"
+                      placeholderTextColor="#9AB0BF"
+                      value={newCaseTitle}
+                      onChangeText={setNewCaseTitle}
+                      autoFocus
+                      returnKeyType="done"
+                      onSubmitEditing={handleCreateCase}
+                    />
+                    <View style={s.newCaseActions}>
+                      <TouchableOpacity
+                        style={[s.newCaseBtn, { backgroundColor: '#1A4A6B' }]}
+                        onPress={handleCreateCase}
+                        disabled={creatingCase || !newCaseTitle.trim()}
+                        activeOpacity={0.8}
+                      >
+                        {creatingCase
+                          ? <ActivityIndicator color="#fff" size="small" />
+                          : <Text style={s.newCaseBtnText}>Създай</Text>
+                        }
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[s.newCaseBtn, { backgroundColor: '#B8CDD8' }]}
+                        onPress={() => { setShowNewCase(false); setNewCaseTitle('') }}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={[s.newCaseBtnText, { color: '#1C2B3A' }]}>Отказ</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 ) : (
-                  cases.map((c) => (
-                    <TouchableOpacity
-                      key={c.id}
-                      style={[s.caseOption, selectedCaseId === c.id && s.caseOptionSelected]}
-                      onPress={() => setSelectedCaseId(c.id)}
-                      activeOpacity={0.75}
-                    >
-                      <View style={[s.caseRadio, selectedCaseId === c.id && s.caseRadioSelected]} />
-                      <Text style={[s.caseLabel, selectedCaseId === c.id && s.caseLabelSelected]}>
-                        {c.title}
-                      </Text>
-                    </TouchableOpacity>
-                  ))
+                  <TouchableOpacity style={s.newCaseToggle} onPress={() => setShowNewCase(true)} activeOpacity={0.75}>
+                    <Text style={s.newCaseToggleText}>+ Нов случай</Text>
+                  </TouchableOpacity>
                 )}
 
                 {uploadError ? <Text style={s.uploadError}>{uploadError}</Text> : null}
@@ -385,7 +453,16 @@ const s = StyleSheet.create({
   imagePillName: { flex: 1, fontSize: 13, color: '#1C2B3A' },
   imagePillX: { fontSize: 14, color: '#8B4200', fontWeight: '700' },
 
-  noCases: { fontSize: 14, color: '#8B4200', textAlign: 'center', padding: 12 },
+  newCaseToggle: { paddingVertical: 12, alignItems: 'center' },
+  newCaseToggleText: { fontSize: 15, color: '#1A4A6B', fontWeight: '600' },
+  newCaseBox: { borderRadius: 12, borderWidth: 1.5, borderColor: '#1A4A6B', padding: 12, gap: 10 },
+  newCaseInput: {
+    borderBottomWidth: 1, borderBottomColor: '#B8CDD8',
+    fontSize: 15, color: '#1C2B3A', paddingVertical: 6,
+  },
+  newCaseActions: { flexDirection: 'row', gap: 8 },
+  newCaseBtn: { flex: 1, borderRadius: 10, paddingVertical: 10, alignItems: 'center' },
+  newCaseBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 
   caseOption: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
