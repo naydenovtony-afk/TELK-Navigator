@@ -89,6 +89,37 @@ export function getDocuments(token: string): Promise<Document[]> {
   return request<Document[]>('/api/mobile/documents', { method: 'GET' }, token)
 }
 
+export type PresignResponse = { key: string; uploadUrl: string }
+
+export function presignUpload(
+  token: string,
+  fileName: string,
+  mimeType: string,
+  fileSize?: number,
+): Promise<PresignResponse> {
+  return request<PresignResponse>('/api/mobile/upload/presign', {
+    method: 'POST',
+    body: JSON.stringify({ fileName, mimeType, ...(fileSize ? { fileSize } : {}) }),
+  }, token)
+}
+
+export function createDocument(
+  token: string,
+  caseId: string,
+  fileKey: string,
+  fileName: string,
+  mimeType: string,
+): Promise<Document> {
+  return request<Document>('/api/mobile/documents', {
+    method: 'POST',
+    body: JSON.stringify({ caseId, fileKey, fileName, mimeType }),
+  }, token)
+}
+
+export function triggerAnalysis(token: string, documentId: string): Promise<unknown> {
+  return request<unknown>(`/api/mobile/documents/${documentId}/analyse`, { method: 'POST' }, token)
+}
+
 export type UserProfile = {
   id: string
   name: string | null

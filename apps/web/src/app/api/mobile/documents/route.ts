@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyMobileToken } from '@/lib/mobile-auth'
 import { db } from '@/db'
 import { documents, cases } from '@/db/schema'
-import { eq, desc, inArray } from 'drizzle-orm'
+import { eq, desc, inArray, and } from 'drizzle-orm'
+import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
@@ -31,5 +32,48 @@ export async function GET(req: NextRequest) {
       status: d.status,
       uploadedAt: d.uploadedAt,
     }))
+  )
+}
+
+const createSchema = z.object({
+  caseId: z.string().uuid(),
+  fileKey: z.string().min(1),
+  fileName: z.string().min(1).max(255),
+  mimeType: z.string().min(1),
+})
+
+export async function POST(req: NextRequest) {
+  const userId = await verifyMobileToken(req)
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json().catch(() => null)
+  const parsed = createSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  }
+
+  const { caseId, fileKey, fileName, mimeType } = parsed.data
+
+  const caseRow = await db.query.cases.findFirst({
+    where: and(eq(cases.id, caseId), eq(cases.userId, userId)),
+  })
+  if (!caseRow) return NextResponse.json({ error: 'Case not found or access denied' }, { status: 403 })
+
+  const [doc] = await db
+    .insert(documents)
+    .values({ caseId, fileKey, fileName, mimeType, status: 'ready' })
+    .returning()
+
+  return NextResponse.json(
+    {
+      id: doc.id,
+      caseId: doc.caseId,
+      caseTitle: caseRow.title,
+      fileName: doc.fileName,
+      mimeType: doc.mimeType,
+      status: doc.status,
+      uploadedAt: doc.uploadedAt,
+    },
+    { status: 201 }
   )
 }
