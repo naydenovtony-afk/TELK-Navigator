@@ -9,6 +9,7 @@ import { FileUpload } from '@/components/upload/file-upload'
 import { AnalyseButton } from '@/components/cases/analyse-button'
 import { AnalysisCard } from '@/components/cases/analysis-card'
 import { CaseStatusButton } from '@/components/cases/case-status-button'
+import { DeleteDocumentButton } from '@/components/cases/delete-document-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -127,6 +128,7 @@ export default async function CaseDetailPage({
                       {['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(doc.mimeType) && doc.status !== 'processing' && !report && (
                         <AnalyseButton documentId={doc.id} disabled={doc.status === 'uploading'} />
                       )}
+                      <DeleteDocumentButton documentId={doc.id} />
                     </div>
                   </div>
 

@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { LifelongCheckResult } from '@/lib/ai'
+
+const STORAGE_KEY = 'telk_lifelong_result'
 
 const VERDICT_STYLES = {
   likely: {
@@ -29,8 +31,16 @@ export default function LifelongCheckPage() {
   const [isProgressive, setIsProgressive] = useState(false)
   const [previousTelkYears, setPreviousTelkYears] = useState('')
   const [result, setResult] = useState<LifelongCheckResult | null>(null)
+  const [restored, setRestored] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) { setResult(JSON.parse(saved)); setRestored(true) }
+    } catch {}
+  }, [])
 
   async function handleCheck() {
     setError('')
@@ -69,6 +79,8 @@ export default function LifelongCheckPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Грешка')
       setResult(data as LifelongCheckResult)
+      setRestored(false)
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) } catch {}
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка при проверката')
     } finally {
@@ -214,6 +226,17 @@ export default function LifelongCheckPage() {
 
       {result && (
         <div className="space-y-4">
+          {restored && (
+            <div className="flex items-center justify-between bg-medical-surface rounded-xl px-4 py-2.5">
+              <span className="text-xs text-medical-slate">Резултат от последна сесия</span>
+              <button
+                onClick={() => { setResult(null); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                className="text-xs text-medical-slate hover:text-critical-red transition-colors font-medium"
+              >
+                Изчисти
+              </button>
+            </div>
+          )}
           {/* Verdict */}
           <div className={`rounded-2xl border p-6 ${VERDICT_STYLES[result.verdict].bg}`}>
             <div className="flex items-center gap-2.5 mb-3">

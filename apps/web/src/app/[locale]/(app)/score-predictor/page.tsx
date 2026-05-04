@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ScorePredictorResult } from '@/lib/ai'
+
+const STORAGE_KEY = 'telk_score_result'
 
 const LIMITATIONS = [
   'Затруднено ходене / нужда от помощно средство',
@@ -22,8 +24,16 @@ export default function ScorePredictorPage() {
   const [previousPercent, setPreviousPercent] = useState('')
   const [additionalContext, setAdditionalContext] = useState('')
   const [result, setResult] = useState<ScorePredictorResult | null>(null)
+  const [restored, setRestored] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) { setResult(JSON.parse(saved)); setRestored(true) }
+    } catch {}
+  }, [])
 
   function toggleLimitation(l: string) {
     setLimitations((prev) => prev.includes(l) ? prev.filter((x) => x !== l) : [...prev, l])
@@ -52,6 +62,8 @@ export default function ScorePredictorPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Грешка')
       setResult(data as ScorePredictorResult)
+      setRestored(false)
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) } catch {}
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка')
     } finally {
@@ -167,6 +179,17 @@ export default function ScorePredictorPage() {
 
       {result && (
         <div className="space-y-4">
+          {restored && (
+            <div className="flex items-center justify-between bg-medical-surface rounded-xl px-4 py-2.5">
+              <span className="text-xs text-medical-slate">Резултат от последна сесия</span>
+              <button
+                onClick={() => { setResult(null); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                className="text-xs text-medical-slate hover:text-critical-red transition-colors font-medium"
+              >
+                Изчисти
+              </button>
+            </div>
+          )}
           {/* Range card */}
           <div className="bg-white rounded-2xl border border-medical-border p-6">
             <p className="text-sm text-medical-slate mb-1">Очаквана оценка</p>

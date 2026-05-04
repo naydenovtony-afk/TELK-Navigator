@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const STORAGE_KEY = 'telk_appeal'
 
 export default function AppealPage() {
   const [applicantName, setApplicantName] = useState('')
@@ -14,6 +16,14 @@ export default function AppealPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [restored, setRestored] = useState(false)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) { setAppeal(JSON.parse(saved)); setRestored(true) }
+    } catch {}
+  }, [])
 
   async function handleGenerate() {
     setError('')
@@ -47,6 +57,8 @@ export default function AppealPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Грешка')
       setAppeal(data.appeal)
+      setRestored(false)
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data.appeal)) } catch {}
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка')
     } finally {
@@ -186,13 +198,28 @@ export default function AppealPage() {
       {appeal && (
         <div className="bg-white rounded-2xl border border-medical-border overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-medical-border">
-            <span className="text-sm font-medium text-dark-text">Жалба до съда</span>
-            <button
-              onClick={handleCopy}
-              className="text-sm text-medical-teal hover:text-medical-navy transition-colors font-medium"
-            >
-              {copied ? '✓ Копирано' : 'Копирай'}
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-dark-text">Жалба до съда</span>
+              {restored && (
+                <span className="text-xs text-medical-slate bg-medical-surface px-2 py-0.5 rounded-full">
+                  от последна сесия
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { setAppeal(''); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                className="text-xs text-medical-slate hover:text-critical-red transition-colors"
+              >
+                Изчисти
+              </button>
+              <button
+                onClick={handleCopy}
+                className="text-sm text-medical-teal hover:text-medical-navy transition-colors font-medium"
+              >
+                {copied ? '✓ Копирано' : 'Копирай'}
+              </button>
+            </div>
           </div>
           <pre className="p-6 text-sm text-dark-text leading-relaxed whitespace-pre-wrap font-sans">
             {appeal}
