@@ -3,6 +3,7 @@ import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
 } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import { getCases, type Case } from '../../lib/api'
 
@@ -20,6 +21,7 @@ const STATUS_COLOR: Record<Case['status'], string> = {
 export default function CasesScreen(): React.JSX.Element {
   const { token } = useAuth()
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -45,7 +47,7 @@ export default function CasesScreen(): React.JSX.Element {
 
   return (
     <View style={s.container}>
-      <View style={s.header}>
+      <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Text style={s.back}>‹ Табло</Text>
         </TouchableOpacity>
@@ -77,7 +79,7 @@ export default function CasesScreen(): React.JSX.Element {
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
-  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52, gap: 4 },
+  header: { backgroundColor: '#1A4A6B', padding: 16, gap: 4 },
   back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   list: { padding: 16, gap: 12 },

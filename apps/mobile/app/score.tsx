@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const CATEGORIES = [
   { key: 'cardiovascular', label: '🫀 Сърдечно-съдови' },
@@ -32,6 +33,7 @@ const RANGES: Record<string, Record<string, { min: number; max: number }>> = {
 
 export default function ScoreScreen(): React.JSX.Element {
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [category, setCategory] = useState('')
   const [docs, setDocs] = useState('')
 
@@ -39,7 +41,7 @@ export default function ScoreScreen(): React.JSX.Element {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#E8F4F8' }}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.back}>‹ Назад</Text>
         </TouchableOpacity>
@@ -104,7 +106,7 @@ export default function ScoreScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52,
+    backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
   back: { color: '#B8CDD8', fontSize: 16 },

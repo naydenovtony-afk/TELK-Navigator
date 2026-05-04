@@ -5,9 +5,11 @@ import {
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function EmployerLetterScreen(): React.JSX.Element {
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [name, setName] = useState('')
   const [company, setCompany] = useState('')
   const [position, setPosition] = useState('')
@@ -48,7 +50,7 @@ ${name}
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.back}>‹ Назад</Text>
         </TouchableOpacity>
@@ -102,7 +104,7 @@ ${name}
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52,
+    backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
   back: { color: '#B8CDD8', fontSize: 16 },

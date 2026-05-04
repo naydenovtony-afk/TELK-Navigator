@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 
 export default function AdminProfileScreen(): React.JSX.Element {
   const { setToken } = useAuth()
   const router = useRouter()
+  const insets = useSafeAreaInsets()
 
   async function handleSignOut(): Promise<void> {
     await setToken(null)
@@ -14,7 +16,7 @@ export default function AdminProfileScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <Text style={styles.headerTitle}>Профил</Text>
       </View>
 
@@ -44,7 +46,7 @@ export default function AdminProfileScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
-  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52 },
+  header: { backgroundColor: '#1A4A6B', padding: 16 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   content: { padding: 16, gap: 16 },
   adminBadge: {

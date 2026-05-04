@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import {
   View, Text, TouchableOpacity, Modal, StyleSheet,
-  SafeAreaView, StatusBar, Platform,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../lib/auth'
 
@@ -19,6 +19,7 @@ export default function AppHeader({
 }: AppHeaderProps): React.JSX.Element {
   const { setToken } = useAuth()
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [menuVisible, setMenuVisible] = useState(false)
   const [confirmVisible, setConfirmVisible] = useState(false)
 
@@ -43,11 +44,9 @@ export default function AppHeader({
 
   function cancelLogout(): void { setConfirmVisible(false) }
 
-  const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0
-
   return (
     <>
-      <View style={[s.header, { paddingTop: statusBarHeight + 14 }]}>
+      <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         {showBack ? (
           <TouchableOpacity style={s.backBtn} onPress={() => router.back()} hitSlop={12}>
             <Text style={s.backText}>← Табло</Text>
@@ -67,7 +66,7 @@ export default function AppHeader({
       {/* ── Dropdown menu ─────────────────────────────── */}
       <Modal visible={menuVisible} transparent animationType="fade" onRequestClose={closeMenu}>
         <TouchableOpacity style={s.overlay} activeOpacity={1} onPress={closeMenu}>
-          <View style={[s.dropdown, { top: statusBarHeight + 60 }]}>
+          <View style={[s.dropdown, { top: insets.top + 60 }]}>
             <TouchableOpacity style={s.menuItem} onPress={goSettings} activeOpacity={0.7}>
               <Text style={s.menuIcon}>⚙️</Text>
               <Text style={s.menuLabel}>Настройки</Text>

@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, ActivityIndicator, RefreshControl, SectionList, TouchableOpacity,
 } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import { getDocuments, type Document } from '../../lib/api'
 
@@ -24,6 +25,7 @@ type Section = { title: string; data: Document[] }
 export default function DocumentsScreen(): React.JSX.Element {
   const { token } = useAuth()
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const [sections, setSections] = useState<Section[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -57,7 +59,7 @@ export default function DocumentsScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Text style={styles.back}>‹ Табло</Text>
         </TouchableOpacity>
@@ -105,7 +107,7 @@ export default function DocumentsScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
-  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52, gap: 4 },
+  header: { backgroundColor: '#1A4A6B', padding: 16, gap: 4 },
   back: { color: '#B8D8E8', fontSize: 14 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   list: { paddingBottom: 16 },

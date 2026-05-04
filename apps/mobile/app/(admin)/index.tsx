@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import { getAdminUsers, type AdminUser } from '../../lib/api'
 
 export default function AdminUsersScreen(): React.JSX.Element {
   const { token } = useAuth()
+  const insets = useSafeAreaInsets()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -38,7 +40,7 @@ export default function AdminUsersScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <Text style={styles.headerTitle}>Администрация</Text>
         <View style={styles.stats}>
           <View style={styles.stat}>
@@ -107,7 +109,7 @@ export default function AdminUsersScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#E8F4F8' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
-  header: { backgroundColor: '#1A4A6B', padding: 16, paddingTop: 52, gap: 16 },
+  header: { backgroundColor: '#1A4A6B', padding: 16, gap: 16 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   stats: { flexDirection: 'row', backgroundColor: '#ffffff15', borderRadius: 10, padding: 12 },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
