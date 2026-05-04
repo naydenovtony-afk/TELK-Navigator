@@ -80,7 +80,7 @@ const EMPLOYER_LETTER_PROMPT = `Ти си правен асистент, спе�
 - Цитирай конкретни членове от Кодекса на труда (КТ) и Закона за хората с увреждания (ЗИХУ)
 - Структура: град/дата горе вдясно → До: → Относно: → Уважаеми/а, → основен текст → С уважение
 - Не добавяй markdown, само чист текст
-- Датата да е: ${new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
+- Датата да е: {DATE}
 
 Правни основания за включване според процента:
 - 50%+: КТ чл.319 (25 дни отпуск), КТ чл.333 (закрила при уволнение), ЗИХУ чл.35
@@ -257,10 +257,11 @@ const APPEAL_PROMPT = `Ти си правен асистент, специали
 - Конкретни правни основания с членове
 - Ясно формулирани искания
 - Само чист текст, без markdown
-- Дата: ${new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}`
+- Дата: {DATE}`
 
 export async function generateAppeal(input: AppealInput): Promise<string> {
-  const prompt = `${APPEAL_PROMPT}
+  const today = new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })
+  const prompt = `${APPEAL_PROMPT.replace('{DATE}', today)}
 
 Данни:
 - Жалбоподател: ${input.applicantName}
@@ -290,7 +291,8 @@ export async function generateEmployerLetter(input: EmployerLetterInput): Promis
     .map((a) => `- ${accommodationLabels[a] ?? a}`)
     .join('\n')
 
-  const prompt = `${EMPLOYER_LETTER_PROMPT}
+  const today = new Date().toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })
+  const prompt = `${EMPLOYER_LETTER_PROMPT.replace('{DATE}', today)}
 
 Данни:
 - Служител: ${input.employeeName}

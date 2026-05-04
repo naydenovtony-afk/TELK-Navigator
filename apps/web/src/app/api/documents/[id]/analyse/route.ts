@@ -78,7 +78,7 @@ export async function POST(
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[analyse] failed:', msg)
     if (documentId) {
-      await db.update(documents).set({ status: 'ready' }).where(eq(documents.id, documentId)).catch(() => {})
+      await db.update(documents).set({ status: 'error' }).where(eq(documents.id, documentId)).catch(() => {})
     }
     return NextResponse.json({ error: msg }, { status: 500 })
   }

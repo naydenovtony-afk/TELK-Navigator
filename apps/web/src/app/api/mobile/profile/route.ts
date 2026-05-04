@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}))
   const name = typeof body.name === 'string' ? body.name.trim() : null
-  if (!name) return NextResponse.json({ error: 'Невалидно ime' }, { status: 400 })
+  if (!name) return NextResponse.json({ error: 'Невалидно име' }, { status: 400 })
 
   await db.update(users).set({ name }).where(eq(users.id, userId))
 
