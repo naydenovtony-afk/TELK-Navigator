@@ -8,20 +8,9 @@ import { Badge } from '@/components/ui'
 import { FileUpload } from '@/components/upload/file-upload'
 import { AnalyseButton } from '@/components/cases/analyse-button'
 import { AnalysisCard } from '@/components/cases/analysis-card'
+import { CaseStatusButton } from '@/components/cases/case-status-button'
 
 export const dynamic = 'force-dynamic'
-
-const STATUS_LABEL: Record<string, string> = {
-  active: 'Активен',
-  submitted: 'Подаден',
-  closed: 'Приключен',
-}
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'default'> = {
-  active: 'success',
-  submitted: 'warning',
-  closed: 'default',
-}
 
 const DOC_STATUS_LABEL: Record<string, string> = {
   uploading: 'Качва се',
@@ -95,9 +84,7 @@ export default async function CaseDetailPage({
             })}
           </p>
         </div>
-        <Badge variant={STATUS_VARIANT[caseRow.status] ?? 'default'}>
-          {STATUS_LABEL[caseRow.status] ?? caseRow.status}
-        </Badge>
+        <CaseStatusButton caseId={id} status={caseRow.status as 'active' | 'submitted' | 'closed'} />
       </div>
 
       {/* Upload section */}
@@ -137,7 +124,7 @@ export default async function CaseDetailPage({
                       <Badge variant={DOC_STATUS_VARIANT[doc.status] ?? 'default'}>
                         {DOC_STATUS_LABEL[doc.status] ?? doc.status}
                       </Badge>
-                      {doc.mimeType === 'application/pdf' && doc.status !== 'processing' && !report && (
+                      {['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(doc.mimeType) && doc.status !== 'processing' && !report && (
                         <AnalyseButton documentId={doc.id} disabled={doc.status === 'uploading'} />
                       )}
                     </div>

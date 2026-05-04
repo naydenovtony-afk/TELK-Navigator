@@ -38,6 +38,7 @@ const URGENCY_BADGE = {
 
 export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[] }) {
   const [items, setItems] = useState(initialDeadlines)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
   const router = useRouter()
 
   async function toggleComplete(id: string, current: boolean) {
@@ -52,6 +53,7 @@ export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[
   async function remove(id: string) {
     await fetch(`/api/deadlines/${id}`, { method: 'DELETE' })
     setItems((prev) => prev.filter((d) => d.id !== id))
+    setConfirmId(null)
     router.refresh()
   }
 
@@ -121,15 +123,32 @@ export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[
             </span>
 
             {/* Delete */}
-            <button
-              onClick={() => remove(d.id)}
-              className="text-medical-border hover:text-critical-red transition-colors shrink-0"
-              aria-label="Изтрий"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
-              </svg>
-            </button>
+            {confirmId === d.id ? (
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => remove(d.id)}
+                  className="text-xs font-semibold text-critical-red bg-critical-red-bg px-2 py-1 rounded-lg hover:opacity-80 transition-opacity"
+                >
+                  Изтрий
+                </button>
+                <button
+                  onClick={() => setConfirmId(null)}
+                  className="text-xs font-semibold text-medical-slate bg-medical-surface px-2 py-1 rounded-lg hover:opacity-80 transition-opacity"
+                >
+                  Отказ
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmId(d.id)}
+                className="text-medical-border hover:text-critical-red transition-colors shrink-0"
+                aria-label="Изтрий"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+              </button>
+            )}
           </li>
         )
       })}
