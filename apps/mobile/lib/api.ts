@@ -70,6 +70,21 @@ export function getDeadlines(token: string): Promise<Deadline[]> {
   return request<Deadline[]>('/api/mobile/deadlines', { method: 'GET' }, token)
 }
 
+export function createDeadline(token: string, label: string, dueAt: string): Promise<Deadline> {
+  return request<Deadline>('/api/mobile/deadlines', {
+    method: 'POST',
+    body: JSON.stringify({ label, dueAt }),
+  }, token)
+}
+
+export function toggleDeadline(token: string, id: string): Promise<Deadline> {
+  return request<Deadline>(`/api/mobile/deadlines/${id}`, { method: 'PATCH' }, token)
+}
+
+export function deleteDeadline(token: string, id: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/mobile/deadlines/${id}`, { method: 'DELETE' }, token)
+}
+
 export function getDocuments(token: string): Promise<Document[]> {
   return request<Document[]>('/api/mobile/documents', { method: 'GET' }, token)
 }
