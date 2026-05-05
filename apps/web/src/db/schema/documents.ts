@@ -9,6 +9,16 @@ export const documentStatusEnum = pgEnum('document_status', [
   'error',
 ])
 
+export const documentTypeEnum = pgEnum('document_type', [
+  'telk_decision',
+  'epicrisis',
+  'outpatient_sheet',
+  'lab_results',
+  'imaging',
+  'specialist_opinion',
+  'other',
+])
+
 export const documents = pgTable('documents', {
   id: uuid('id').primaryKey().defaultRandom(),
   caseId: uuid('case_id')
@@ -17,6 +27,7 @@ export const documents = pgTable('documents', {
   fileKey: text('file_key').notNull(),
   fileName: text('file_name').notNull(),
   mimeType: text('mime_type').notNull(),
+  documentType: documentTypeEnum('document_type'),
   textContent: text('text_content'),
   icd10Code: text('icd10_code'),
   status: documentStatusEnum('status').notNull().default('uploading'),

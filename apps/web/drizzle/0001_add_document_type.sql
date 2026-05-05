@@ -1,0 +1,2 @@
+CREATE TYPE "public"."document_type" AS ENUM('telk_decision', 'epicrisis', 'outpatient_sheet', 'lab_results', 'imaging', 'specialist_opinion', 'other');--> statement-breakpoint
+ALTER TABLE "documents" ADD COLUMN "document_type" "document_type";

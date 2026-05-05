@@ -6,6 +6,18 @@ import { Spinner } from '@/components/ui'
 
 type UploadState = 'idle' | 'uploading' | 'analysing' | 'success' | 'analysis_failed' | 'error'
 
+type DocumentType = 'telk_decision' | 'epicrisis' | 'outpatient_sheet' | 'lab_results' | 'imaging' | 'specialist_opinion' | 'other'
+
+const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  telk_decision: 'ТЕЛК решение',
+  epicrisis: 'Епикриза',
+  outpatient_sheet: 'Амбулаторен лист',
+  lab_results: 'Лабораторни изследвания',
+  imaging: 'Образна диагностика',
+  specialist_opinion: 'Специалистично становище',
+  other: 'Друго',
+}
+
 interface FileUploadProps {
   caseId: string
   onSuccess?: (documentId: string, fileName: string) => void
@@ -23,6 +35,7 @@ export function FileUpload({
   const [progress, setProgress] = useState(0)
   const [errorMsg, setErrorMsg] = useState('')
   const [isDragOver, setIsDragOver] = useState(false)
+  const [documentType, setDocumentType] = useState<DocumentType>('other')
 
   const upload = useCallback(
     async (file: File) => {
@@ -59,7 +72,7 @@ export function FileUpload({
         const docRes = await fetch('/api/documents', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ caseId, fileKey: key, fileName: file.name, mimeType: file.type }),
+          body: JSON.stringify({ caseId, fileKey: key, fileName: file.name, mimeType: file.type, documentType }),
         })
         if (!docRes.ok) throw new Error('Грешка при регистриране на документа')
         const doc = await docRes.json()
@@ -94,7 +107,20 @@ export function FileUpload({
   )
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      <div>
+        <label className="block text-xs font-medium text-medical-slate mb-1">Вид документ</label>
+        <select
+          value={documentType}
+          onChange={(e) => setDocumentType(e.target.value as DocumentType)}
+          disabled={state === 'uploading' || state === 'analysing'}
+          className="w-full rounded-xl border border-medical-border bg-white px-3 py-2 text-sm text-medical-navy focus:outline-none focus:ring-2 focus:ring-medical-teal/40 disabled:opacity-50"
+        >
+          {(Object.entries(DOCUMENT_TYPE_LABELS) as [DocumentType, string][]).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
+      </div>
       <div
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
@@ -179,6 +205,7 @@ export function FileUpload({
       )}
     </div>
   )
+
 }
 
 function uploadWithProgress(

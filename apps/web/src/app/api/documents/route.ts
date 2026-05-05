@@ -7,11 +7,14 @@ import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
+const DOCUMENT_TYPES = ['telk_decision', 'epicrisis', 'outpatient_sheet', 'lab_results', 'imaging', 'specialist_opinion', 'other'] as const
+
 const createSchema = z.object({
   caseId: z.string().uuid(),
   fileKey: z.string().min(1),
   fileName: z.string().min(1).max(255),
   mimeType: z.string().min(1),
+  documentType: z.enum(DOCUMENT_TYPES).optional(),
 })
 
 export async function GET(req: NextRequest) {
@@ -52,7 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { caseId, fileKey, fileName, mimeType } = parsed.data
+  const { caseId, fileKey, fileName, mimeType, documentType } = parsed.data
 
   const caseRow = await db.query.cases.findFirst({
     where: and(eq(cases.id, caseId), eq(cases.userId, session.user.id)),
@@ -63,7 +66,7 @@ export async function POST(req: NextRequest) {
 
   const [doc] = await db
     .insert(documents)
-    .values({ caseId, fileKey, fileName, mimeType, status: 'ready' })
+    .values({ caseId, fileKey, fileName, mimeType, documentType: documentType ?? null, status: 'ready' })
     .returning()
 
   return NextResponse.json(doc, { status: 201 })

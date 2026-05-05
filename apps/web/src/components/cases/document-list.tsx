@@ -3,10 +3,21 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui'
 
+const DOCUMENT_TYPE_LABELS: Record<string, string> = {
+  telk_decision: 'ТЕЛК решение',
+  epicrisis: 'Епикриза',
+  outpatient_sheet: 'Амбулаторен лист',
+  lab_results: 'Лабораторни изследвания',
+  imaging: 'Образна диагностика',
+  specialist_opinion: 'Специалистично становище',
+  other: 'Друго',
+}
+
 type Doc = {
   id: string
   fileName: string
   mimeType: string
+  documentType?: string | null
   status: string
   uploadedAt: Date | string
 }
@@ -51,6 +62,11 @@ export function DocumentList({ initialDocs }: DocumentListProps) {
           <FileTypeIcon mimeType={doc.mimeType} />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-medical-navy truncate">{doc.fileName}</p>
+            {doc.documentType && (
+              <p className="text-xs font-medium text-medical-teal">
+                {DOCUMENT_TYPE_LABELS[doc.documentType] ?? doc.documentType}
+              </p>
+            )}
             <p className="text-xs text-medical-slate">
               {new Date(doc.uploadedAt).toLocaleDateString('bg-BG', {
                 day: 'numeric',
