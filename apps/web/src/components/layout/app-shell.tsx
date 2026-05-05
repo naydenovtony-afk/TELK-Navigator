@@ -89,9 +89,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="flex min-h-screen bg-medical-surface">
+    <div className="flex h-screen overflow-hidden bg-medical-surface">
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 bg-ocean-hero flex flex-col">
+      <aside className="w-64 shrink-0 bg-ocean-hero flex flex-col h-screen sticky top-0">
         {/* Logo */}
         <div className="px-6 py-6 border-b border-white/10">
           <span className="font-display text-2xl text-white tracking-wide">
@@ -141,7 +141,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 overflow-y-auto">
         {children}
       </main>
     </div>
