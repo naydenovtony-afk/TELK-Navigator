@@ -131,7 +131,7 @@ export function FileUpload({
           handleFiles(e.dataTransfer.files)
         }}
         className={[
-          'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 cursor-pointer transition-colors',
+          'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-6 sm:p-10 cursor-pointer transition-colors',
           isDragOver
             ? 'border-medical-teal bg-medical-teal/5'
             : 'border-medical-border hover:border-medical-teal/50 hover:bg-medical-surface',

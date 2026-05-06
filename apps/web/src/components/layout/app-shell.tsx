@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { SignOutButton } from './sign-out-button'
 
 interface NavItem {
@@ -85,65 +86,128 @@ const navItems: NavItem[] = [
   },
 ]
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
 
   return (
+    <>
+      {/* Logo */}
+      <div className="px-6 py-6 border-b border-white/10">
+        <span className="font-display text-2xl text-white tracking-wide">ТЕЛК</span>
+        <span className="font-display text-2xl text-medical-teal"> Навигатор</span>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => {
+          const active = pathname.startsWith(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className={[
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+                active
+                  ? 'bg-medical-teal/20 text-white'
+                  : 'text-white/60 hover:text-white hover:bg-white/10',
+              ].join(' ')}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* User footer */}
+      <div className="px-3 py-4 border-t border-white/10 space-y-1">
+        <Link
+          href="/bg/settings"
+          onClick={onNavigate}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Настройки
+        </Link>
+        <SignOutButton
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+        />
+      </div>
+    </>
+  )
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
+  return (
     <div className="flex h-screen overflow-hidden bg-medical-surface">
-      {/* Sidebar */}
-      <aside className="w-64 shrink-0 bg-ocean-hero flex flex-col h-screen sticky top-0">
-        {/* Logo */}
-        <div className="px-6 py-6 border-b border-white/10">
-          <span className="font-display text-2xl text-white tracking-wide">
-            ТЕЛК
-          </span>
-          <span className="font-display text-2xl text-medical-teal">
-            {' '}Навигатор
-          </span>
-        </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => {
-            const active = pathname.startsWith(item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={[
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-medical-teal/20 text-white'
-                    : 'text-white/60 hover:text-white hover:bg-white/10',
-                ].join(' ')}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* User footer */}
-        <div className="px-3 py-4 border-t border-white/10 space-y-1">
-          <Link
-            href="/bg/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Настройки
-          </Link>
-          <SignOutButton className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors" />
-        </div>
+      {/* ── Desktop sidebar ── */}
+      <aside className="hidden lg:flex w-64 shrink-0 bg-ocean-hero flex-col h-screen sticky top-0">
+        <SidebarContent />
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 min-w-0 overflow-y-auto">
-        {children}
-      </main>
+      {/* ── Mobile drawer backdrop ── */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <aside
+        className={[
+          'fixed inset-y-0 left-0 z-50 w-72 bg-ocean-hero flex flex-col transition-transform duration-300 lg:hidden',
+          menuOpen ? 'translate-x-0' : '-translate-x-full',
+        ].join(' ')}
+      >
+        {/* Close button */}
+        <button
+          onClick={() => setMenuOpen(false)}
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Затвори менюто"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <SidebarContent onNavigate={() => setMenuOpen(false)} />
+      </aside>
+
+      {/* ── Main area ── */}
+      <div className="flex flex-col flex-1 min-w-0">
+
+        {/* Mobile top bar */}
+        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-ocean-hero border-b border-white/10 shrink-0">
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label="Отвори менюто"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <span className="font-display text-lg text-white">ТЕЛК</span>
+          <span className="font-display text-lg text-medical-teal">Навигатор</span>
+        </header>
+
+        <main className="flex-1 min-w-0 overflow-y-auto">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

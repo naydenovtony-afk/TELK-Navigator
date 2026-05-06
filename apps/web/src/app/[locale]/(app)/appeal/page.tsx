@@ -73,15 +73,15 @@ export default function AppealPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl text-medical-navy">Асистент за обжалване</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Асистент за обжалване</h1>
         <p className="text-sm text-medical-slate mt-1">
           Генерирайте официална жалба против решение на ТЕЛК с цитирани правни основания
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6 space-y-5" data-print-hide>
+      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6 mb-4 sm:mb-6 space-y-4 sm:space-y-5" data-print-hide>
         <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide">Данни за жалбата</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -197,7 +197,7 @@ export default function AppealPage() {
 
       {appeal && (
         <div className="bg-white rounded-2xl border border-medical-border overflow-hidden" data-print-content>
-          <div className="flex items-center justify-between px-6 py-4 border-b border-medical-border">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-medical-border">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-dark-text">Жалба до съда</span>
               {restored && (
@@ -227,10 +227,10 @@ export default function AppealPage() {
               </button>
             </div>
           </div>
-          <pre className="p-6 text-sm text-dark-text leading-relaxed whitespace-pre-wrap font-sans">
+          <pre className="p-4 sm:p-6 text-sm text-dark-text leading-relaxed whitespace-pre-wrap font-sans">
             {appeal}
           </pre>
-          <div className="px-6 py-4 border-t border-medical-border bg-clinical-amber-bg">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-medical-border bg-clinical-amber-bg">
             <p className="text-xs text-clinical-amber">
               Жалбата е генерирана от AI и трябва да се прегледа от адвокат преди подаване. Срокът за обжалване е 14 дни от получаване на решението (АПК чл.149).
             </p>

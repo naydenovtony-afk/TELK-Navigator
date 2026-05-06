@@ -89,15 +89,15 @@ export default function LifelongCheckPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl text-medical-navy">Проверка за пожизнено ТЕЛК</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Проверка за пожизнено ТЕЛК</h1>
         <p className="text-sm text-medical-slate mt-1">
           Анализ дали отговаряте на критериите за решение без срок за преосвидетелстване
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6 space-y-5">
+      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6 mb-4 sm:mb-6 space-y-4 sm:space-y-5">
         <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide">
           Данни за анализа
         </h2>
@@ -249,7 +249,7 @@ export default function LifelongCheckPage() {
           </div>
 
           {/* Criteria */}
-          <div className="bg-white rounded-2xl border border-medical-border p-6">
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
             <h3 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
               Оценка по критерии
             </h3>
@@ -271,7 +271,7 @@ export default function LifelongCheckPage() {
           </div>
 
           {/* Recommendation */}
-          <div className="bg-white rounded-2xl border border-medical-border p-6">
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
             <h3 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-3">
               Препоръка
             </h3>

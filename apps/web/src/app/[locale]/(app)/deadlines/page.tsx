@@ -22,10 +22,10 @@ export default async function DeadlinesPage() {
   const upcoming = rows.filter((d) => !d.isCompleted && new Date(d.dueAt) >= new Date()).length
 
   return (
-    <div className="p-8 max-w-2xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="font-display text-3xl text-medical-navy">Срокове</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Срокове</h1>
           <p className="text-sm text-medical-slate mt-1">
             {overdue > 0
               ? `${overdue} просрочени · ${upcoming} предстоящи`

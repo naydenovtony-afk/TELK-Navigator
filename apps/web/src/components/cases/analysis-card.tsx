@@ -62,7 +62,7 @@ export function AnalysisCard({
 
       {/* Covered */}
       {covered.length > 0 && (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <h4 className="text-xs font-semibold text-vital-green uppercase tracking-wide mb-3">
             Налични елементи ({covered.length})
           </h4>
@@ -79,7 +79,7 @@ export function AnalysisCard({
 
       {/* Incomplete */}
       {incomplete.length > 0 && (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <h4 className="text-xs font-semibold text-clinical-amber uppercase tracking-wide mb-3">
             Непълни елементи ({incomplete.length})
           </h4>
@@ -96,7 +96,7 @@ export function AnalysisCard({
 
       {/* Missing */}
       {missing.length > 0 && (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <h4 className="text-xs font-semibold text-critical-red uppercase tracking-wide mb-3">
             Липсващи елементи ({missing.length})
           </h4>

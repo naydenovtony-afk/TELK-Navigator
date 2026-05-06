@@ -72,15 +72,15 @@ export default function ScorePredictorPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl text-medical-navy">Прогноза за ТЕЛК решение</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Прогноза за ТЕЛК решение</h1>
         <p className="text-sm text-medical-slate mt-1">
           Ориентировъчен диапазон на очакваната оценка въз основа на диагнозата и ограниченията
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-medical-border p-6 mb-6 space-y-5">
+      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6 mb-4 sm:mb-6 space-y-4 sm:space-y-5">
         <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide">Данни</h2>
 
         <div>
@@ -191,15 +191,15 @@ export default function ScorePredictorPage() {
             </div>
           )}
           {/* Range card */}
-          <div className="bg-white rounded-2xl border border-medical-border p-6">
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
             <p className="text-sm text-medical-slate mb-1">Очаквана оценка</p>
-            <p className="font-display text-5xl text-medical-navy font-medium">{result.rangeLabel}</p>
+            <p className="font-display text-4xl sm:text-5xl text-medical-navy font-medium">{result.rangeLabel}</p>
             <p className="text-sm text-medical-slate mt-3 leading-relaxed">{result.summary}</p>
           </div>
 
           {/* Factors */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="bg-white rounded-2xl border border-medical-border p-5">
+            <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-5">
               <h3 className="text-xs font-medium text-vital-green uppercase tracking-wide mb-3">
                 Фактори в полза
               </h3>
@@ -211,7 +211,7 @@ export default function ScorePredictorPage() {
                 ))}
               </ul>
             </div>
-            <div className="bg-white rounded-2xl border border-medical-border p-5">
+            <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-5">
               <h3 className="text-xs font-medium text-clinical-amber uppercase tracking-wide mb-3">
                 Рискови фактори
               </h3>
@@ -226,7 +226,7 @@ export default function ScorePredictorPage() {
           </div>
 
           {/* Tips */}
-          <div className="bg-white rounded-2xl border border-medical-border p-6">
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
             <h3 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-3">
               Какво да включите в документацията
             </h3>

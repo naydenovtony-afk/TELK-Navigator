@@ -29,9 +29,9 @@ export default async function DocumentsPage() {
     .orderBy(desc(documents.uploadedAt))
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl text-medical-navy">Всички документи</h1>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Всички документи</h1>
         <p className="text-sm text-medical-slate mt-1">
           Документи от всички ваши случаи
         </p>
@@ -55,48 +55,50 @@ export default async function DocumentsPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-medical-border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-medical-border bg-medical-surface">
-                <th className="text-left px-6 py-3 text-medical-slate font-medium">Файл</th>
-                <th className="text-left px-6 py-3 text-medical-slate font-medium">Случай</th>
-                <th className="text-left px-6 py-3 text-medical-slate font-medium">Статус</th>
-                <th className="text-left px-6 py-3 text-medical-slate font-medium">Качен на</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-medical-border">
-              {rows.map((doc) => (
-                <tr key={doc.id} className="hover:bg-medical-surface/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <FileIcon mime={doc.mimeType} />
-                      <span className="text-dark-text font-medium truncate max-w-xs">
-                        {doc.fileName}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link
-                      href={`/bg/dashboard/cases/${doc.caseId}`}
-                      className="text-medical-teal hover:underline"
-                    >
-                      {doc.caseTitle}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4">
-                    <StatusBadge status={doc.status} />
-                  </td>
-                  <td className="px-6 py-4 text-medical-slate">
-                    {new Date(doc.uploadedAt).toLocaleDateString('bg-BG', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[520px]">
+              <thead>
+                <tr className="border-b border-medical-border bg-medical-surface">
+                  <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium">Файл</th>
+                  <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium hidden sm:table-cell">Случай</th>
+                  <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium">Статус</th>
+                  <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium hidden sm:table-cell">Качен на</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-medical-border">
+                {rows.map((doc) => (
+                  <tr key={doc.id} className="hover:bg-medical-surface/50 transition-colors">
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <div className="flex items-center gap-2">
+                        <FileIcon mime={doc.mimeType} />
+                        <span className="text-dark-text font-medium truncate max-w-[140px] sm:max-w-xs">
+                          {doc.fileName}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
+                      <Link
+                        href={`/bg/dashboard/cases/${doc.caseId}`}
+                        className="text-medical-teal hover:underline"
+                      >
+                        {doc.caseTitle}
+                      </Link>
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <StatusBadge status={doc.status} />
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-medical-slate hidden sm:table-cell">
+                      {new Date(doc.uploadedAt).toLocaleDateString('bg-BG', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

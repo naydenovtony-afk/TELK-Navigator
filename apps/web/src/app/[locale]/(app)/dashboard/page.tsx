@@ -47,10 +47,10 @@ export default async function DashboardPage() {
   const overdueCount = Number(overdueResult[0]?.value ?? 0)
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="font-display text-3xl text-medical-navy">Моите случаи</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-medical-navy">Моите случаи</h1>
           <p className="text-sm text-medical-slate mt-1">
             Управлявайте вашите ТЕЛК преписки
           </p>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
       </div>
 
       {rows.length > 0 && (
-        <div className="flex items-center gap-6 mb-6 text-sm">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4 sm:mb-6 text-sm">
           <span>
             <span className="font-medium text-medical-navy">{rows.length}</span>
             <span className="text-medical-slate ml-1">{rows.length === 1 ? 'случай' : 'случая'}</span>
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
           <NewCaseButton />
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((c) => (
             <Link
               key={c.id}
