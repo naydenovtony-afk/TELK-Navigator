@@ -28,7 +28,7 @@ telk-navigator/
 | Database | Neon PostgreSQL + Drizzle ORM | Migrations required |
 | Auth | Auth.js v5 (web) + raw JWT (mobile) | NOT Supabase Auth |
 | Storage | Cloudflare R2 | S3-compatible API |
-| AI | gemini-1.5-flash | Server-side ONLY |
+| AI | gemini-2.5-flash | Server-side ONLY |
 | Icons | Lucide React | NOT FontAwesome, NOT emoji |
 | Font | DM Sans (UI) + DM Serif Display (display) | Довери.се brand fonts |
 | i18n | next-intl | bg + en — bg from day one |
@@ -137,7 +137,6 @@ Example:
 
 - Every schema change: `npx drizzle-kit generate` → commit migration SQL
 - Never raw SQL — always Drizzle ORM
-- All mutations log to `documentHistory` table
 - UUID for all primary keys — never auto-increment
 - `createdAt` on every table with `defaultNow()`
 
