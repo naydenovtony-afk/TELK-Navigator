@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import { auth, signOut } from '@/auth'
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { users, userPreferences } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { PreferencesForm } from '@/components/settings/preferences-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,6 +18,10 @@ export default async function SettingsPage() {
   })
 
   if (!user) redirect('/bg/sign-in')
+
+  const prefs = await db.query.userPreferences.findFirst({
+    where: eq(userPreferences.userId, userId),
+  })
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-2xl">
@@ -61,6 +66,25 @@ export default async function SettingsPage() {
             })}
           />
         </div>
+      </div>
+
+      {/* Preferences */}
+      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
+          Предпочитания
+        </h2>
+        <PreferencesForm
+          initial={
+            prefs
+              ? {
+                  telkSituation: prefs.telkSituation,
+                  mainDiagnosisCategory: prefs.mainDiagnosisCategory,
+                  hasEpicrisis: prefs.hasEpicrisis,
+                  telkExpiresAt: prefs.telkExpiresAt?.toISOString() ?? null,
+                }
+              : null
+          }
+        />
       </div>
 
       {/* Sign-out */}
