@@ -12,7 +12,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
@@ -39,11 +41,16 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@swc/core": "^1.15.33",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "drizzle-kit": "^0.31.10",
+    "jest": "^30.3.0",
+    "jest-environment-node": "^29.7.0",
     "tsx": "^4.21.0",
     "typescript": "^5"
   }
