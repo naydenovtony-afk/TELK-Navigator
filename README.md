@@ -38,7 +38,7 @@ The ТЕЛК process in Bulgaria is bureaucratically complex — patients must g
 ## 2. Technology Stack
 
 ### Web (`apps/web`)
-- **Framework:** Next.js 15 App Router (TypeScript)
+- **Framework:** Next.js 14.2 App Router (TypeScript)
 - **Styling:** Tailwind CSS v4 (`@theme` tokens in globals.css)
 - **Auth:** Auth.js v5 — Google OAuth (web) + custom JWT (mobile)
 - **Database:** Neon serverless PostgreSQL + Drizzle ORM
@@ -130,7 +130,8 @@ telk-navigator/
 │   │   │       ├── mobile-auth.ts    # JWT verification for mobile endpoints
 │   │   │       └── rights.ts         # Disability rights calculator logic
 │   │   └── drizzle/
-│   │       └── 0000_absent_chamber.sql  # Database migration
+│   │       ├── 0000_absent_chamber.sql  # Initial schema migration
+│   │       └── 0001_add_document_type.sql  # Document type categorization
 │   └── mobile/                       # Expo React Native app
 │       ├── app/
 │       │   ├── (tabs)/               # Main tab navigation
@@ -343,4 +344,4 @@ The mobile app is tested via **Expo Go** (iOS / Android) pointing to the deploye
 ## Course
 
 **SoftUni — Full Stack Apps with AI** · May 2026  
-**Author:** Antoni Naydenov
+**Author:** Toni Naydenov
