@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
-import { auth, signOut } from '@/auth'
+import { auth } from '@/auth'
 import { db } from '@/db'
 import { users, userPreferences } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -89,28 +89,6 @@ export default async function SettingsPage() {
         />
       </div>
 
-      {/* Sign-out */}
-      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
-        <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
-          Сесия
-        </h2>
-        <p className="text-sm text-medical-slate mb-4">
-          Излизането ще приключи текущата ви сесия на това устройство.
-        </p>
-        <form
-          action={async () => {
-            'use server'
-            await signOut({ redirectTo: '/bg' })
-          }}
-        >
-          <button
-            type="submit"
-            className="border border-medical-border text-dark-text text-sm font-medium px-5 py-2.5 rounded-lg hover:border-medical-navy hover:text-medical-navy transition-colors"
-          >
-            Изход от профила
-          </button>
-        </form>
-      </div>
     </div>
   )
 }
