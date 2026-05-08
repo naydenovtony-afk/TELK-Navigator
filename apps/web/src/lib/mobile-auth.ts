@@ -1,6 +1,9 @@
 import { jwtVerify } from 'jose'
 import type { NextRequest } from 'next/server'
 
+const secret = process.env.NEXTAUTH_SECRET
+if (!secret) throw new Error('NEXTAUTH_SECRET is not set')
+
 export type MobileAuth = { userId: string; role: string }
 
 export async function verifyMobileTokenFull(req: NextRequest): Promise<MobileAuth | null> {
@@ -10,7 +13,7 @@ export async function verifyMobileTokenFull(req: NextRequest): Promise<MobileAut
   try {
     const { payload } = await jwtVerify(
       token,
-      new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
+      new TextEncoder().encode(secret)
     )
     if (!payload.sub) return null
     return { userId: payload.sub, role: (payload.role as string) ?? 'patient' }
