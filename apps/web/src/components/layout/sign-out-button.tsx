@@ -17,7 +17,7 @@ export function SignOutButton({ className }: { className?: string }) {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-80 flex flex-col gap-4">
+          <div className="bg-white rounded-2xl border border-medical-border p-6 w-80 flex flex-col gap-4">
             <p className="text-sm font-medium text-gray-800">Сигурни ли сте, че искате да излезете?</p>
             <div className="flex gap-3 justify-end">
               <button
@@ -28,7 +28,7 @@ export function SignOutButton({ className }: { className?: string }) {
               </button>
               <button
                 onClick={() => signOut({ callbackUrl: '/bg/sign-in' })}
-                className="px-4 py-2 rounded-xl text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                className="px-4 py-2 rounded-xl text-sm font-medium border border-critical-red text-critical-red hover:bg-critical-red-bg transition-colors"
               >
                 Изход
               </button>
