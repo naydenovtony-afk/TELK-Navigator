@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Badge } from '@/components/ui'
 
 interface User {
@@ -76,7 +77,7 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     {u.image ? (
-                      <img src={u.image} alt="" className="w-8 h-8 rounded-full" />
+                      <Image src={u.image} alt="" width={32} height={32} className="rounded-full" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-medical-surface flex items-center justify-center text-xs font-bold text-medical-slate">
                         {(u.name ?? u.email)[0].toUpperCase()}

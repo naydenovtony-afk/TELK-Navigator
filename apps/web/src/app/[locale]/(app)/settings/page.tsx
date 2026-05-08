@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import { auth, signOut } from '@/auth'
 import { db } from '@/db'
 import { users, userPreferences } from '@/db/schema'
@@ -37,11 +38,12 @@ export default async function SettingsPage() {
         </h2>
         <div className="flex items-center gap-4 mb-6">
           {user.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={user.image}
               alt={user.name ?? 'Потребител'}
-              className="w-14 h-14 rounded-full border border-medical-border"
+              width={56}
+              height={56}
+              className="rounded-full border border-medical-border"
             />
           ) : (
             <div className="w-14 h-14 rounded-full bg-medical-surface border border-medical-border flex items-center justify-center text-medical-navy font-medium text-lg">
