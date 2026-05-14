@@ -7,6 +7,8 @@ import { eq, desc, count, inArray, and, lt } from 'drizzle-orm'
 import { Badge } from '@/components/ui'
 import { NewCaseButton } from '@/components/cases/new-case-button'
 
+const PAGE_SIZE = 12
+
 export const dynamic = 'force-dynamic'
 
 const STATUS_LABEL: Record<string, string> = {
@@ -21,14 +23,30 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'default'> = {
   closed: 'default',
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { page?: string }
+}) {
   const session = await auth()
   const userId = session?.user?.id
   if (!userId) redirect('/bg/sign-in')
-  const rows = await db.query.cases.findMany({
-    where: eq(cases.userId, userId),
-    orderBy: [desc(cases.createdAt)],
-  })
+
+  const page = Math.max(1, parseInt(searchParams.page ?? '1', 10))
+  const offset = (page - 1) * PAGE_SIZE
+
+  const [rows, [{ totalCases }]] = await Promise.all([
+    db.query.cases.findMany({
+      where: eq(cases.userId, userId),
+      orderBy: [desc(cases.createdAt)],
+      limit: PAGE_SIZE,
+      offset,
+    }),
+    db.select({ totalCases: count() }).from(cases).where(eq(cases.userId, userId)),
+  ])
+
+  const totalCount = Number(totalCases)
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   const caseIds = rows.map((c) => c.id)
   const [docsByCase, overdueResult] = await Promise.all([
@@ -58,11 +76,11 @@ export default async function DashboardPage() {
         <NewCaseButton />
       </div>
 
-      {rows.length > 0 && (
+      {totalCount > 0 && (
         <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4 sm:mb-6 text-sm">
           <span>
-            <span className="font-medium text-medical-navy">{rows.length}</span>
-            <span className="text-medical-slate ml-1">{rows.length === 1 ? 'случай' : 'случая'}</span>
+            <span className="font-medium text-medical-navy">{totalCount}</span>
+            <span className="text-medical-slate ml-1">{totalCount === 1 ? 'случай' : 'случая'}</span>
           </span>
           <span className="text-medical-border">·</span>
           <span>
@@ -80,7 +98,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {rows.length === 0 ? (
+      {totalCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <FolderIcon />
           <h2 className="font-display text-xl text-medical-navy mt-4 mb-2">
@@ -123,6 +141,32 @@ export default async function DashboardPage() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-8 px-1">
+          <p className="text-xs text-medical-slate">
+            Страница {page} от {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            {page > 1 && (
+              <Link
+                href={`?page=${page - 1}`}
+                className="text-xs px-3 py-1.5 rounded-lg border border-medical-border hover:border-medical-teal text-medical-navy transition-colors"
+              >
+                ← Предишна
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link
+                href={`?page=${page + 1}`}
+                className="text-xs px-3 py-1.5 rounded-lg border border-medical-border hover:border-medical-teal text-medical-navy transition-colors"
+              >
+                Следваща →
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </div>
