@@ -120,6 +120,16 @@ export function RightsCalculator() {
                               {b.legalRef}
                             </span>
                           )}
+                          {b.sourceUrl && (
+                            <a
+                              href={b.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] font-medium text-medical-teal hover:underline shrink-0 ml-auto"
+                            >
+                              → Виж
+                            </a>
+                          )}
                         </div>
                         <p className="text-xs text-medical-slate mt-1 leading-relaxed">{b.detail}</p>
                       </li>

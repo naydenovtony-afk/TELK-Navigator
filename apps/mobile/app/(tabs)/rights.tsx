@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { getTelkPercent, saveTelkPercent } from '../../lib/prefs'
 
-type Benefit = { id: string; label: string; detail: string; category: string }
+type Benefit = { id: string; label: string; detail: string; category: string; sourceUrl?: string }
 
 const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
-  { id: 'B001', minPercent: 50, category: 'financial',   label: 'Месечна добавка за увреждане',       detail: 'Изплаща се от АСП. Размерът зависи от степента на увреждане.' },
-  { id: 'B002', minPercent: 50, category: 'financial',   label: 'Данъчно облекчение (ЗДДФЛ)',          detail: 'Намаление на данъчната основа с 7 920 лв. годишно.' },
-  { id: 'B003', minPercent: 50, category: 'financial',   label: 'Намаление на данък сгради',          detail: '50% намаление на данъка върху недвижимите имоти за основно жилище.' },
-  { id: 'B004', minPercent: 50, category: 'transport',   label: 'Безплатен градски транспорт',         detail: 'Безплатно пътуване в обществения транспорт по местоживеене.' },
-  { id: 'B005', minPercent: 50, category: 'healthcare',  label: 'Безплатни лекарства (по списък)',     detail: 'Медикаменти за хронични заболявания се заплащат от НЗОК.' },
-  { id: 'B006', minPercent: 50, category: 'social',      label: 'Помощни средства и съоръжения',      detail: 'Финансиране на помощни технически средства чрез НЗОК и АСП.' },
-  { id: 'B007', minPercent: 71, category: 'transport',   label: 'Карта за паркиране (Синя карта)',     detail: 'Паркиране на обозначени места за хора с увреждания.' },
-  { id: 'B008', minPercent: 71, category: 'transport',   label: '50% намаление на ж.п. билети',        detail: 'Намаление при пътуване с БДЖ.' },
-  { id: 'B009', minPercent: 71, category: 'transport',   label: 'Намаление при въздушен транспорт',   detail: 'Някои авиокомпании предоставят намаления.' },
-  { id: 'B010', minPercent: 71, category: 'social',      label: 'Приоритет в социални услуги',        detail: 'Приоритетен достъп до дневни центрове и социален асистент.' },
-  { id: 'B011', minPercent: 71, category: 'financial',   label: 'Целева помощ за отопление',          detail: 'Право на целева помощ при покриване на доходен критерий.' },
-  { id: 'B012', minPercent: 91, category: 'social',      label: 'Личен асистент (до 4 ч/ден)',         detail: 'Финансирана от държавата услуга за подпомагане при ежедневни дейности.' },
-  { id: 'B013', minPercent: 91, category: 'employment',  label: 'Допълнителен платен отпуск — 25 дни', detail: 'Минимум 25 дни платен годишен отпуск.' },
-  { id: 'B014', minPercent: 91, category: 'financial',   label: 'Намаление на телефонна такса',       detail: 'Социална абонаментна такса при фиксирана телефонна линия.' },
-  { id: 'B015', minPercent: 91, category: 'healthcare',  label: 'Освобождаване от потребителска такса', detail: 'Пълно освобождаване от такса при посещение на лекар.' },
+  { id: 'B001', minPercent: 50, category: 'financial',   label: 'Месечна добавка за увреждане',        detail: 'Изплаща се от АСП. Размерът се определя ежегодно с акт на Министерския съвет. (Чл. 70–74 ЗХУ)',                                                                             sourceUrl: 'https://asp.government.bg' },
+  { id: 'B002', minPercent: 50, category: 'financial',   label: 'Данъчно облекчение (ЗДДФЛ)',           detail: 'Намаление на данъчната основа с 7 920 лв. годишно при подаване на декларация. (Чл. 18 ЗДДФЛ)',                                                                           sourceUrl: 'https://nap.bg' },
+  { id: 'B003', minPercent: 50, category: 'financial',   label: 'Намаление на данък сгради',           detail: '50% намаление на данъка върху недвижимите имоти за основно жилище. (Чл. 25 ЗМДТ)',                                                                                         sourceUrl: 'https://asp.government.bg' },
+  { id: 'B004', minPercent: 50, category: 'transport',   label: 'Безплатен градски транспорт',          detail: 'Безплатно пътуване в обществения транспорт на населеното място по местоживеене. (Чл. 65 ЗХУ)',                                                                             sourceUrl: 'https://asp.government.bg' },
+  { id: 'B005', minPercent: 50, category: 'healthcare',  label: 'Безплатни лекарства (по списък)',      detail: 'Медикаменти за хронични заболявания, включени в позитивния лекарствен списък, се заплащат от НЗОК. (Чл. 45 ЗЗО)',                                                         sourceUrl: 'https://nhif.bg/bg/medicine_food/medical-list/2026' },
+  { id: 'B006', minPercent: 50, category: 'social',      label: 'Помощни средства и съоръжения',       detail: 'Финансиране на помощни технически средства, протези и ортези чрез НЗОК и АСП. (Чл. 68 ЗХУ)',                                                                               sourceUrl: 'https://nhif.bg' },
+  { id: 'B016', minPercent: 50, category: 'employment',  label: '7-часов работен ден',                 detail: 'Работещите с ТЕЛК решение имат право на намалено работно време от 7 часа при пълна заплата. (Чл. 319 КТ)',                                                                 sourceUrl: 'https://gli.government.bg' },
+  { id: 'B017', minPercent: 50, category: 'employment',  label: 'Минимум 26 дни платен отпуск',        detail: 'Работещите с увреждане имат право на не по-малко от 26 работни дни годишен платен отпуск. (Чл. 155, ал. 4 КТ)',                                                           sourceUrl: 'https://gli.government.bg' },
+  { id: 'B018', minPercent: 50, category: 'employment',  label: 'Закрила при уволнение',               detail: 'Работодателят е длъжен да поиска предварително разрешение от Инспекцията по труда преди уволнение. (Чл. 333, ал. 1 КТ)',                                                   sourceUrl: 'https://gli.government.bg' },
+  { id: 'B007', minPercent: 71, category: 'transport',   label: 'Карта за паркиране (Синя карта)',      detail: 'Право на специален стикер и паркиране на обозначени места за хора с увреждания. (Наредба № РД-02-20-2)',                                                                   sourceUrl: 'https://asp.government.bg' },
+  { id: 'B008', minPercent: 71, category: 'transport',   label: '50% намаление на ж.п. билети',         detail: 'Намаление при пътуване с БДЖ — важи за притежателя на ТЕЛК решение. (Чл. 66 ЗХУ)',                                                                                        sourceUrl: 'https://bdz.bg' },
+  { id: 'B009', minPercent: 71, category: 'transport',   label: 'Намаление при въздушен транспорт',    detail: 'Право на помощ и настаняване при въздушно пътуване съгласно европейски регламент. (Регл. (ЕО) 1107/2006)',                                                                  sourceUrl: 'https://transport.ec.europa.eu' },
+  { id: 'B010', minPercent: 71, category: 'social',      label: 'Приоритет в социални услуги',         detail: 'Приоритетен достъп до дневни центрове, домашен помощник и социален асистент. (Чл. 18 ЗСУ)',                                                                               sourceUrl: 'https://asp.government.bg' },
+  { id: 'B011', minPercent: 71, category: 'financial',   label: 'Целева помощ за отопление',           detail: 'Право на целева помощ за отопление при покриване на доходен критерий. (ЗСПД)',                                                                                            sourceUrl: 'https://asp.government.bg' },
+  { id: 'B012', minPercent: 91, category: 'social',      label: 'Личен асистент (до 4 ч/ден)',          detail: 'Финансирана от държавата услуга за подпомагане при ежедневни дейности. (Чл. 75 ЗХУ)',                                                                                      sourceUrl: 'https://asp.government.bg' },
+  { id: 'B013', minPercent: 91, category: 'financial',   label: 'Надбавка за постоянна чужда помощ',   detail: 'Допълнителна надбавка за лица, нуждаещи се от постоянни грижи от друго лице — отразено в ТЕЛК решението. (Чл. 103 КСО)',                                                   sourceUrl: 'https://noi.bg' },
+  { id: 'B014', minPercent: 91, category: 'financial',   label: 'Намаление на телефонна такса',        detail: 'Социална абонаментна такса при фиксирана телефонна линия. (Наредба на КРС)',                                                                                               sourceUrl: 'https://crc.bg' },
+  { id: 'B015', minPercent: 91, category: 'healthcare',  label: 'Освобождаване от потребителска такса', detail: 'Пълно освобождаване от потребителска такса при посещение на личен лекар и специалист. (Чл. 37 ЗЗО)',                                                                      sourceUrl: 'https://nhif.bg' },
 ]
 
 const CATEGORIES = ['financial', 'transport', 'healthcare', 'employment', 'social'] as const
@@ -179,6 +182,11 @@ export default function RightsScreen(): React.JSX.Element {
                     <View key={b.id} style={s.benefitCard}>
                       <Text style={s.benefitLabel}>{b.label}</Text>
                       <Text style={s.benefitDetail}>{b.detail}</Text>
+                      {b.sourceUrl && (
+                        <TouchableOpacity onPress={() => Linking.openURL(b.sourceUrl!)} hitSlop={8}>
+                          <Text style={s.benefitLink}>→ Виж</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   ))}
                 </View>
@@ -187,7 +195,7 @@ export default function RightsScreen(): React.JSX.Element {
           )}
 
           <Text style={s.footer}>
-            Правата се определят съгласно ЗИХУ, КТ и НЗОК правилника. Консултирайте се с АСП за точни суми.
+            Правата са гарантирани от действащото законодателство (КТ, ЗХУ, ЗДДФЛ, ЗМДТ, ЗЗО). Паричните суми се актуализират ежегодно с акт на Министерския съвет.
           </Text>
         </>
       )}
@@ -254,6 +262,7 @@ const s = StyleSheet.create({
   },
   benefitLabel: { fontSize: 15, fontWeight: '600', color: '#1C2B3A' },
   benefitDetail: { fontSize: 13, color: '#3D5A73', lineHeight: 18 },
+  benefitLink: { fontSize: 12, color: '#6B3D1A', fontWeight: '600', marginTop: 4 },
 
   footer: {
     marginHorizontal: 16, marginTop: 20,
