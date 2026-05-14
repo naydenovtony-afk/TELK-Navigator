@@ -49,6 +49,10 @@ export default async function AdminOverviewPage() {
           <h2 className="font-display text-lg text-medical-navy group-hover:text-medical-teal transition-colors">Управление на потребители</h2>
           <p className="text-sm text-medical-slate mt-1">Промяна на роли, преглед на акаунти</p>
         </Link>
+        <Link href="/bg/admin/cases" className="bg-white rounded-2xl border border-medical-border p-6 hover:border-medical-teal/50 hover:shadow-sm transition-all group block">
+          <h2 className="font-display text-lg text-medical-navy group-hover:text-medical-teal transition-colors">Управление на случаи</h2>
+          <p className="text-sm text-medical-slate mt-1">Преглед и изтриване на всички случаи</p>
+        </Link>
         <Link href="/bg/admin/prompts" className="bg-white rounded-2xl border border-medical-border p-6 hover:border-medical-teal/50 hover:shadow-sm transition-all group block">
           <h2 className="font-display text-lg text-medical-navy group-hover:text-medical-teal transition-colors">Prompt модули</h2>
           <p className="text-sm text-medical-slate mt-1">Редактиране на AI промптове за анализ</p>

@@ -8,6 +8,7 @@ import { SignOutButton } from './sign-out-button'
 const navItems = [
   { href: '/bg/admin', label: 'Обзор' },
   { href: '/bg/admin/users', label: 'Потребители' },
+  { href: '/bg/admin/cases', label: 'Случаи' },
   { href: '/bg/admin/prompts', label: 'Prompt модули' },
 ]
 
