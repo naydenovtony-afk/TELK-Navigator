@@ -49,8 +49,8 @@ describe('calculateRights', () => {
       expect(calculateRights(49).benefits).toHaveLength(0)
     })
 
-    it('returns 6 benefits at exactly 50%', () => {
-      expect(calculateRights(50).benefits).toHaveLength(6)
+    it('returns 9 benefits at exactly 50%', () => {
+      expect(calculateRights(50).benefits).toHaveLength(9)
     })
 
     it('returns more benefits at 71% (unlocks 5 more)', () => {
@@ -59,9 +59,9 @@ describe('calculateRights', () => {
       expect(at71).toBeGreaterThan(at50)
     })
 
-    it('returns all 15 benefits at 91%', () => {
-      expect(calculateRights(91).benefits).toHaveLength(15)
-      expect(calculateRights(100).benefits).toHaveLength(15)
+    it('returns all 18 benefits at 91%', () => {
+      expect(calculateRights(91).benefits).toHaveLength(18)
+      expect(calculateRights(100).benefits).toHaveLength(18)
     })
 
     it('benefits have required fields', () => {

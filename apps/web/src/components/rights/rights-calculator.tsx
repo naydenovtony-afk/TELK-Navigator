@@ -84,7 +84,7 @@ export function RightsCalculator() {
               </div>
               {result.monthlyAllowance && (
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-medical-slate mb-1">Месечна добавка (ориент.)</p>
+                  <p className="text-xs text-medical-slate mb-1">Месечна добавка (чл. 70 ЗХУ)</p>
                   <p className="font-display text-2xl text-medical-navy">
                     {result.monthlyAllowance} лв.
                   </p>
@@ -113,7 +113,14 @@ export function RightsCalculator() {
                   <ul className="divide-y divide-medical-border">
                     {items.map((b) => (
                       <li key={b.id} className="px-5 py-4">
-                        <p className="text-sm font-medium text-medical-navy">{b.label}</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-medium text-medical-navy">{b.label}</p>
+                          {b.legalRef && (
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-medical-teal/10 text-medical-teal border border-medical-teal/20 shrink-0">
+                              {b.legalRef}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-medical-slate mt-1 leading-relaxed">{b.detail}</p>
                       </li>
                     ))}
@@ -124,7 +131,7 @@ export function RightsCalculator() {
           </div>
 
           <p className="text-xs text-medical-slate text-center">
-            Информацията е ориентировъчна. Консултирайте се с АСП или правен специалист за актуални суми и условия.
+            Правата са гарантирани от действащото законодателство (КТ, ЗХУ, ЗДДФЛ, ЗМДТ, ЗЗО). Паричните суми се актуализират ежегодно с акт на Министерския съвет.
           </p>
         </>
       ) : (

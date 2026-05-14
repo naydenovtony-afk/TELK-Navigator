@@ -3,6 +3,7 @@ export interface Benefit {
   label: string
   detail: string
   category: 'financial' | 'transport' | 'healthcare' | 'employment' | 'social'
+  legalRef?: string
 }
 
 export interface RightsResult {
@@ -20,7 +21,8 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     minPercent: 50,
     category: 'financial',
     label: 'Месечна добавка за увреждане',
-    detail: 'Изплаща се от АСП. Размерът зависи от степента на увреждане.',
+    detail: 'Изплаща се от АСП. Размерът се определя ежегодно с акт на Министерския съвет.',
+    legalRef: 'Чл. 70–74 ЗХУ',
   },
   {
     id: 'B002',
@@ -28,6 +30,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'financial',
     label: 'Данъчно облекчение (ЗДДФЛ)',
     detail: 'Намаление на данъчната основа с 7 920 лв. годишно при подаване на декларация.',
+    legalRef: 'Чл. 18 ЗДДФЛ',
   },
   {
     id: 'B003',
@@ -35,6 +38,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'financial',
     label: 'Намаление на данък сгради',
     detail: '50% намаление на данъка върху недвижимите имоти за основно жилище.',
+    legalRef: 'Чл. 25 ЗМДТ',
   },
   {
     id: 'B004',
@@ -42,6 +46,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'transport',
     label: 'Безплатен градски транспорт',
     detail: 'Безплатно пътуване в обществения транспорт на населеното място по местоживеене.',
+    legalRef: 'Чл. 65 ЗХУ',
   },
   {
     id: 'B005',
@@ -49,6 +54,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'healthcare',
     label: 'Безплатни лекарства (по списък)',
     detail: 'Медикаменти за хронични заболявания, включени в позитивния лекарствен списък, се заплащат от НЗОК.',
+    legalRef: 'Чл. 45 ЗЗО',
   },
   {
     id: 'B006',
@@ -56,6 +62,31 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'social',
     label: 'Помощни средства и съоръжения',
     detail: 'Финансиране на помощни технически средства, протези и ортези чрез НЗОК и АСП.',
+    legalRef: 'Чл. 68 ЗХУ',
+  },
+  {
+    id: 'B016',
+    minPercent: 50,
+    category: 'employment',
+    label: '7-часов работен ден',
+    detail: 'Работещите с ТЕЛК решение имат право на намалено работно време от 7 часа при пълна заплата.',
+    legalRef: 'Чл. 319 КТ',
+  },
+  {
+    id: 'B017',
+    minPercent: 50,
+    category: 'employment',
+    label: 'Минимум 26 дни платен отпуск',
+    detail: 'Работещите с увреждане имат право на не по-малко от 26 работни дни годишен платен отпуск.',
+    legalRef: 'Чл. 155, ал. 4 КТ',
+  },
+  {
+    id: 'B018',
+    minPercent: 50,
+    category: 'employment',
+    label: 'Закрила при уволнение',
+    detail: 'Работодателят е длъжен да поиска предварително разрешение от Инспекцията по труда преди уволнение.',
+    legalRef: 'Чл. 333, ал. 1 КТ',
   },
   // 71%+
   {
@@ -64,6 +95,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'transport',
     label: 'Карта за паркиране (Синя карта)',
     detail: 'Право на специален стикер и паркиране на обозначени места за хора с увреждания.',
+    legalRef: 'Наредба № РД-02-20-2',
   },
   {
     id: 'B008',
@@ -71,13 +103,15 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'transport',
     label: '50% намаление на ж.п. билети',
     detail: 'Намаление при пътуване с БДЖ — важи за притежателя на ТЕЛК решение.',
+    legalRef: 'Чл. 66 ЗХУ',
   },
   {
     id: 'B009',
     minPercent: 71,
     category: 'transport',
     label: 'Намаление при въздушен транспорт',
-    detail: 'Някои авиокомпании предоставят намаления — проверете при резервация.',
+    detail: 'Право на помощ и настаняване при въздушно пътуване съгласно европейски регламент.',
+    legalRef: 'Регл. (ЕО) 1107/2006',
   },
   {
     id: 'B010',
@@ -85,6 +119,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'social',
     label: 'Приоритет в социални услуги',
     detail: 'Приоритетен достъп до дневни центрове, домашен помощник и социален асистент.',
+    legalRef: 'Чл. 18 ЗСУ',
   },
   {
     id: 'B011',
@@ -92,6 +127,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'financial',
     label: 'Целева помощ за отопление',
     detail: 'Право на целева помощ за отопление при покриване на доходен критерий.',
+    legalRef: 'ЗСПД',
   },
   // 91%+
   {
@@ -100,13 +136,15 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'social',
     label: 'Личен асистент (до 4 ч/ден)',
     detail: 'Финансирана от държавата услуга за подпомагане при ежедневни дейности.',
+    legalRef: 'Чл. 75 ЗХУ',
   },
   {
     id: 'B013',
     minPercent: 91,
-    category: 'employment',
-    label: 'Допълнителен платен отпуск — 25 дни',
-    detail: 'Работещите с над 91% увреждане имат право на минимум 25 дни платен годишен отпуск.',
+    category: 'financial',
+    label: 'Надбавка за постоянна чужда помощ',
+    detail: 'Допълнителна надбавка за лица, нуждаещи се от постоянни грижи от друго лице — отразено в ТЕЛК решението.',
+    legalRef: 'Чл. 103 КСО',
   },
   {
     id: 'B014',
@@ -114,6 +152,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'financial',
     label: 'Намаление на телефонна такса',
     detail: 'Социална абонаментна такса при фиксирана телефонна линия.',
+    legalRef: 'Наредба на КРС',
   },
   {
     id: 'B015',
@@ -121,6 +160,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     category: 'healthcare',
     label: 'Освобождаване от потребителска такса',
     detail: 'Пълно освобождаване от потребителска такса при посещение на личен лекар и специалист.',
+    legalRef: 'Чл. 37 ЗЗО',
   },
 ]
 
