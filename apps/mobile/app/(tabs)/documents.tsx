@@ -12,19 +12,8 @@ import {
   getDocuments, getCases, presignUpload, createDocument, triggerAnalysis, createCase,
   type Document, type Case,
 } from '../../lib/api'
-
-const STATUS_LABEL: Record<Document['status'], string> = {
-  uploading: 'Качва се',
-  processing: 'Анализира се',
-  ready: 'Готов',
-  error: 'Грешка',
-}
-const STATUS_COLOR: Record<Document['status'], string> = {
-  uploading: '#7A5200',
-  processing: '#1A4A6B',
-  ready: '#1A6B3C',
-  error: '#8B1A1A',
-}
+import { DocumentRow } from '../../components/DocumentRow'
+import { EmptyState } from '../../components/EmptyState'
 
 type Section = { title: string; data: Document[] }
 
@@ -207,16 +196,13 @@ export default function DocumentsScreen(): React.JSX.Element {
           }
           contentContainerStyle={sections.length === 0 ? s.emptyContainer : s.list}
           ListEmptyComponent={
-            <View style={s.emptyCard}>
-              <Text style={s.emptyIcon}>📷</Text>
-              <Text style={s.emptyTitle}>Добавете документ</Text>
-              <Text style={s.emptyBody}>
-                Снимайте епикризи, резултати от изследвания или амбулаторни листове. AI ще ги анализира за ТЕЛК.
-              </Text>
-              <TouchableOpacity style={s.emptyBtn} onPress={openModal} activeOpacity={0.75}>
-                <Text style={s.emptyBtnText}>Качи документ</Text>
-              </TouchableOpacity>
-            </View>
+            <EmptyState
+              icon="📷"
+              title="Добавете документ"
+              body="Снимайте епикризи, резултати от изследвания или амбулаторни листове. AI ще ги анализира за ТЕЛК."
+              buttonLabel="Качи документ"
+              onPress={openModal}
+            />
           }
           renderSectionHeader={({ section }) => (
             <View style={s.sectionHeader}>
@@ -224,23 +210,10 @@ export default function DocumentsScreen(): React.JSX.Element {
             </View>
           )}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={s.card}
-              activeOpacity={0.75}
+            <DocumentRow
+              item={item}
               onPress={() => router.push(`/document-detail?id=${item.id}&name=${encodeURIComponent(item.fileName)}` as never)}
-            >
-              <View style={s.row}>
-                <Text style={s.fileName} numberOfLines={1}>{item.fileName}</Text>
-                <View style={[s.badge, { backgroundColor: STATUS_COLOR[item.status] + '20' }]}>
-                  <Text style={[s.badgeText, { color: STATUS_COLOR[item.status] }]}>
-                    {STATUS_LABEL[item.status]}
-                  </Text>
-                </View>
-              </View>
-              <Text style={s.date}>
-                {new Date(item.uploadedAt).toLocaleDateString('bg-BG')}
-              </Text>
-            </TouchableOpacity>
+            />
           )}
         />
       )}
@@ -391,32 +364,9 @@ const s = StyleSheet.create({
 
   list: { paddingBottom: 16 },
   emptyContainer: { flex: 1, justifyContent: 'center', padding: 24 },
-  emptyCard: {
-    backgroundColor: '#fff', borderRadius: 20, padding: 28,
-    alignItems: 'center', gap: 12,
-    borderWidth: 0.5, borderColor: '#B8CDD8',
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 },
-  },
-  emptyIcon: { fontSize: 52 },
-  emptyTitle: { fontSize: 18, fontWeight: '800', color: '#1C2B3A', textAlign: 'center' },
-  emptyBody: { fontSize: 15, color: '#3D5A73', textAlign: 'center', lineHeight: 22 },
-  emptyBtn: {
-    marginTop: 4, backgroundColor: '#1A4A6B', borderRadius: 12,
-    paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', width: '100%',
-  },
-  emptyBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 
   sectionHeader: { backgroundColor: '#E8F4F8', paddingHorizontal: 16, paddingVertical: 8 },
   sectionTitle: { fontSize: 13, fontWeight: '600', color: '#3D5A73', textTransform: 'uppercase', letterSpacing: 0.5 },
-  card: {
-    backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 8,
-    borderRadius: 8, padding: 14, borderWidth: 0.5, borderColor: '#B8CDD8', gap: 4,
-  },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  fileName: { flex: 1, fontSize: 14, fontWeight: '500', color: '#1C2B3A' },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
-  badgeText: { fontSize: 11, fontWeight: '600' },
-  date: { fontSize: 12, color: '#3D5A73' },
   error: { color: '#8B1A1A', padding: 16, textAlign: 'center' },
 
   // Modal

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Linking,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { getTelkPercent, saveTelkPercent } from '../../lib/prefs'
+import { BenefitCard } from '../../components/BenefitCard'
+import type { BenefitItem } from '../../components/BenefitCard'
 
-type Benefit = { id: string; label: string; detail: string; category: string; sourceUrl?: string }
+type Benefit = BenefitItem
 
 const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
   { id: 'B001', minPercent: 50, category: 'financial',   label: 'Месечна добавка за увреждане',        detail: 'Изплаща се от АСП. Размерът се определя ежегодно с акт на Министерския съвет. (Чл. 70–74 ЗХУ)',                                                                             sourceUrl: 'https://asp.government.bg' },
@@ -179,15 +181,7 @@ export default function RightsScreen(): React.JSX.Element {
                 <View key={cat} style={s.section}>
                   <Text style={s.sectionTitle}>{CATEGORY_LABEL[cat]}</Text>
                   {items.map((b) => (
-                    <View key={b.id} style={s.benefitCard}>
-                      <Text style={s.benefitLabel}>{b.label}</Text>
-                      <Text style={s.benefitDetail}>{b.detail}</Text>
-                      {b.sourceUrl && (
-                        <TouchableOpacity onPress={() => Linking.openURL(b.sourceUrl!)} hitSlop={8}>
-                          <Text style={s.benefitLink}>→ Виж</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
+                    <BenefitCard key={b.id} benefit={b} />
                   ))}
                 </View>
               )
@@ -255,14 +249,6 @@ const s = StyleSheet.create({
 
   section: { marginHorizontal: 16, marginTop: 6, gap: 8 },
   sectionTitle: { fontSize: 14, fontWeight: '700', color: '#1C2B3A', marginBottom: 2 },
-  benefitCard: {
-    backgroundColor: '#fff', borderRadius: 12, padding: 14,
-    borderWidth: 0.5, borderColor: '#B8CDD8', gap: 4,
-    borderLeftWidth: 4, borderLeftColor: '#6B3D1A',
-  },
-  benefitLabel: { fontSize: 15, fontWeight: '600', color: '#1C2B3A' },
-  benefitDetail: { fontSize: 13, color: '#3D5A73', lineHeight: 18 },
-  benefitLink: { fontSize: 12, color: '#6B3D1A', fontWeight: '600', marginTop: 4 },
 
   footer: {
     marginHorizontal: 16, marginTop: 20,
