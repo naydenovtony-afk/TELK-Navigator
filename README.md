@@ -103,6 +103,7 @@ telk-navigator/
 │   │   │   │   │   ├── (admin)/      # Admin panel
 │   │   │   │   │   │   ├── admin/                # Overview
 │   │   │   │   │   │   ├── admin/users/          # User management
+│   │   │   │   │   │   ├── admin/cases/          # Cases management
 │   │   │   │   │   │   └── admin/prompts/        # AI prompt management
 │   │   │   │   │   └── (auth)/       # Sign-in / sign-up
 │   │   │   │   └── api/              # REST API endpoints
@@ -131,7 +132,8 @@ telk-navigator/
 │   │   │       └── rights.ts         # Disability rights calculator logic
 │   │   └── drizzle/
 │   │       ├── 0000_absent_chamber.sql  # Initial schema migration
-│   │       └── 0001_add_document_type.sql  # Document type categorization
+│   │       ├── 0001_add_document_type.sql  # Document type categorization
+│   │       └── 0002_strange_black_widow.sql  # Add accounts, passwords, nme_modules tables
 │   └── mobile/                       # Expo React Native app
 │       ├── app/
 │       │   ├── (tabs)/               # Main tab navigation
@@ -149,6 +151,11 @@ telk-navigator/
 │       │   ├── employer-letter.tsx   # Employer letter generator
 │       │   ├── sign-in.tsx           # Login screen
 │       │   └── register.tsx          # Registration screen
+│       ├── components/               # Reusable React Native components
+│       │   ├── BenefitCard.tsx       # Rights calculator card + external link
+│       │   ├── CaseCard.tsx          # Case list item with status pill
+│       │   ├── DocumentRow.tsx       # Document list row
+│       │   └── EmptyState.tsx        # Empty list placeholder
 │       └── lib/
 │           ├── api.ts                # Typed API client (all backend calls)
 │           ├── auth.tsx              # AuthContext + SecureStore token management
@@ -219,6 +226,7 @@ document_history             ← audit trail
 | POST | `/api/appeal` | Generate court appeal letter |
 | POST | `/api/employer-letter` | Generate employer accommodation letter |
 | GET/PATCH | `/api/admin/users` | List users / update role (admin only) |
+| DELETE | `/api/admin/cases/[id]` | Delete any case (admin only) |
 | GET/POST | `/api/admin/prompts` | List / create AI prompt templates (admin only) |
 | PATCH/DELETE | `/api/admin/prompts/[id]` | Update / delete prompt template (admin only) |
 
@@ -290,10 +298,10 @@ Create `apps/mobile/.env`:
 EXPO_PUBLIC_API_URL=http://localhost:3000
 ```
 
-### 3. Push database schema
+### 3. Run database migrations
 
 ```bash
-npm run db:push -w apps/web
+npm run db:migrate -w apps/web
 ```
 
 ### 4. (Optional) Seed demo data

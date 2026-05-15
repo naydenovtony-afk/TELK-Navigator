@@ -140,8 +140,8 @@ Example:
 - UUID for all primary keys — never auto-increment
 - `createdAt` on every table with `defaultNow()`
 
-**10 tables:**
-users · userPreferences · cases · documents · analysisReports · reviewTokens · documentHistory · deadlines · promptModules · referrals
+**13 tables:**
+users · userPreferences · accounts · userPasswords · cases · documents · analysisReports · reviewTokens · documentHistory · deadlines · promptModules · nmeModules · referrals
 
 ---
 
