@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { FileSearch, Scale, CalendarClock, FolderOpen } from 'lucide-react'
+import { HowItWorksSteps } from '@/components/landing/HowItWorksSteps'
 
 export default async function LandingPage(): Promise<React.JSX.Element> {
   const t = await getTranslations('landing')
@@ -123,26 +124,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
           <h2 className="text-3xl font-medium text-center text-medical-navy mb-12">
             {t('how.title')}
           </h2>
-          <div className="flex flex-col md:flex-row gap-10">
-            {steps.map((s) => (
-              <div key={s.n} className="flex-1 flex flex-col items-center text-center gap-4">
-                <div className="w-14 h-14 rounded-full border-2 border-medical-border flex items-center justify-center text-medical-navy font-medium text-xl">
-                  {s.n}
-                </div>
-                <p className="text-dark-text font-medium text-lg">{s.label}</p>
-                <p className="text-medical-slate text-base leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-14 text-center">
-            <Link
-              href="/bg/sign-in"
-              className="bg-medical-navy text-white px-10 py-4 rounded text-base font-medium hover:bg-medical-teal transition-colors inline-block"
-            >
-              {t('hero.cta')}
-            </Link>
-          </div>
+          <HowItWorksSteps steps={steps} ctaLabel={t('hero.cta')} />
         </div>
       </section>
 
