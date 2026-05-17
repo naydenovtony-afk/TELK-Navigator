@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
+import { FileSearch, Scale, CalendarClock, FolderOpen } from 'lucide-react'
 
 export default async function LandingPage(): Promise<React.JSX.Element> {
   const t = await getTranslations('landing')
@@ -7,25 +8,33 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
   const features = [
     {
       key: 'ai',
-      icon: '◈',
+      Icon: FileSearch,
+      bandBg: 'bg-medical-teal/10',
+      iconColor: 'text-medical-teal',
       title: t('features.ai.title'),
       desc: t('features.ai.desc'),
     },
     {
       key: 'rights',
-      icon: '⊙',
+      Icon: Scale,
+      bandBg: 'bg-medical-navy/10',
+      iconColor: 'text-medical-navy',
       title: t('features.rights.title'),
       desc: t('features.rights.desc'),
     },
     {
       key: 'deadlines',
-      icon: '◷',
+      Icon: CalendarClock,
+      bandBg: 'bg-amber/10',
+      iconColor: 'text-amber',
       title: t('features.deadlines.title'),
       desc: t('features.deadlines.desc'),
     },
     {
       key: 'cases',
-      icon: '▣',
+      Icon: FolderOpen,
+      bandBg: 'bg-vital-green/10',
+      iconColor: 'text-vital-green',
       title: t('features.cases.title'),
       desc: t('features.cases.desc'),
     },
@@ -94,13 +103,15 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
           {features.map((f) => (
             <div
               key={f.key}
-              className="bg-white border border-medical-border rounded-lg p-8"
+              className="bg-white border border-medical-border rounded-xl overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-medical-teal text-2xl">{f.icon}</span>
-                <span className="text-dark-text font-medium text-lg">{f.title}</span>
+              <div className={`${f.bandBg} py-10 flex items-center justify-center border-b border-medical-border/30`}>
+                <f.Icon size={52} className={f.iconColor} strokeWidth={1.5} />
               </div>
-              <p className="text-medical-slate text-base leading-relaxed">{f.desc}</p>
+              <div className="p-7">
+                <h3 className="text-dark-text font-medium text-lg mb-3">{f.title}</h3>
+                <p className="text-medical-slate text-base leading-relaxed">{f.desc}</p>
+              </div>
             </div>
           ))}
         </div>
