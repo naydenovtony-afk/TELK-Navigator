@@ -24,7 +24,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Месечна добавка за увреждане',
     detail: 'Изплаща се от АСП. Размерът се определя ежегодно с акт на Министерския съвет.',
     legalRef: 'Чл. 70–74 ЗХУ',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://asp.government.bg/bg/deynosti/podkrepa-na-horata-s-uvrezhdaniya/pravo-na-mesechna-finansova-podkrepa/',
   },
   {
     id: 'B002',
@@ -33,7 +33,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Данъчно облекчение (ЗДДФЛ)',
     detail: 'Намаление на данъчната основа с 7 920 лв. годишно при подаване на декларация.',
     legalRef: 'Чл. 18 ЗДДФЛ',
-    sourceUrl: 'https://nap.bg',
+    sourceUrl: 'https://nra.bg/wps/portal/nra/taxes/godishen-danak-varhu-dohdite/danachni-oblekcheniya',
   },
   {
     id: 'B003',
@@ -42,7 +42,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Намаление на данък сгради',
     detail: '50% намаление на данъка върху недвижимите имоти за основно жилище.',
     legalRef: 'Чл. 25 ЗМДТ',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://nra.bg/wps/portal/nra/taxes/mestni-danatsi-i-taksi/sgradi-i-smet/sgradi-i-smet',
   },
   {
     id: 'B004',
@@ -51,7 +51,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Безплатен градски транспорт',
     detail: 'Безплатно пътуване в обществения транспорт на населеното място по местоживеене.',
     legalRef: 'Чл. 65 ЗХУ',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://nssi.bg/wp-content/uploads/ZHU.pdf',
   },
   {
     id: 'B005',
@@ -69,7 +69,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Помощни средства и съоръжения',
     detail: 'Финансиране на помощни технически средства, протези и ортези чрез НЗОК и АСП.',
     legalRef: 'Чл. 68 ЗХУ',
-    sourceUrl: 'https://nhif.bg',
+    sourceUrl: 'https://www.mlsp.government.bg/eng/integratsiya-na-khorata-s-uvrezhdaniya',
   },
   {
     id: 'B016',
@@ -78,7 +78,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: '7-часов работен ден',
     detail: 'Работещите с ТЕЛК решение имат право на намалено работно време от 7 часа при пълна заплата.',
     legalRef: 'Чл. 319 КТ',
-    sourceUrl: 'https://gli.government.bg',
+    sourceUrl: 'https://nsrhu.bg/?page=novina&lang=bg&novina=51',
   },
   {
     id: 'B017',
@@ -87,7 +87,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Минимум 26 дни платен отпуск',
     detail: 'Работещите с увреждане имат право на не по-малко от 26 работни дни годишен платен отпуск.',
     legalRef: 'Чл. 155, ал. 4 КТ',
-    sourceUrl: 'https://gli.government.bg',
+    sourceUrl: 'https://nsrhu.bg/?page=novina&lang=bg&novina=51',
   },
   {
     id: 'B018',
@@ -96,7 +96,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Закрила при уволнение',
     detail: 'Работодателят е длъжен да поиска предварително разрешение от Инспекцията по труда преди уволнение.',
     legalRef: 'Чл. 333, ал. 1 КТ',
-    sourceUrl: 'https://gli.government.bg',
+    sourceUrl: 'https://nsrhu.bg/?page=novina&lang=bg&novina=51',
   },
   // 71%+
   {
@@ -106,7 +106,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Карта за паркиране (Синя карта)',
     detail: 'Право на специален стикер и паркиране на обозначени места за хора с увреждания.',
     legalRef: 'Наредба № РД-02-20-2',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://nssi.bg/wp-content/uploads/ZHU.pdf',
   },
   {
     id: 'B008',
@@ -115,7 +115,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: '50% намаление на ж.п. билети',
     detail: 'Намаление при пътуване с БДЖ — важи за притежателя на ТЕЛК решение.',
     legalRef: 'Чл. 66 ЗХУ',
-    sourceUrl: 'https://bdz.bg',
+    sourceUrl: 'https://nssi.bg/wp-content/uploads/ZHU.pdf',
   },
   {
     id: 'B009',
@@ -133,7 +133,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Приоритет в социални услуги',
     detail: 'Приоритетен достъп до дневни центрове, домашен помощник и социален асистент.',
     legalRef: 'Чл. 18 ЗСУ',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://www.mlsp.government.bg/eng/integratsiya-na-khorata-s-uvrezhdaniya',
   },
   {
     id: 'B011',
@@ -142,7 +142,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Целева помощ за отопление',
     detail: 'Право на целева помощ за отопление при покриване на доходен критерий.',
     legalRef: 'ЗСПД',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://www.mlsp.government.bg/eng/integratsiya-na-khorata-s-uvrezhdaniya',
   },
   // 91%+
   {
@@ -152,7 +152,7 @@ const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
     label: 'Личен асистент (до 4 ч/ден)',
     detail: 'Финансирана от държавата услуга за подпомагане при ежедневни дейности.',
     legalRef: 'Чл. 75 ЗХУ',
-    sourceUrl: 'https://asp.government.bg',
+    sourceUrl: 'https://www.mlsp.government.bg/eng/integratsiya-na-khorata-s-uvrezhdaniya',
   },
   {
     id: 'B013',
