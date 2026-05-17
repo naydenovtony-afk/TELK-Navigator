@@ -48,7 +48,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
           </span>
           <Link
             href="/bg/sign-in"
-            className="text-sm text-medical-border hover:text-white transition-colors"
+            className="text-sm text-white border border-white/30 hover:border-medical-teal hover:text-medical-teal px-5 py-2 rounded transition-colors"
           >
             {t('hero.signIn')}
           </Link>
@@ -72,13 +72,13 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <Link
             href="/bg/sign-in"
-            className="bg-medical-teal text-white px-8 py-3 rounded text-sm font-medium hover:bg-medical-navy transition-colors"
+            className="bg-medical-teal text-white px-8 py-4 rounded text-base font-medium hover:bg-medical-navy transition-colors"
           >
             {t('hero.cta')}
           </Link>
           <Link
             href="#how"
-            className="border border-medical-border/40 text-medical-border px-8 py-3 rounded text-sm font-medium hover:border-medical-border/80 transition-colors"
+            className="border border-medical-border/40 text-medical-border px-8 py-4 rounded text-base font-medium hover:border-medical-border/80 transition-colors"
           >
             Как работи
           </Link>
@@ -87,20 +87,20 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
 
       {/* Features */}
       <section className="max-w-5xl mx-auto px-6 py-20 w-full">
-        <h2 className="text-2xl font-medium text-center text-medical-navy mb-12">
+        <h2 className="text-3xl font-medium text-center text-medical-navy mb-12">
           {t('features.title')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {features.map((f) => (
             <div
               key={f.key}
-              className="bg-white border border-medical-border rounded-lg p-6"
+              className="bg-white border border-medical-border rounded-lg p-8"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-medical-teal text-xl">{f.icon}</span>
-                <span className="text-dark-text font-medium text-base">{f.title}</span>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-medical-teal text-2xl">{f.icon}</span>
+                <span className="text-dark-text font-medium text-lg">{f.title}</span>
               </div>
-              <p className="text-medical-slate text-sm leading-relaxed">{f.desc}</p>
+              <p className="text-medical-slate text-base leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -109,17 +109,17 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
       {/* How it works */}
       <section id="how" className="bg-white border-t border-medical-border py-20 px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-medium text-center text-medical-navy mb-12">
+          <h2 className="text-3xl font-medium text-center text-medical-navy mb-12">
             {t('how.title')}
           </h2>
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col md:flex-row gap-10">
             {steps.map((s) => (
-              <div key={s.n} className="flex-1 flex flex-col items-center text-center gap-3">
-                <div className="w-10 h-10 rounded-full border border-medical-border flex items-center justify-center text-medical-navy font-medium text-base">
+              <div key={s.n} className="flex-1 flex flex-col items-center text-center gap-4">
+                <div className="w-14 h-14 rounded-full border-2 border-medical-border flex items-center justify-center text-medical-navy font-medium text-xl">
                   {s.n}
                 </div>
-                <p className="text-dark-text font-medium text-base">{s.label}</p>
-                <p className="text-medical-slate text-sm leading-relaxed">{s.desc}</p>
+                <p className="text-dark-text font-medium text-lg">{s.label}</p>
+                <p className="text-medical-slate text-base leading-relaxed">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -127,7 +127,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
           <div className="mt-14 text-center">
             <Link
               href="/bg/sign-in"
-              className="bg-medical-navy text-white px-10 py-3 rounded text-sm font-medium hover:bg-medical-teal transition-colors inline-block"
+              className="bg-medical-navy text-white px-10 py-4 rounded text-base font-medium hover:bg-medical-teal transition-colors inline-block"
             >
               {t('hero.cta')}
             </Link>
