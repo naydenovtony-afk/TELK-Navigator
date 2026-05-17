@@ -10,7 +10,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
     {
       key: 'ai',
       Icon: FileSearch,
-      bandBg: 'bg-medical-teal/10',
+      bandBg: 'bg-medical-teal/25',
       iconColor: 'text-medical-teal',
       title: t('features.ai.title'),
       desc: t('features.ai.desc'),
@@ -18,7 +18,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
     {
       key: 'rights',
       Icon: Scale,
-      bandBg: 'bg-medical-navy/10',
+      bandBg: 'bg-medical-navy/20',
       iconColor: 'text-medical-navy',
       title: t('features.rights.title'),
       desc: t('features.rights.desc'),
@@ -26,7 +26,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
     {
       key: 'deadlines',
       Icon: CalendarClock,
-      bandBg: 'bg-amber/10',
+      bandBg: 'bg-amber/25',
       iconColor: 'text-amber',
       title: t('features.deadlines.title'),
       desc: t('features.deadlines.desc'),
@@ -34,7 +34,7 @@ export default async function LandingPage(): Promise<React.JSX.Element> {
     {
       key: 'cases',
       Icon: FolderOpen,
-      bandBg: 'bg-vital-green/10',
+      bandBg: 'bg-vital-green/25',
       iconColor: 'text-vital-green',
       title: t('features.cases.title'),
       desc: t('features.cases.desc'),
