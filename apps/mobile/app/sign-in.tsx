@@ -12,11 +12,16 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import * as Google from 'expo-auth-session/providers/google'
+import * as AuthSession from 'expo-auth-session'
 import { useAuth } from '../lib/auth'
 import { login, register, googleAuth, type AuthResponse } from '../lib/api'
 
 WebBrowser.maybeCompleteAuthSession()
+
+const GOOGLE_DISCOVERY = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+}
 
 type Mode = 'login' | 'register'
 
@@ -31,9 +36,16 @@ export default function SignIn(): React.JSX.Element {
   const { setToken } = useAuth()
   const router = useRouter()
 
-  const [, googleResponse, googlePrompt] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  })
+  const redirectUri = 'https://auth.expo.io/@tonynaydenov/telk-navigator'
+  const [, googleResponse, googlePrompt] = AuthSession.useAuthRequest(
+    {
+      clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+      redirectUri,
+      scopes: ['openid', 'email', 'profile'],
+      responseType: AuthSession.ResponseType.Token,
+    },
+    GOOGLE_DISCOVERY,
+  )
 
   useEffect(() => {
     if (googleResponse?.type === 'success') {
