@@ -104,6 +104,7 @@ export default function RightsScreen(): React.JSX.Element {
 
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
+      {/* Header — matches lifelong */}
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Text style={s.back}>‹ Табло</Text>
@@ -111,34 +112,36 @@ export default function RightsScreen(): React.JSX.Element {
         <Text style={s.headerTitle}>Моите права</Text>
       </View>
 
-      {/* Percent input card */}
-      <View style={s.inputCard}>
+      {/* Input card — matches lifelong style */}
+      <View style={s.card}>
         {percent !== null && !editing ? (
-          /* Personalised — show current value with edit option */
-          <View style={s.savedRow}>
-            <View style={[s.savedBadge, { backgroundColor: getTierColor(percent) }]}>
-              <Text style={s.savedValue}>{percent}%</Text>
-            </View>
-            <View style={s.savedInfo}>
-              <Text style={s.savedTier}>{getTierLabel(percent)}</Text>
-              {allowance !== null && (
-                <Text style={s.savedAllowance}>Месечна добавка: ~{allowance} лв.</Text>
-              )}
-            </View>
-            <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)} hitSlop={10}>
-              <Text style={s.editBtnText}>✏️</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          /* Input mode */
+          /* Saved state */
           <>
-            <Text style={s.inputLabel}>Процент от ТЕЛК решение</Text>
+            <View style={s.savedRow}>
+              <View style={[s.tierBadge, { backgroundColor: getTierColor(percent) }]}>
+                <Text style={s.tierPercent}>{percent}%</Text>
+              </View>
+              <View style={s.savedInfo}>
+                <Text style={s.tierLabel}>{getTierLabel(percent)}</Text>
+                {allowance !== null && (
+                  <Text style={s.allowanceText}>Месечна добавка: ~{allowance} лв.</Text>
+                )}
+              </View>
+              <TouchableOpacity style={s.editCircle} onPress={() => setEditing(true)} hitSlop={10}>
+                <Text style={s.editCircleText}>✏️</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : (
+          /* Input mode — matches lifelong layout */
+          <>
+            <Text style={s.question}>Какъв е процентът от вашето ТЕЛК решение?</Text>
             <View style={s.inputRow}>
               <TextInput
                 style={s.input}
                 keyboardType="number-pad"
-                placeholder="напр. 75"
-                placeholderTextColor="#9AB0BF"
+                placeholder="0 – 100"
+                placeholderTextColor="#7A95A8"
                 value={input}
                 onChangeText={setInput}
                 maxLength={3}
@@ -146,17 +149,20 @@ export default function RightsScreen(): React.JSX.Element {
                 returnKeyType="done"
                 onSubmitEditing={handleApply}
               />
-              <Text style={s.pct}>%</Text>
-              <TouchableOpacity
-                style={[s.applyBtn, !input.trim() && s.applyBtnDisabled]}
-                onPress={handleApply}
-                disabled={!input.trim()}
-              >
-                <Text style={s.applyBtnText}>Покажи правата</Text>
-              </TouchableOpacity>
+              <Text style={s.percent}>%</Text>
             </View>
+            <TouchableOpacity
+              style={[s.button, !input.trim() && s.buttonDisabled]}
+              onPress={handleApply}
+              disabled={!input.trim()}
+            >
+              <Text style={s.buttonText}>Покажи правата ми</Text>
+            </TouchableOpacity>
             {editing && (
-              <TouchableOpacity style={s.cancelRow} onPress={() => { setEditing(false); setInput(String(percent ?? '')) }}>
+              <TouchableOpacity
+                style={s.cancelRow}
+                onPress={() => { setEditing(false); setInput(String(percent ?? '')) }}
+              >
                 <Text style={s.cancelText}>Отказ</Text>
               </TouchableOpacity>
             )}
@@ -170,7 +176,7 @@ export default function RightsScreen(): React.JSX.Element {
           {benefits.length === 0 ? (
             <View style={s.noBenefitsCard}>
               <Text style={s.noBenefitsText}>
-                При под 50% увреждане няма право на социални добавки по ЗИХУ.
+                При под 50% увреждане няма право на социални добавки по ЗХУ.
               </Text>
             </View>
           ) : (
@@ -202,54 +208,58 @@ const s = StyleSheet.create({
   content: { paddingBottom: 40 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
 
-  header: { backgroundColor: '#6B3D1A', padding: 16, gap: 4 },
-  back: { color: '#E8C8A8', fontSize: 14 },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  /* Header — same as lifelong.tsx */
+  header: {
+    backgroundColor: '#1A4A6B', padding: 16,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+  },
+  back: { color: '#B8D8E8', fontSize: 14 },
+  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
 
-  inputCard: {
-    margin: 16, backgroundColor: '#fff', borderRadius: 16, padding: 18,
-    borderWidth: 0.5, borderColor: '#B8CDD8', gap: 12,
+  /* Input card — same structure as lifelong.tsx */
+  card: {
+    backgroundColor: '#fff', borderRadius: 12, padding: 20,
+    margin: 16,
+    borderWidth: 0.5, borderColor: '#B8CDD8', gap: 14,
     elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5, shadowOffset: { width: 0, height: 2 },
   },
-
-  savedRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  savedBadge: { borderRadius: 12, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center' },
-  savedValue: { color: '#fff', fontSize: 26, fontWeight: '800' },
-  savedInfo: { flex: 1, gap: 3 },
-  savedTier: { fontSize: 15, fontWeight: '700', color: '#1C2B3A' },
-  savedAllowance: { fontSize: 13, color: '#1A6B3C', fontWeight: '600' },
-  editBtn: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#EDF3F7', justifyContent: 'center', alignItems: 'center',
-  },
-  editBtnText: { fontSize: 16 },
-
-  inputLabel: { fontSize: 14, color: '#3D5A73' },
+  question: { fontSize: 16, fontWeight: '600', color: '#1C2B3A' },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   input: {
-    width: 72, borderWidth: 1.5, borderColor: '#B8CDD8', borderRadius: 10,
-    paddingVertical: 10, paddingHorizontal: 12,
-    fontSize: 20, fontWeight: '700', color: '#1C2B3A', textAlign: 'center',
+    flex: 1, backgroundColor: '#E8F4F8', borderRadius: 8, padding: 14,
+    fontSize: 24, fontWeight: '700', color: '#1A4A6B', textAlign: 'center',
+    borderWidth: 0.5, borderColor: '#B8CDD8',
   },
-  pct: { fontSize: 20, color: '#1C2B3A', fontWeight: '600' },
-  applyBtn: {
-    flex: 1, backgroundColor: '#6B3D1A', borderRadius: 10,
-    paddingVertical: 13, alignItems: 'center',
+  percent: { fontSize: 24, fontWeight: '700', color: '#1A4A6B' },
+  button: {
+    backgroundColor: '#1A4A6B', borderRadius: 8, padding: 14, alignItems: 'center',
   },
-  applyBtnDisabled: { opacity: 0.45 },
-  applyBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  buttonDisabled: { opacity: 0.45 },
+  buttonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
   cancelRow: { alignItems: 'center' },
   cancelText: { fontSize: 14, color: '#3D5A73' },
 
+  /* Saved state */
+  savedRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  tierBadge: { borderRadius: 12, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center' },
+  tierPercent: { color: '#fff', fontSize: 26, fontWeight: '800' },
+  savedInfo: { flex: 1, gap: 3 },
+  tierLabel: { fontSize: 15, fontWeight: '700', color: '#1C2B3A' },
+  allowanceText: { fontSize: 13, color: '#1A6B3C', fontWeight: '600' },
+  editCircle: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: '#EDF3F7', justifyContent: 'center', alignItems: 'center',
+  },
+  editCircleText: { fontSize: 16 },
+
+  /* Benefits sections */
   noBenefitsCard: {
     marginHorizontal: 16, backgroundColor: '#fff', borderRadius: 12, padding: 16,
     borderWidth: 0.5, borderColor: '#B8CDD8',
   },
   noBenefitsText: { fontSize: 14, color: '#8B1A1A', lineHeight: 20 },
-
   section: { marginHorizontal: 16, marginTop: 6, gap: 8 },
   sectionTitle: { fontSize: 14, fontWeight: '700', color: '#1C2B3A', marginBottom: 2 },
-
   footer: {
     marginHorizontal: 16, marginTop: 20,
     fontSize: 12, color: '#7A95A8', textAlign: 'center', lineHeight: 17,
