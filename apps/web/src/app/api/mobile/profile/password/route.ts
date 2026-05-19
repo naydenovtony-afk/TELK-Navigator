@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    const msg = parsed.error.errors[0]?.message ?? 'Невалидни данни'
+    const msg = parsed.error.issues[0]?.message ?? 'Невалидни данни'
     return NextResponse.json({ error: msg }, { status: 400 })
   }
 
