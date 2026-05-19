@@ -50,7 +50,8 @@ telk-navigator/
 - Auth.js v5 manages web sessions ONLY → `import { auth } from "@/auth"`
 - Raw JWT for Expo mobile ONLY → `/api/mobile/auth/*`
 - Middleware chains auth() wrapping intlMiddleware — single export
-- Mobile routes excluded from matcher: `/((?!api/mobile|_next/static|_next/image|favicon).*)`
+- ALL `/api/` routes excluded from middleware matcher — never add api paths to the matcher
+- Actual matcher: `/((?!api/|_next/static|_next/image|favicon.ico|.*\\..*).*)`
 
 ### TypeScript
 - Never `any` type — use types from packages/shared/src/types/
@@ -63,6 +64,10 @@ telk-navigator/
 - Never hardcode UI strings — always `t('key')` from next-intl
 - Never hardcode hex colors — use Tailwind tokens
 - Never commit TODO comments
+
+### Zod v4
+- Use `parsed.error.issues[0]?.message` — NOT `.errors[0]` (removed in v4)
+- `.flatten()` is deprecated — read `.issues` directly
 
 ### pdf-parse
 - Incompatible with Edge Runtime — uses `fs`
@@ -143,6 +148,9 @@ Example:
 **13 tables:**
 users · userPreferences · accounts · userPasswords · cases · documents · analysisReports · reviewTokens · documentHistory · deadlines · promptModules · nmeModules · referrals
 
+**Cases table extended fields** (migration 0003):
+`caseType` (initial | reexamination | appeal) · `diagnoses` · `previousPercent` · `appealReason` · `commissionDecision`
+
 ---
 
 ## API Rules
@@ -151,6 +159,12 @@ users · userPreferences · accounts · userPasswords · cases · documents · a
 - Ownership check on every resource access
 - Error messages in Bulgarian: `Нямате достъп до този документ.`
 - HTTP: 200/201 success, 400 validation, 401 auth, 403 forbidden, 404 not found
+
+### Mobile 401 Handling
+The `request()` function in `apps/mobile/lib/api.ts` reads the JSON body before deciding how to handle a 401:
+- Body `{ error: 'Unauthorized' }` or no body → calls `_onUnauthorized()` (logs user out) + throws "Сесията е изтекла"
+- Any other error message → throws that message directly, does NOT log the user out
+- Login/register endpoints return 401 for wrong credentials — this must NOT trigger logout
 
 ---
 
@@ -196,6 +210,15 @@ Every commit is atomic — one thing, done well.
 - NEVER: More than 1 Primary button per screen
 - NEVER: font-size below 16px on inputs
 - NEVER: "score", "chance", "probability" in analysis UI copy
+
+---
+
+## Testing
+
+- Web API tests: `cd apps/web && npm test`
+- Test files in `apps/web/src/__tests__/` — follow existing mock patterns
+- Mock `@/db`, `@/auth`, `bcryptjs`, and `jose` at the top of each test file
+- 103 tests across 10 suites — keep all green before every commit
 
 ---
 
