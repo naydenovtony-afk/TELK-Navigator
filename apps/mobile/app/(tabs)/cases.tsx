@@ -123,7 +123,7 @@ export default function CasesScreen(): React.JSX.Element {
         const updated = await updateCase(token, editingCase.id, patch)
         setCases((prev) => prev.map((x) => x.id === editingCase.id ? updated : x))
       } else {
-        const created = await createCase(token, patch as Required<Pick<CasePatch, 'title'>> & CasePatch)
+        const created = await createCase(token, { ...patch, title: patch.title! })
         setCases((prev) => [created, ...prev])
       }
       setShowModal(false)

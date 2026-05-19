@@ -81,7 +81,7 @@ export default function DocumentsScreen(): React.JSX.Element {
     if (!token || !newCaseTitle.trim()) return
     setCreatingCase(true)
     try {
-      const newCase = await createCase(token, newCaseTitle.trim())
+      const newCase = await createCase(token, { title: newCaseTitle.trim() })
       setCases((prev) => [newCase, ...prev])
       setSelectedCaseId(newCase.id)
       setShowNewCase(false)
@@ -212,7 +212,9 @@ export default function DocumentsScreen(): React.JSX.Element {
           renderItem={({ item }) => (
             <DocumentRow
               item={item}
-              onPress={() => router.push(`/document-detail?id=${item.id}&name=${encodeURIComponent(item.fileName)}` as never)}
+              onPress={() => router.push(
+                `/document-detail?id=${item.id}&name=${encodeURIComponent(item.fileName)}&fileUrl=${encodeURIComponent(item.fileUrl ?? '')}&mimeType=${encodeURIComponent(item.mimeType)}` as never
+              )}
             />
           )}
         />

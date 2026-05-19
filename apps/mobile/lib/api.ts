@@ -24,13 +24,24 @@ export type Deadline = {
   isCompleted: boolean
 }
 
+export type DocumentType =
+  | 'telk_decision'
+  | 'epicrisis'
+  | 'outpatient_sheet'
+  | 'lab_results'
+  | 'imaging'
+  | 'specialist_opinion'
+  | 'other'
+
 export type Document = {
   id: string
   caseId: string
   caseTitle: string
   fileName: string
   mimeType: string
+  documentType: DocumentType | null
   status: 'uploading' | 'processing' | 'ready' | 'error'
+  fileUrl: string
   uploadedAt: string
 }
 
@@ -90,7 +101,10 @@ export type CasePatch = {
   commissionDecision?: string | null
 }
 
-export function createCase(token: string, fields: Pick<CasePatch, 'title'> & Omit<CasePatch, 'title' | 'status'>): Promise<Case> {
+export function createCase(
+  token: string,
+  fields: { title: string } & Partial<Omit<CasePatch, 'title' | 'status'>>,
+): Promise<Case> {
   return request<Case>('/api/mobile/cases', {
     method: 'POST',
     body: JSON.stringify(fields),

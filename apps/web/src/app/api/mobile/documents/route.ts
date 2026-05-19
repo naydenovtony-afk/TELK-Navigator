@@ -4,6 +4,7 @@ import { db } from '@/db'
 import { documents, cases } from '@/db/schema'
 import { eq, desc, inArray, and } from 'drizzle-orm'
 import { z } from 'zod'
+import { getPublicUrl } from '@/lib/r2'
 
 export const runtime = 'nodejs'
 
@@ -29,7 +30,9 @@ export async function GET(req: NextRequest) {
       caseTitle: caseMap.get(d.caseId) ?? '',
       fileName: d.fileName,
       mimeType: d.mimeType,
+      documentType: d.documentType ?? null,
       status: d.status,
+      fileUrl: getPublicUrl(d.fileKey),
       uploadedAt: d.uploadedAt,
     }))
   )
