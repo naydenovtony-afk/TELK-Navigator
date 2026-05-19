@@ -4,6 +4,7 @@ import {
   TouchableOpacity, LayoutAnimation, Platform, UIManager, Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import { useAuth } from '../../lib/auth'
 import { getAdminUsers, deleteAdminUser, type AdminUser } from '../../lib/api'
 
@@ -12,7 +13,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export default function AdminUsersScreen(): React.JSX.Element {
-  const { token } = useAuth()
+  const { token, setToken } = useAuth()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -21,6 +23,11 @@ export default function AdminUsersScreen(): React.JSX.Element {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'patient' | 'admin'>('all')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  async function handleSignOut(): Promise<void> {
+    await setToken(null)
+    router.replace('/sign-in')
+  }
 
   async function load(silent = false): Promise<void> {
     if (!token) return
@@ -84,7 +91,12 @@ export default function AdminUsersScreen(): React.JSX.Element {
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
-        <Text style={styles.headerTitle}>Администрация</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>Администрация</Text>
+          <TouchableOpacity onPress={handleSignOut} hitSlop={12}>
+            <Text style={styles.signOutBtn}>Изход</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.stats}>
           <View style={styles.stat}>
             <Text style={styles.statNum}>{patients.length}</Text>
@@ -220,7 +232,9 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
 
   header: { backgroundColor: '#1A4A6B', padding: 16, gap: 16 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  signOutBtn: { color: '#B8D8E8', fontSize: 14, fontWeight: '500' },
   stats: { flexDirection: 'row', backgroundColor: '#ffffff15', borderRadius: 10, padding: 12 },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
   statNum: { color: '#fff', fontSize: 22, fontWeight: '700' },
