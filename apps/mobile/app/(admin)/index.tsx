@@ -4,7 +4,6 @@ import {
   TouchableOpacity, LayoutAnimation, Platform, UIManager, Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
 import { useAuth } from '../../lib/auth'
 import { getAdminUsers, deleteAdminUser, type AdminUser } from '../../lib/api'
 
@@ -14,7 +13,6 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 export default function AdminUsersScreen(): React.JSX.Element {
   const { token, setToken } = useAuth()
-  const router = useRouter()
   const insets = useSafeAreaInsets()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,9 +22,21 @@ export default function AdminUsersScreen(): React.JSX.Element {
   const [filter, setFilter] = useState<'all' | 'patient' | 'admin'>('all')
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  async function handleSignOut(): Promise<void> {
-    await setToken(null)
-    router.replace('/sign-in')
+  function handleSignOut(): void {
+    Alert.alert(
+      'Изход',
+      'Сигурни ли сте, че искате да излезете от профила?',
+      [
+        { text: 'Отказ', style: 'cancel' },
+        {
+          text: 'Изход',
+          style: 'destructive',
+          onPress: async () => {
+            await setToken(null)
+          },
+        },
+      ],
+    )
   }
 
   async function load(silent = false): Promise<void> {
