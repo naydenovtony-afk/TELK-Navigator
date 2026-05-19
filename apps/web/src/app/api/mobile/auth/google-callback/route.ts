@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${EXPO_REDIRECT}&error=no_code`)
   }
 
-  const redirectUri = `${process.env.NEXTAUTH_URL_PRODUCTION ?? 'https://telk-navigator-web.vercel.app'}/api/mobile/auth/google-callback`
+  const redirectUri = 'https://telk-navigator-web.vercel.app/api/mobile/auth/google-callback'
 
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',

@@ -5,7 +5,7 @@ export const runtime = 'nodejs'
 export async function GET() {
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri: `${process.env.NEXTAUTH_URL_PRODUCTION ?? 'https://telk-navigator-web.vercel.app'}/api/mobile/auth/google-callback`,
+    redirect_uri: 'https://telk-navigator-web.vercel.app/api/mobile/auth/google-callback',
     response_type: 'code',
     scope: 'openid email profile',
     access_type: 'offline',
