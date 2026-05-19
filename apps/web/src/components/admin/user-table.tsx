@@ -17,6 +17,7 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState(initialUsers)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
 
   async function toggleRole(id: string, current: 'patient' | 'admin') {
@@ -31,6 +32,19 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
       })
       if (res.ok) {
         setUsers((prev) => prev.map((u) => u.id === id ? { ...u, role: next } : u))
+      }
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  async function deleteUser(id: string) {
+    setLoadingId(id)
+    setDeleteConfirmId(null)
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setUsers((prev) => prev.filter((u) => u.id !== id))
       }
     } finally {
       setLoadingId(null)
@@ -98,7 +112,24 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
                   {new Date(u.createdAt).toLocaleDateString('bg-BG', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </td>
                 <td className="px-5 py-4 text-right">
-                  {confirmId === u.id ? (
+                  {deleteConfirmId === u.id ? (
+                    <div className="flex items-center justify-end gap-1">
+                      <span className="text-xs text-critical-red mr-1">Сигурни ли сте?</span>
+                      <button
+                        onClick={() => deleteUser(u.id)}
+                        disabled={loadingId === u.id}
+                        className="text-xs font-semibold text-white bg-critical-red px-2 py-1 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-50"
+                      >
+                        Изтрий
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirmId(null)}
+                        className="text-xs font-semibold text-medical-slate bg-medical-surface px-2 py-1 rounded-lg hover:opacity-80 transition-opacity"
+                      >
+                        Отказ
+                      </button>
+                    </div>
+                  ) : confirmId === u.id ? (
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => toggleRole(u.id, u.role)}
@@ -115,13 +146,22 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setConfirmId(u.id)}
-                      disabled={loadingId === u.id}
-                      className="text-xs text-medical-teal hover:underline disabled:opacity-50"
-                    >
-                      {u.role === 'admin' ? 'Премахни админ' : 'Направи админ'}
-                    </button>
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => setConfirmId(u.id)}
+                        disabled={loadingId === u.id}
+                        className="text-xs text-medical-teal hover:underline disabled:opacity-50"
+                      >
+                        {u.role === 'admin' ? 'Премахни админ' : 'Направи админ'}
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirmId(u.id)}
+                        disabled={loadingId === u.id}
+                        className="text-xs text-critical-red hover:underline disabled:opacity-50"
+                      >
+                        Изтрий
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>

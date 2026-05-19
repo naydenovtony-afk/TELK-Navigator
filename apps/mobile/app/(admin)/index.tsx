@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl,
-  TouchableOpacity, LayoutAnimation, Platform, UIManager,
+  TouchableOpacity, LayoutAnimation, Platform, UIManager, Alert,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
-import { getAdminUsers, type AdminUser } from '../../lib/api'
+import { getAdminUsers, deleteAdminUser, type AdminUser } from '../../lib/api'
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -20,6 +20,7 @@ export default function AdminUsersScreen(): React.JSX.Element {
   const [error, setError] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'patient' | 'admin'>('all')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function load(silent = false): Promise<void> {
     if (!token) return
@@ -41,6 +42,34 @@ export default function AdminUsersScreen(): React.JSX.Element {
   function toggleExpand(id: string): void {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setExpandedId((prev) => (prev === id ? null : id))
+  }
+
+  function confirmDelete(user: AdminUser): void {
+    Alert.alert(
+      'Изтриване на акаунт',
+      `Сигурни ли сте, че искате да изтриете акаунта на ${user.name ?? user.email}? Всички данни ще бъдат изтрити безвъзвратно.`,
+      [
+        { text: 'Отказ', style: 'cancel' },
+        {
+          text: 'Изтрий',
+          style: 'destructive',
+          onPress: async () => {
+            if (!token) return
+            setDeletingId(user.id)
+            try {
+              await deleteAdminUser(token, user.id)
+              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+              setUsers((prev) => prev.filter((u) => u.id !== user.id))
+              setExpandedId(null)
+            } catch (e) {
+              Alert.alert('Грешка', e instanceof Error ? e.message : 'Неуспешно изтриване.')
+            } finally {
+              setDeletingId(null)
+            }
+          },
+        },
+      ],
+    )
   }
 
   if (loading) {
@@ -165,6 +194,16 @@ export default function AdminUsersScreen(): React.JSX.Element {
                       <Text style={styles.detailLabel}>ID</Text>
                       <Text style={[styles.detailValue, styles.detailMono]} numberOfLines={1}>{item.id}</Text>
                     </View>
+                    <TouchableOpacity
+                      style={styles.deleteBtn}
+                      onPress={() => confirmDelete(item)}
+                      disabled={deletingId === item.id}
+                      activeOpacity={0.7}
+                    >
+                      {deletingId === item.id
+                        ? <ActivityIndicator color="#8B1A1A" size="small" />
+                        : <Text style={styles.deleteBtnText}>Изтрий акаунт</Text>}
+                    </TouchableOpacity>
                   </View>
                 )}
               </View>
@@ -252,4 +291,10 @@ const styles = StyleSheet.create({
   detailMono: { fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', fontSize: 11 },
 
   error: { color: '#8B1A1A', padding: 16, textAlign: 'center' },
+
+  deleteBtn: {
+    marginTop: 4, borderWidth: 1, borderColor: '#8B1A1A', borderRadius: 8,
+    paddingVertical: 9, alignItems: 'center',
+  },
+  deleteBtnText: { color: '#8B1A1A', fontSize: 13, fontWeight: '600' },
 })

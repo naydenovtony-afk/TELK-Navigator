@@ -31,3 +31,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   return NextResponse.json(updated)
 }
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  if (!isAdmin(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const { id } = await params
+
+  if (id === session.user?.id) {
+    return NextResponse.json({ error: 'Не можете да изтриете собствения си акаунт.' }, { status: 400 })
+  }
+
+  await db.delete(users).where(eq(users.id, id))
+
+  return NextResponse.json({ ok: true })
+}

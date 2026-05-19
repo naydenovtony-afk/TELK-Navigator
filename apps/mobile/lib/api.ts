@@ -229,6 +229,10 @@ export function getAdminUsers(token: string): Promise<AdminUser[]> {
   return request<AdminUser[]>('/api/mobile/admin/users', { method: 'GET' }, token)
 }
 
+export function deleteAdminUser(token: string, id: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/mobile/admin/users/${id}`, { method: 'DELETE' }, token)
+}
+
 export function getProfile(token: string): Promise<UserProfile> {
   return request<UserProfile>('/api/mobile/profile', { method: 'GET' }, token)
 }
