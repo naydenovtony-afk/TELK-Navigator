@@ -18,6 +18,8 @@ build/
 # Expo / React Native
 dist/
 .expo/
+/app.json
+/telk-navigator-expo-qr.png
 apps/mobile/.expo/
 apps/mobile/dist/
 
