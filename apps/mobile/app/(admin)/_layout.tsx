@@ -1,6 +1,7 @@
-import React from 'react'
-import { Tabs } from 'expo-router'
+import React, { useEffect } from 'react'
+import { Tabs, useRouter } from 'expo-router'
 import { Text, View, StyleSheet } from 'react-native'
+import { useAuth } from '../../lib/auth'
 
 function TabIcon({ emoji, label, focused }: { emoji: string; label: string; focused: boolean }): React.JSX.Element {
   return (
@@ -12,6 +13,15 @@ function TabIcon({ emoji, label, focused }: { emoji: string; label: string; focu
 }
 
 export default function AdminLayout(): React.JSX.Element {
+  const { token } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!token) {
+      router.replace('/sign-in')
+    }
+  }, [token])
+
   return (
     <Tabs
       screenOptions={{
