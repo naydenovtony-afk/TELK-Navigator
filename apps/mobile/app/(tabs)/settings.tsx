@@ -4,7 +4,7 @@ import {
   TextInput, TouchableOpacity, Alert,
 } from 'react-native'
 import { useAuth } from '../../lib/auth'
-import { getProfile, updateProfile, type UserProfile } from '../../lib/api'
+import { getProfile, updateProfile, changePassword, type UserProfile } from '../../lib/api'
 import { getTelkPercent, saveTelkPercent, clearTelkPercent } from '../../lib/prefs'
 import AppHeader from '../../components/AppHeader'
 
@@ -29,6 +29,14 @@ export default function SettingsScreen(): React.JSX.Element {
   const [percentInput, setPercentInput] = useState('')
   const [editingPercent, setEditingPercent] = useState(false)
   const [savingPercent, setSavingPercent] = useState(false)
+
+  const [pwOpen, setPwOpen] = useState(false)
+  const [currentPw, setCurrentPw] = useState('')
+  const [newPw, setNewPw] = useState('')
+  const [confirmPw, setConfirmPw] = useState('')
+  const [savingPw, setSavingPw] = useState(false)
+  const [pwError, setPwError] = useState('')
+  const [pwSuccess, setPwSuccess] = useState(false)
 
   useEffect(() => {
     if (!token) return
@@ -78,6 +86,26 @@ export default function SettingsScreen(): React.JSX.Element {
   function handleCancelEdit(): void {
     setNameInput(profile?.name ?? '')
     setEditing(false)
+  }
+
+  async function handleChangePassword(): Promise<void> {
+    setPwError('')
+    setPwSuccess(false)
+    if (!token) return
+    if (!currentPw) { setPwError('Въведете текущата парола.'); return }
+    if (newPw.length < 8) { setPwError('Новата парола трябва да е поне 8 символа.'); return }
+    if (newPw !== confirmPw) { setPwError('Паролите не съвпадат.'); return }
+    setSavingPw(true)
+    try {
+      await changePassword(token, currentPw, newPw, confirmPw)
+      setPwSuccess(true)
+      setCurrentPw(''); setNewPw(''); setConfirmPw('')
+      setTimeout(() => { setPwSuccess(false); setPwOpen(false) }, 2000)
+    } catch (e) {
+      setPwError(e instanceof Error ? e.message : 'Грешка')
+    } finally {
+      setSavingPw(false)
+    }
   }
 
   if (loading) return <View style={s.center}><ActivityIndicator color="#1A4A6B" /></View>
@@ -140,6 +168,76 @@ export default function SettingsScreen(): React.JSX.Element {
           <Row label="Имейл" value={profile?.email ?? '—'} />
           <Row label="Роля" value={roleLabel} />
           <Row label="Регистриран на" value={registeredOn} />
+        </View>
+
+        {/* Password card */}
+        <View style={s.card}>
+          <Text style={s.cardLabel}>СИГУРНОСТ</Text>
+
+          <TouchableOpacity
+            style={s.pwToggleRow}
+            onPress={() => { setPwOpen((v) => !v); setPwError(''); setPwSuccess(false) }}
+            activeOpacity={0.8}
+          >
+            <Text style={s.pwToggleText}>🔒  Промяна на парола</Text>
+            <Text style={s.pwChevron}>{pwOpen ? '▲' : '▼'}</Text>
+          </TouchableOpacity>
+
+          {pwOpen && (
+            <View style={s.pwForm}>
+              <TextInput
+                style={s.pwInput}
+                placeholder="Текуща парола"
+                placeholderTextColor="#9AB0BF"
+                value={currentPw}
+                onChangeText={setCurrentPw}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={s.pwInput}
+                placeholder="Нова парола (мин. 8 символа)"
+                placeholderTextColor="#9AB0BF"
+                value={newPw}
+                onChangeText={setNewPw}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={s.pwInput}
+                placeholder="Потвърди новата парола"
+                placeholderTextColor="#9AB0BF"
+                value={confirmPw}
+                onChangeText={setConfirmPw}
+                secureTextEntry
+                autoCapitalize="none"
+                returnKeyType="done"
+                onSubmitEditing={handleChangePassword}
+              />
+
+              {pwError ? <Text style={s.pwError}>{pwError}</Text> : null}
+              {pwSuccess ? <Text style={s.pwSuccess}>✓  Паролата е сменена успешно</Text> : null}
+
+              <View style={s.pwActions}>
+                <TouchableOpacity
+                  style={[s.saveBtn, savingPw && { opacity: 0.55 }]}
+                  onPress={handleChangePassword}
+                  disabled={savingPw}
+                >
+                  {savingPw
+                    ? <ActivityIndicator color="#fff" size="small" />
+                    : <Text style={s.saveBtnText}>Смени паролата</Text>}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={s.cancelBtn}
+                  onPress={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setConfirmPw(''); setPwError('') }}
+                  disabled={savingPw}
+                >
+                  <Text style={s.cancelBtnText}>Отказ</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* TELK percent card */}
@@ -282,4 +380,19 @@ const s = StyleSheet.create({
   },
   rowLabel: { fontSize: 15, color: '#3D5A73' },
   rowValue: { fontSize: 15, fontWeight: '600', color: '#1C2B3A' },
+
+  pwToggleRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  pwToggleText: { fontSize: 15, fontWeight: '600', color: '#1C2B3A' },
+  pwChevron: { fontSize: 12, color: '#7A95A8' },
+  pwForm: { gap: 10, paddingTop: 4 },
+  pwInput: {
+    borderWidth: 1.5, borderColor: '#B8CDD8', borderRadius: 10,
+    padding: 12, fontSize: 15, color: '#1C2B3A', backgroundColor: '#FAFCFD',
+  },
+  pwError:   { fontSize: 13, color: '#8B1A1A', lineHeight: 18 },
+  pwSuccess: { fontSize: 13, color: '#1A6B3C', fontWeight: '600' },
+  pwActions: { flexDirection: 'row', gap: 8, paddingTop: 2 },
 })

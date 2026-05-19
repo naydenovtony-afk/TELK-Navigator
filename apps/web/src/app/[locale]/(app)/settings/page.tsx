@@ -5,6 +5,7 @@ import { db } from '@/db'
 import { users, userPreferences } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { PreferencesForm } from '@/components/settings/preferences-form'
+import { ChangePasswordForm } from '@/components/settings/change-password-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,6 +69,14 @@ export default async function SettingsPage() {
             })}
           />
         </div>
+      </div>
+
+      {/* Security */}
+      <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 className="text-sm font-medium text-medical-slate uppercase tracking-wide mb-4">
+          Сигурност
+        </h2>
+        <ChangePasswordForm />
       </div>
 
       {/* Preferences */}

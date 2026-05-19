@@ -235,3 +235,15 @@ export function updateProfile(token: string, name: string): Promise<{ ok: boolea
     body: JSON.stringify({ name }),
   }, token)
 }
+
+export function changePassword(
+  token: string,
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>('/api/mobile/profile/password', {
+    method: 'PATCH',
+    body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+  }, token)
+}
