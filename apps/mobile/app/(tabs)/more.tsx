@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../../lib/auth'
 
@@ -15,8 +15,14 @@ export default function MoreScreen(): React.JSX.Element {
   const { setToken } = useAuth()
 
   function handleSignOut(): void {
-    setToken(null)
-    router.replace('/sign-in')
+    Alert.alert(
+      'Изход',
+      'Сигурни ли сте, че искате да излезете от профила си?',
+      [
+        { text: 'Отказ', style: 'cancel' },
+        { text: 'Изход', style: 'destructive', onPress: () => { setToken(null); router.replace('/sign-in') } },
+      ],
+    )
   }
 
   return (
