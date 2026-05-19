@@ -40,7 +40,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params
 
-  if (id === session.user?.id) {
+  if (id === session?.user?.id) {
     return NextResponse.json({ error: 'Не можете да изтриете собствения си акаунт.' }, { status: 400 })
   }
 
