@@ -12,16 +12,13 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import * as AuthSession from 'expo-auth-session'
+import * as Linking from 'expo-linking'
 import { useAuth } from '../lib/auth'
-import { login, register, googleAuth, type AuthResponse } from '../lib/api'
+import { login, register } from '../lib/api'
 
 WebBrowser.maybeCompleteAuthSession()
 
-const GOOGLE_DISCOVERY = {
-  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-  tokenEndpoint: 'https://oauth2.googleapis.com/token',
-}
+const GOOGLE_INIT_URL = 'https://telk-navigator-web.vercel.app/api/mobile/auth/google-init'
 
 type Mode = 'login' | 'register'
 
@@ -36,35 +33,36 @@ export default function SignIn(): React.JSX.Element {
   const { setToken } = useAuth()
   const router = useRouter()
 
-  const redirectUri = 'https://auth.expo.io/@tonynaydenov/telk-navigator'
-  const [, googleResponse, googlePrompt] = AuthSession.useAuthRequest(
-    {
-      clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-      redirectUri,
-      scopes: ['openid', 'email', 'profile'],
-      responseType: AuthSession.ResponseType.Token,
-      usePKCE: false,
-    },
-    GOOGLE_DISCOVERY,
-  )
-
   useEffect(() => {
-    if (googleResponse?.type === 'success') {
-      const accessToken = googleResponse.authentication?.accessToken
-      if (accessToken) {
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      const parsed = Linking.parse(url)
+      const token = parsed.queryParams?.token as string | undefined
+      if (token) {
         setGoogleLoading(true)
-        googleAuth(accessToken)
-          .then(async ({ token, role }: AuthResponse) => {
-            await setToken(token)
-            router.replace(role === 'admin' ? '/(admin)' : '/(tabs)')
+        setToken(token)
+          .then(() => {
+            try {
+              const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+              router.replace(payload.role === 'admin' ? '/(admin)' : '/(tabs)')
+            } catch {
+              router.replace('/(tabs)')
+            }
           })
-          .catch((e: Error) => setError(e.message ?? 'Грешка при Google вход.'))
           .finally(() => setGoogleLoading(false))
       }
-    } else if (googleResponse?.type === 'error') {
-      setError('Google входът беше отказан.')
+    })
+    return () => sub.remove()
+  }, [])
+
+  async function handleGoogle(): Promise<void> {
+    setError('')
+    setGoogleLoading(true)
+    try {
+      await WebBrowser.openBrowserAsync(GOOGLE_INIT_URL)
+    } finally {
+      setGoogleLoading(false)
     }
-  }, [googleResponse])
+  }
 
   function switchMode(next: Mode) {
     setMode(next)
@@ -136,7 +134,7 @@ export default function SignIn(): React.JSX.Element {
           {/* Google */}
           <TouchableOpacity
             style={styles.googleBtn}
-            onPress={() => { setError(''); void googlePrompt() }}
+            onPress={() => void handleGoogle()}
             disabled={googleLoading}
             activeOpacity={0.8}
           >
