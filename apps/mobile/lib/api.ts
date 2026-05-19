@@ -204,6 +204,23 @@ export type UserProfile = {
   createdAt: string
 }
 
+export type AppealInput = {
+  receivedPercent: number
+  expectedPercent: number
+  diagnosisDescription: string
+  groundsForAppeal: string
+  missingDocuments?: string
+  applicantName: string
+  telkCity: string
+}
+
+export function generateMobileAppeal(token: string, input: AppealInput): Promise<{ appeal: string }> {
+  return request<{ appeal: string }>('/api/mobile/appeal', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  }, token)
+}
+
 export function getAdminUsers(token: string): Promise<AdminUser[]> {
   return request<AdminUser[]>('/api/mobile/admin/users', { method: 'GET' }, token)
 }
