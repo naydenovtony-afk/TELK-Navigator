@@ -54,7 +54,8 @@
           "photosPermission": "ТЕЛК Navigator чете галерията, за да изберете снимка на медицински документ.",
           "cameraPermission": "ТЕЛК Navigator използва камерата за снимане на медицински документи."
         }
-      ]
+      ],
+      "expo-web-browser"
     ]
   }
 }

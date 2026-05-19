@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,8 +11,12 @@ import {
   ScrollView,
 } from 'react-native'
 import { useRouter } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import * as Google from 'expo-auth-session/providers/google'
 import { useAuth } from '../lib/auth'
-import { login, register } from '../lib/api'
+import { login, register, googleAuth, type AuthResponse } from '../lib/api'
+
+WebBrowser.maybeCompleteAuthSession()
 
 type Mode = 'login' | 'register'
 
@@ -23,8 +27,31 @@ export default function SignIn(): React.JSX.Element {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const { setToken } = useAuth()
   const router = useRouter()
+
+  const [, googleResponse, googlePrompt] = Google.useAuthRequest({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+  })
+
+  useEffect(() => {
+    if (googleResponse?.type === 'success') {
+      const accessToken = googleResponse.authentication?.accessToken
+      if (accessToken) {
+        setGoogleLoading(true)
+        googleAuth(accessToken)
+          .then(async ({ token, role }: AuthResponse) => {
+            await setToken(token)
+            router.replace(role === 'admin' ? '/(admin)' : '/(tabs)')
+          })
+          .catch((e: Error) => setError(e.message ?? 'Грешка при Google вход.'))
+          .finally(() => setGoogleLoading(false))
+      }
+    } else if (googleResponse?.type === 'error') {
+      setError('Google входът беше отказан.')
+    }
+  }, [googleResponse])
 
   function switchMode(next: Mode) {
     setMode(next)
@@ -92,6 +119,25 @@ export default function SignIn(): React.JSX.Element {
               ? 'Влезте с вашия имейл и парола'
               : 'Създайте акаунт с имейл и парола'}
           </Text>
+
+          {/* Google */}
+          <TouchableOpacity
+            style={styles.googleBtn}
+            onPress={() => { setError(''); void googlePrompt() }}
+            disabled={googleLoading}
+            activeOpacity={0.8}
+          >
+            {googleLoading
+              ? <ActivityIndicator color="#1C2B3A" />
+              : <Text style={styles.googleText}>🔑  Вход с Google</Text>}
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerLabel}>или с имейл</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
           {/* Tab toggle */}
           <View style={styles.tabs}>
@@ -206,6 +252,21 @@ const styles = StyleSheet.create({
   },
   cardTitle: { fontSize: 22, fontWeight: '700', color: '#1A4A6B', marginBottom: 4 },
   cardSubtitle: { fontSize: 13, color: '#3D5A73', marginBottom: 20 },
+
+  googleBtn: {
+    borderWidth: 1,
+    borderColor: '#B8CDD8',
+    borderRadius: 12,
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: '#fff',
+  },
+  googleText: { fontSize: 15, color: '#1C2B3A', fontWeight: '500' },
+
+  divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 8 },
+  dividerLine: { flex: 1, height: 0.5, backgroundColor: '#B8CDD8' },
+  dividerLabel: { fontSize: 12, color: '#3D5A73' },
 
   tabs: {
     flexDirection: 'row',

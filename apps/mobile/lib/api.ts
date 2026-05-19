@@ -91,6 +91,13 @@ export function register(email: string, password: string): Promise<AuthResponse>
   })
 }
 
+export function googleAuth(accessToken: string): Promise<AuthResponse> {
+  return request<AuthResponse>('/api/mobile/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ accessToken }),
+  })
+}
+
 export function getCases(token: string): Promise<Case[]> {
   return request<Case[]>('/api/mobile/cases', { method: 'GET' }, token)
 }
