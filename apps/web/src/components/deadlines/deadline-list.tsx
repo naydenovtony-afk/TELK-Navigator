@@ -61,8 +61,22 @@ export function DeadlineList({ initialDeadlines }: { initialDeadlines: Deadline[
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-medical-border p-10 text-center">
-        <p className="text-sm text-medical-slate">Нямате добавени срокове</p>
+      <div className="bg-white rounded-2xl border border-medical-border p-10 text-center flex flex-col items-center gap-3">
+        <div className="w-14 h-14 rounded-full bg-medical-surface flex items-center justify-center">
+          <svg className="w-7 h-7 text-medical-slate" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <rect x="3" y="4" width="18" height="18" rx="3" />
+            <path d="M3 9h18M8 2v4M16 2v4" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div>
+          <p className="font-medium text-medical-navy">Нямате добавени срокове</p>
+          <p className="text-sm text-medical-slate mt-1 max-w-xs mx-auto">
+            Следете важни дати — преосвидетелстване, обжалване, подаване на документи.
+          </p>
+        </div>
+        <p className="text-xs text-medical-slate">
+          Използвайте бутона <span className="font-semibold text-medical-navy">+ Нов срок</span> горе вдясно, за да добавите.
+        </p>
       </div>
     )
   }
