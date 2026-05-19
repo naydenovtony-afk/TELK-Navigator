@@ -43,6 +43,7 @@ export default function SignIn(): React.JSX.Element {
       redirectUri,
       scopes: ['openid', 'email', 'profile'],
       responseType: AuthSession.ResponseType.Token,
+      usePKCE: false,
     },
     GOOGLE_DISCOVERY,
   )
