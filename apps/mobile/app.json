@@ -34,6 +34,7 @@
       }
     },
     "android": {
+      "package": "bg.telknavigator.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
