@@ -29,7 +29,7 @@ export default async function SignInPage() {
             {t('title')}
           </h2>
           <p className="text-sm text-medical-slate mb-6">
-            Влезте с Google или с демо акаунт.
+            Влезте с Google или създайте акаунт с имейл.
           </p>
 
           {/* Google */}
