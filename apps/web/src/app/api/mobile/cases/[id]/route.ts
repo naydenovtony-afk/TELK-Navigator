@@ -10,6 +10,11 @@ export const runtime = 'nodejs'
 const patchSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   status: z.enum(['active', 'submitted', 'closed']).optional(),
+  caseType: z.enum(['initial', 'reexamination', 'appeal']).nullable().optional(),
+  diagnoses: z.string().max(1000).nullable().optional(),
+  previousPercent: z.number().int().min(0).max(100).nullable().optional(),
+  appealReason: z.string().max(1000).nullable().optional(),
+  commissionDecision: z.string().max(1000).nullable().optional(),
 })
 
 async function getOwnedCase(id: string, userId: string) {

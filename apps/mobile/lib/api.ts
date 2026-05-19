@@ -9,6 +9,11 @@ export type Case = {
   id: string
   title: string
   status: 'active' | 'submitted' | 'closed'
+  caseType: 'initial' | 'reexamination' | 'appeal' | null
+  diagnoses: string | null
+  previousPercent: number | null
+  appealReason: string | null
+  commissionDecision: string | null
   createdAt: string
 }
 
@@ -75,18 +80,24 @@ export function getCases(token: string): Promise<Case[]> {
   return request<Case[]>('/api/mobile/cases', { method: 'GET' }, token)
 }
 
-export function createCase(token: string, title: string): Promise<Case> {
+export type CasePatch = {
+  title?: string
+  status?: Case['status']
+  caseType?: Case['caseType']
+  diagnoses?: string | null
+  previousPercent?: number | null
+  appealReason?: string | null
+  commissionDecision?: string | null
+}
+
+export function createCase(token: string, fields: Pick<CasePatch, 'title'> & Omit<CasePatch, 'title' | 'status'>): Promise<Case> {
   return request<Case>('/api/mobile/cases', {
     method: 'POST',
-    body: JSON.stringify({ title }),
+    body: JSON.stringify(fields),
   }, token)
 }
 
-export function updateCase(
-  token: string,
-  id: string,
-  patch: { title?: string; status?: Case['status'] },
-): Promise<Case> {
+export function updateCase(token: string, id: string, patch: CasePatch): Promise<Case> {
   return request<Case>(`/api/mobile/cases/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
