@@ -4,7 +4,7 @@ import {
   TouchableOpacity, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert, TextInput,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
