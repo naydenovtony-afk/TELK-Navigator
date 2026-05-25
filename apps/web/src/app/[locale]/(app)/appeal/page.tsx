@@ -199,6 +199,23 @@ export default function AppealPage() {
         </button>
       </div>
 
+      {loading && (
+        <div className="bg-white rounded-2xl border border-medical-border overflow-hidden animate-pulse">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-medical-border">
+            <div className="h-4 w-32 bg-medical-border/40 rounded" />
+            <div className="flex gap-3">
+              <div className="h-4 w-16 bg-medical-border/40 rounded" />
+              <div className="h-4 w-16 bg-medical-border/40 rounded" />
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 space-y-3">
+            {[1, 0.9, 1, 0.7, 1, 0.8, 1, 0.75].map((w, i) => (
+              <div key={i} className="h-3 bg-medical-border/40 rounded" style={{ width: `${w * 100}%` }} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {appeal && (
         <div className="bg-white rounded-2xl border border-medical-border overflow-hidden" data-print-content>
           <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-medical-border">

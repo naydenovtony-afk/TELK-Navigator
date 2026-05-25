@@ -181,6 +181,39 @@ export default function ScorePredictorPage() {
         </button>
       </div>
 
+      {loading && (
+        <div className="space-y-4 animate-pulse">
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
+            <div className="h-3 w-28 bg-medical-border/40 rounded mb-3" />
+            <div className="h-12 w-36 bg-medical-border/40 rounded mb-4" />
+            <div className="space-y-2">
+              <div className="h-3 bg-medical-border/40 rounded w-full" />
+              <div className="h-3 bg-medical-border/40 rounded w-4/5" />
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[0, 1].map((col) => (
+              <div key={col} className="bg-white rounded-2xl border border-medical-border p-4 sm:p-5">
+                <div className="h-3 w-24 bg-medical-border/40 rounded mb-4" />
+                <div className="space-y-2.5">
+                  {[1, 0.85, 0.9].map((w, i) => (
+                    <div key={i} className="h-3 bg-medical-border/40 rounded" style={{ width: `${w * 100}%` }} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-2xl border border-medical-border p-4 sm:p-6">
+            <div className="h-3 w-48 bg-medical-border/40 rounded mb-4" />
+            <div className="space-y-3">
+              {[1, 0.9, 0.95, 0.8].map((w, i) => (
+                <div key={i} className="h-3 bg-medical-border/40 rounded" style={{ width: `${w * 100}%` }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {result && (
         <div className="space-y-4">
           {restored && (
