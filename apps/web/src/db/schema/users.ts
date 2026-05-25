@@ -52,6 +52,7 @@ export const userPreferences = pgTable('user_preferences', {
   hasEpicrisis: boolean('has_epicrisis'),
   telkExpiresAt: timestamp('telk_expires_at', { withTimezone: true }),
   dashboardLayout: jsonb('dashboard_layout'),
+  aiResults: jsonb('ai_results'),
   updatedAt: timestamp('updated_at', { withTimezone: true }),
 })
 

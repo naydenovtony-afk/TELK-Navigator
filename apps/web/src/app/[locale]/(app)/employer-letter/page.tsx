@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'telk_employer_letter'
+const DB_KEY = 'employerLetter'
 
 type Accommodation = 'leave' | 'hours' | 'dismissal' | 'adaptation' | 'parking'
 
@@ -27,10 +27,10 @@ export default function EmployerLetterPage() {
   const [restored, setRestored] = useState(false)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) { setLetter(JSON.parse(saved)); setRestored(true) }
-    } catch {}
+    fetch('/api/preferences/ai-results')
+      .then((r) => r.json())
+      .then((data) => { if (data[DB_KEY]) { setLetter(data[DB_KEY]); setRestored(true) } })
+      .catch(() => {})
   }, [])
 
   const pct = parseInt(percent, 10)
@@ -75,7 +75,11 @@ export default function EmployerLetterPage() {
       if (!res.ok) throw new Error(data.error ?? 'Грешка при генериране')
       setLetter(data.letter)
       setRestored(false)
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data.letter)) } catch {}
+      fetch('/api/preferences/ai-results', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [DB_KEY]: data.letter }),
+      }).catch(() => {})
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка')
     } finally {
@@ -224,7 +228,14 @@ export default function EmployerLetterPage() {
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => { setLetter(''); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                onClick={() => {
+                  setLetter(''); setRestored(false)
+                  fetch('/api/preferences/ai-results', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [DB_KEY]: null }),
+                  }).catch(() => {})
+                }}
                 className="text-xs text-medical-slate hover:text-critical-red transition-colors"
               >
                 Изчисти

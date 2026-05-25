@@ -4,6 +4,7 @@ import { users, userPasswords } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -13,6 +14,11 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  if (!rateLimit(`register:${ip}`, 5, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Твърде много опити. Моля, изчакайте 15 минути.' }, { status: 429 })
+  }
+
   const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {

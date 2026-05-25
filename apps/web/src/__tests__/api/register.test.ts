@@ -1,3 +1,8 @@
+jest.mock('@/lib/rate-limit', () => ({
+  rateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue('127.0.0.1'),
+}))
+
 jest.mock('bcryptjs', () => ({ hash: jest.fn().mockResolvedValue('$2b$12$hashed') }))
 
 jest.mock('@/db', () => ({

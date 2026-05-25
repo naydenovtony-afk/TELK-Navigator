@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'telk_appeal'
+const DB_KEY = 'appeal'
 
 export default function AppealPage() {
   const [applicantName, setApplicantName] = useState('')
@@ -19,10 +19,10 @@ export default function AppealPage() {
   const [restored, setRestored] = useState(false)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) { setAppeal(JSON.parse(saved)); setRestored(true) }
-    } catch {}
+    fetch('/api/preferences/ai-results')
+      .then((r) => r.json())
+      .then((data) => { if (data[DB_KEY]) { setAppeal(data[DB_KEY]); setRestored(true) } })
+      .catch(() => {})
   }, [])
 
   async function handleGenerate() {
@@ -58,7 +58,11 @@ export default function AppealPage() {
       if (!res.ok) throw new Error(data.error ?? 'Грешка')
       setAppeal(data.appeal)
       setRestored(false)
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data.appeal)) } catch {}
+      fetch('/api/preferences/ai-results', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [DB_KEY]: data.appeal }),
+      }).catch(() => {})
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка')
     } finally {
@@ -208,7 +212,14 @@ export default function AppealPage() {
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => { setAppeal(''); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                onClick={() => {
+                  setAppeal(''); setRestored(false)
+                  fetch('/api/preferences/ai-results', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [DB_KEY]: null }),
+                  }).catch(() => {})
+                }}
                 className="text-xs text-medical-slate hover:text-critical-red transition-colors"
               >
                 Изчисти

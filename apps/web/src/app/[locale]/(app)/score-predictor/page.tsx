@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import type { ScorePredictorResult } from '@/lib/ai'
 
-const STORAGE_KEY = 'telk_score_result'
+const DB_KEY = 'scorePredictor'
 
 const LIMITATIONS = [
   'Затруднено ходене / нужда от помощно средство',
@@ -29,10 +29,10 @@ export default function ScorePredictorPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) { setResult(JSON.parse(saved)); setRestored(true) }
-    } catch {}
+    fetch('/api/preferences/ai-results')
+      .then((r) => r.json())
+      .then((data) => { if (data[DB_KEY]) { setResult(data[DB_KEY]); setRestored(true) } })
+      .catch(() => {})
   }, [])
 
   function toggleLimitation(l: string) {
@@ -63,7 +63,11 @@ export default function ScorePredictorPage() {
       if (!res.ok) throw new Error(data.error ?? 'Грешка')
       setResult(data as ScorePredictorResult)
       setRestored(false)
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) } catch {}
+      fetch('/api/preferences/ai-results', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [DB_KEY]: data }),
+      }).catch(() => {})
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Грешка')
     } finally {
@@ -183,7 +187,14 @@ export default function ScorePredictorPage() {
             <div className="flex items-center justify-between bg-medical-surface rounded-xl px-4 py-2.5">
               <span className="text-xs text-medical-slate">Резултат от последна сесия</span>
               <button
-                onClick={() => { setResult(null); setRestored(false); try { localStorage.removeItem(STORAGE_KEY) } catch {} }}
+                onClick={() => {
+                  setResult(null); setRestored(false)
+                  fetch('/api/preferences/ai-results', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [DB_KEY]: null }),
+                  }).catch(() => {})
+                }}
                 className="text-xs text-medical-slate hover:text-critical-red transition-colors font-medium"
               >
                 Изчисти

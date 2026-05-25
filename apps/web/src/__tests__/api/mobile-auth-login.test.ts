@@ -3,6 +3,11 @@
  * Tests all combinations of valid/invalid credentials per the QA test case matrix.
  */
 
+jest.mock('@/lib/rate-limit', () => ({
+  rateLimit: jest.fn().mockReturnValue(true),
+  getClientIp: jest.fn().mockReturnValue('127.0.0.1'),
+}))
+
 jest.mock('jose', () => ({
   SignJWT: jest.fn().mockImplementation(() => ({
     setProtectedHeader: jest.fn().mockReturnThis(),
