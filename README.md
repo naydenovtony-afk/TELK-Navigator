@@ -2,8 +2,9 @@
 
 A multi-platform web + mobile application that helps Bulgarian patients navigate the ТЕЛК (Territorial Expert Medical Commission) medical disability assessment process.
 
-**Live demo:** https://telk-navigator-web.vercel.app/bg  
-**Sample credentials:** demo@telk.bg / demo123
+**Live demo (web):** https://telk-navigator-web.vercel.app/bg  
+**Android APK:** https://github.com/naydenovtony-afk/TELK-Navigator/releases/tag/v1.0.0  
+**Sample credentials:** demo@telk.bg / demo123 (web) · admin@telk.bg / Admin1234! (admin)
 
 ---
 
@@ -345,7 +346,7 @@ npm run db:studio     # Open Drizzle Studio UI
 
 The web app is deployed on **Vercel** with root directory set to `apps/web`.
 
-The mobile app is tested via **Expo Go** (iOS / Android) pointing to the deployed Vercel backend.
+The mobile app Android binary (APK) is published in [GitHub Releases v1.0.0](https://github.com/naydenovtony-afk/TELK-Navigator/releases/tag/v1.0.0), built with Expo EAS. Install on any Android device to test against the live Vercel backend.
 
 ---
 
