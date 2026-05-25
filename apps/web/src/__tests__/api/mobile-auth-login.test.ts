@@ -154,6 +154,19 @@ describe('malformed input', () => {
   })
 })
 
+// ── Rate limiting ─────────────────────────────────────────────────────────────
+
+describe('rate limiting', () => {
+  it('returns 429 when the IP has exceeded the request limit', async () => {
+    const { rateLimit } = await import('@/lib/rate-limit')
+    ;(rateLimit as jest.Mock).mockReturnValueOnce(false)
+
+    const res = await POST(makeReq({ email: 'patient@example.com', password: 'password123' }))
+
+    expect(res.status).toBe(429)
+  })
+})
+
 // ── OAuth account (no local password) ─────────────────────────────────────────
 
 describe('account linked to Google OAuth', () => {

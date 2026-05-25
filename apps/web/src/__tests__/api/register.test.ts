@@ -85,6 +85,19 @@ describe('already registered email', () => {
   })
 })
 
+// ── Rate limiting ─────────────────────────────────────────────────────────────
+
+describe('rate limiting', () => {
+  it('returns 429 when the IP has exceeded the request limit', async () => {
+    const { rateLimit } = await import('@/lib/rate-limit')
+    ;(rateLimit as jest.Mock).mockReturnValueOnce(false)
+
+    const res = await POST(makeReq({ email: 'new@example.com', password: 'securepass' }))
+
+    expect(res.status).toBe(429)
+  })
+})
+
 // ── Input validation ──────────────────────────────────────────────────────────
 
 describe('invalid input', () => {
