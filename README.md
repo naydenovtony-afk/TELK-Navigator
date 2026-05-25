@@ -58,29 +58,53 @@ The ТЕЛК process in Bulgaria is bureaucratically complex — patients must g
 
 ## 3. Architecture
 
-### Communication diagram
+### System diagram
 
-```
-┌──────────────────────────┐      ┌──────────────────────────┐
-│   Next.js Web App        │      │   Expo Mobile App        │
-│   Server Components      │      │   React Native           │
-│   + Client Components    │      │   (iOS / Android)        │
-└────────────┬─────────────┘      └─────────────┬────────────┘
-             │ HTTP (session cookie)             │ HTTP (Bearer JWT)
-             ▼                                  ▼
-┌────────────────────────────────────────────────────────────┐
-│               Next.js API Routes (Node.js runtime)         │
-│   /api/*          — Auth.js session guard                  │
-│   /api/mobile/*   — custom JWT verification                │
-└──────────┬────────────────────┬───────────────┬────────────┘
-           │                    │               │
-    ┌──────▼──────┐  ┌──────────▼────┐  ┌──────▼──────────┐
-    │  Neon DB    │  │ Cloudflare R2 │  │ Google Gemini   │
-    │ (Drizzle)   │  │ File Storage  │  │ 2.5 Flash API   │
-    └─────────────┘  └───────────────┘  └─────────────────┘
+```mermaid
+flowchart TD
+    subgraph Clients
+        WEB["🌐 Next.js Web App\n(Browser)"]
+        MOB["📱 Expo Mobile App\n(Android)"]
+    end
+
+    subgraph Vercel["Next.js on Vercel"]
+        MW["Middleware\nAuth guards · i18n routing"]
+        SSR["Server Components\nApp Router pages"]
+        API_WEB["/api/* routes\nAuth.js session cookie"]
+        API_MOB["/api/mobile/* routes\nBearer JWT verification"]
+    end
+
+    subgraph Services["External Services"]
+        NEON[("Neon PostgreSQL\n13 tables · Drizzle ORM")]
+        R2["Cloudflare R2\nFile Storage"]
+        GEMINI["Google Gemini 2.5 Flash\nAI Analysis · Generation"]
+        GOAUTH["Google OAuth 2.0"]
+    end
+
+    WEB -- "cookie session" --> MW
+    MOB -- "Bearer JWT" --> MW
+    MW --> SSR & API_WEB & API_MOB
+
+    SSR & API_WEB & API_MOB --> NEON
+
+    API_WEB & API_MOB -- "issue presigned URL" --> R2
+    WEB & MOB -- "direct PUT upload" --> R2
+
+    API_WEB & API_MOB --> GEMINI
+
+    WEB <-- "OAuth flow" --> GOAUTH
+    MOB -- "OAuth via web backend\n+ deep-link callback" --> GOAUTH
 ```
 
-> **File uploads bypass the API server.** The client requests a presigned URL from `/api/upload/presign`, then uploads the file directly to Cloudflare R2 via `PUT`.
+> **File uploads bypass the API server.** The client requests a presigned URL from `/api/upload/presign`, then uploads the file directly to Cloudflare R2 via `PUT`. The API server never handles file bytes.
+
+### Auth flows
+
+| Client | Method | Token |
+|--------|--------|-------|
+| Web browser | Auth.js v5 | Encrypted session cookie |
+| Mobile (credentials) | Custom HS256 JWT | 30-day Bearer token in SecureStore |
+| Mobile (Google) | OAuth → web backend → deep-link | JWT issued after server-side token exchange |
 
 ### Project structure
 
