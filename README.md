@@ -4,7 +4,7 @@ A multi-platform web + mobile application that helps Bulgarian patients navigate
 
 **Live demo (web):** https://telk-navigator-web.vercel.app/bg  
 **Android APK:** https://github.com/naydenovtony-afk/TELK-Navigator/releases/tag/v1.0.0  
-**Sample credentials:** demo@telk.bg / demo123 (web) · admin@telk.bg / Admin1234! (admin)
+**Sample credentials:** demo@telk.bg / Demo1234! (patient) · admin@telk.bg / Admin1234! (admin)
 
 ---
 
