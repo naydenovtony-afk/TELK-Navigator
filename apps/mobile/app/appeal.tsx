@@ -409,10 +409,10 @@ const styles = StyleSheet.create({
     padding: 12, fontSize: 14, color: '#1C2B3A', backgroundColor: '#FAFCFD',
   },
   inputMulti: { minHeight: 90, textAlignVertical: 'top' },
-  inputPercent: { textAlign: 'center', fontSize: 18, fontWeight: '700', width: '100%' },
+  inputPercent: { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '700' },
   row2col: { flexDirection: 'row', gap: 12 },
   percentRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  percentSign: { fontSize: 18, fontWeight: '700', color: '#1C2B3A' },
+  percentSign: { fontSize: 18, fontWeight: '700', color: '#1C2B3A', flexShrink: 0 },
 
   errorBox: {
     backgroundColor: '#FFF0F0', borderRadius: 8, padding: 12,
