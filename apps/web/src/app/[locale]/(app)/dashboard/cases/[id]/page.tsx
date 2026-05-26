@@ -10,6 +10,7 @@ import { AnalyseButton } from '@/components/cases/analyse-button'
 import { AnalysisCard } from '@/components/cases/analysis-card'
 import { CaseStatusButton } from '@/components/cases/case-status-button'
 import { DeleteDocumentButton } from '@/components/cases/delete-document-button'
+import { DeleteCaseButton } from '@/components/cases/delete-case-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -85,7 +86,10 @@ export default async function CaseDetailPage({
             })}
           </p>
         </div>
-        <CaseStatusButton caseId={id} status={caseRow.status as 'active' | 'submitted' | 'closed'} />
+        <div className="flex items-center gap-3">
+          <CaseStatusButton caseId={id} status={caseRow.status as 'active' | 'submitted' | 'closed'} />
+          <DeleteCaseButton caseId={id} />
+        </div>
       </div>
 
       {/* Upload section */}

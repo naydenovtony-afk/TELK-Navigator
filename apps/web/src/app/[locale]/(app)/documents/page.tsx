@@ -5,6 +5,7 @@ import { db } from '@/db'
 import { documents, cases } from '@/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { StatusBadge } from '@/components/ui'
+import { DeleteDocumentButton } from '@/components/cases/delete-document-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,6 +64,7 @@ export default async function DocumentsPage() {
                   <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium hidden sm:table-cell">Случай</th>
                   <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium">Статус</th>
                   <th className="text-left px-4 sm:px-6 py-3 text-medical-slate font-medium hidden sm:table-cell">Качен на</th>
+                  <th className="px-4 sm:px-6 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-medical-border">
@@ -93,6 +95,9 @@ export default async function DocumentsPage() {
                         month: 'short',
                         year: 'numeric',
                       })}
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-right">
+                      <DeleteDocumentButton documentId={doc.id} />
                     </td>
                   </tr>
                 ))}
