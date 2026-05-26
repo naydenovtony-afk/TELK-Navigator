@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking,
   TextInput, ActivityIndicator, Alert, Share, KeyboardAvoidingView, Platform,
 } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../lib/auth'
@@ -66,6 +67,7 @@ export default function AppealScreen(): React.JSX.Element {
   const [genError, setGenError] = useState('')
   const [result, setResult] = useState('')
   const [generatorOpen, setGeneratorOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   function field(key: keyof FormState) {
     return (value: string) => setForm((f) => ({ ...f, [key]: value }))
@@ -107,6 +109,13 @@ export default function AppealScreen(): React.JSX.Element {
     } finally {
       setGenerating(false)
     }
+  }
+
+  async function handleCopy(): Promise<void> {
+    if (!result) return
+    await Clipboard.setStringAsync(result)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   async function handleShare(): Promise<void> {
@@ -308,6 +317,11 @@ export default function AppealScreen(): React.JSX.Element {
             <View style={styles.resultHeader}>
               <Text style={styles.resultHeaderTitle}>📄  Жалба до съда</Text>
               <View style={styles.resultActions}>
+                <TouchableOpacity onPress={handleCopy} hitSlop={8}>
+                  <Text style={[styles.resultActionText, copied && { color: '#1A6B3C' }]}>
+                    {copied ? '✓ Копирано' : 'Копирай'}
+                  </Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={handleShare} hitSlop={8}>
                   <Text style={styles.resultActionText}>Сподели</Text>
                 </TouchableOpacity>
