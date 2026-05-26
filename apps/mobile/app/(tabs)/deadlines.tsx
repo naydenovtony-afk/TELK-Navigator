@@ -208,7 +208,7 @@ export default function DeadlinesScreen(): React.JSX.Element {
       <Modal visible={showAdd} transparent animationType="slide" onRequestClose={() => setShowAdd(false)}>
         <KeyboardAvoidingView
           style={s.modalBackdrop}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <TouchableOpacity style={s.modalDismiss} activeOpacity={1} onPress={() => setShowAdd(false)} />
           <View style={[s.sheet, { paddingBottom: insets.bottom + 16 }]}>
