@@ -59,7 +59,7 @@ const DOC_TYPES = [
   { key: 'outpatient',      label: 'Амбулаторен лист',              icon: '📄' },
   { key: 'lab',             label: 'Лабораторни изследвания',        icon: '🔬' },
   { key: 'imaging',         label: 'Образна диагностика (МРТ, рентген)', icon: '🖼️' },
-  { key: 'specialist',      label: 'Специалистко мнение',            icon: '👨‍⚕️' },
+  { key: 'specialist',      label: 'Експертно становище',            icon: '👨‍⚕️' },
   { key: 'previous_telk',   label: 'Предишно ТЕЛК решение',          icon: '📑' },
 ] as const
 
