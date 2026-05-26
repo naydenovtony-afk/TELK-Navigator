@@ -4,7 +4,7 @@ import { generateAppeal } from '@/lib/ai'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
-export const maxDuration = 30
+export const maxDuration = 60
 
 const schema = z.object({
   receivedPercent: z.number().int().min(0).max(100),
@@ -28,6 +28,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const appeal = await generateAppeal(parsed.data)
-  return NextResponse.json({ appeal })
+  try {
+    const appeal = await generateAppeal(parsed.data)
+    return NextResponse.json({ appeal })
+  } catch {
+    return NextResponse.json({ error: 'Грешка при генериране. Опитайте отново.' }, { status: 500 })
+  }
 }

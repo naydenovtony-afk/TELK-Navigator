@@ -4,7 +4,7 @@ import { checkLifelongEligibility } from '@/lib/ai'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
-export const maxDuration = 30
+export const maxDuration = 60
 
 const schema = z.object({
   percent: z.number().int().min(1).max(100),
@@ -27,6 +27,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const result = await checkLifelongEligibility(parsed.data)
-  return NextResponse.json(result)
+  try {
+    const result = await checkLifelongEligibility(parsed.data)
+    return NextResponse.json(result)
+  } catch {
+    return NextResponse.json({ error: 'Грешка при генериране. Опитайте отново.' }, { status: 500 })
+  }
 }
