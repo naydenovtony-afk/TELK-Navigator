@@ -2,6 +2,7 @@
 
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export function SignOutButton({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
@@ -15,8 +16,8 @@ export function SignOutButton({ className }: { className?: string }) {
         Изход
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      {open && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl border border-medical-border p-6 w-80 flex flex-col gap-4">
             <p className="text-sm font-medium text-gray-800">Сигурни ли сте, че искате да излезете?</p>
             <div className="flex gap-3 justify-end">
@@ -34,7 +35,8 @@ export function SignOutButton({ className }: { className?: string }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
