@@ -206,6 +206,7 @@ export default function CasesScreen(): React.JSX.Element {
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
               onEdit={openEdit}
+              onViewDocuments={(c) => router.push(`/case-detail?id=${c.id}&title=${encodeURIComponent(c.title)}` as never)}
             />
           )}
         />

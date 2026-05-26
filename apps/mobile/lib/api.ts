@@ -176,10 +176,11 @@ export function createDocument(
   fileKey: string,
   fileName: string,
   mimeType: string,
+  documentType?: string,
 ): Promise<Document> {
   return request<Document>('/api/mobile/documents', {
     method: 'POST',
-    body: JSON.stringify({ caseId, fileKey, fileName, mimeType }),
+    body: JSON.stringify({ caseId, fileKey, fileName, mimeType, ...(documentType ? { documentType } : {}) }),
   }, token)
 }
 

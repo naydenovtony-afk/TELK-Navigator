@@ -17,6 +17,16 @@ import { EmptyState } from '../../components/EmptyState'
 
 type Section = { title: string; data: Document[] }
 
+const DOCUMENT_TYPE_OPTIONS: { value: string; label: string; icon: string }[] = [
+  { value: 'epicrisis',          label: 'Епикриза',                 icon: '📋' },
+  { value: 'lab_results',        label: 'Лабораторни',              icon: '🔬' },
+  { value: 'imaging',            label: 'Образна диагностика',       icon: '🩻' },
+  { value: 'outpatient_sheet',   label: 'Амбулаторен лист',         icon: '📄' },
+  { value: 'specialist_opinion', label: 'Специалистично становище',  icon: '👨‍⚕️' },
+  { value: 'telk_decision',      label: 'ТЕЛК решение',             icon: '⚖️' },
+  { value: 'other',              label: 'Друго',                    icon: '📎' },
+]
+
 export default function DocumentsScreen(): React.JSX.Element {
   const { token } = useAuth()
   const router = useRouter()
@@ -33,6 +43,7 @@ export default function DocumentsScreen(): React.JSX.Element {
   const [selectedCaseId, setSelectedCaseId] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [documentType, setDocumentType] = useState('other')
   const [showNewCase, setShowNewCase] = useState(false)
   const [newCaseTitle, setNewCaseTitle] = useState('')
   const [creatingCase, setCreatingCase] = useState(false)
@@ -71,6 +82,7 @@ export default function DocumentsScreen(): React.JSX.Element {
   function openModal(): void {
     setPickedAsset(null)
     setSelectedCaseId('')
+    setDocumentType('other')
     setUploadError('')
     setShowNewCase(false)
     setNewCaseTitle('')
@@ -150,7 +162,7 @@ export default function DocumentsScreen(): React.JSX.Element {
       }
 
       // 3. Create document record
-      const doc = await createDocument(token, selectedCaseId, key, fileName, mimeType)
+      const doc = await createDocument(token, selectedCaseId, key, fileName, mimeType, documentType)
 
       // 4. Trigger AI analysis in background (fire and forget)
       triggerAnalysis(token, doc.id).catch(() => {})
@@ -266,6 +278,27 @@ export default function DocumentsScreen(): React.JSX.Element {
                     <Text style={s.imagePillX}>✕</Text>
                   </TouchableOpacity>
                 </View>
+
+                <Text style={s.typePickerLabel}>Вид документ</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={s.typePickerRow}
+                >
+                  {DOCUMENT_TYPE_OPTIONS.map((opt) => (
+                    <TouchableOpacity
+                      key={opt.value}
+                      style={[s.typeChip, documentType === opt.value && s.typeChipSelected]}
+                      onPress={() => setDocumentType(opt.value)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={s.typeChipIcon}>{opt.icon}</Text>
+                      <Text style={[s.typeChipLabel, documentType === opt.value && s.typeChipLabelSelected]}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
 
                 {cases.map((c) => (
                   <TouchableOpacity
@@ -442,4 +475,17 @@ const s = StyleSheet.create({
 
   cancelBtn: { alignItems: 'center', paddingVertical: 10 },
   cancelBtnText: { color: '#3D5A73', fontSize: 15 },
+
+  typePickerLabel: { fontSize: 13, fontWeight: '600', color: '#3D5A73', marginBottom: 8 },
+  typePickerRow: { gap: 8, paddingBottom: 4 },
+  typeChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingVertical: 7, paddingHorizontal: 11,
+    borderRadius: 20, borderWidth: 1.5, borderColor: '#B8CDD8',
+    backgroundColor: '#F8FBFC',
+  },
+  typeChipSelected: { borderColor: '#1A4A6B', backgroundColor: '#E8F4F8' },
+  typeChipIcon: { fontSize: 14 },
+  typeChipLabel: { fontSize: 12, color: '#3D5A73', fontWeight: '500' },
+  typeChipLabelSelected: { color: '#1A4A6B', fontWeight: '700' },
 })

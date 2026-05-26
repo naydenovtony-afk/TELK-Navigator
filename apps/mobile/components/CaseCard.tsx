@@ -41,9 +41,10 @@ interface CaseCardProps {
   onDelete: (c: Case) => void
   onStatusChange: (c: Case, newStatus: Case['status']) => void
   onEdit: (c: Case) => void
+  onViewDocuments?: (c: Case) => void
 }
 
-export function CaseCard({ item, onDelete, onStatusChange, onEdit }: CaseCardProps): React.JSX.Element {
+export function CaseCard({ item, onDelete, onStatusChange, onEdit, onViewDocuments }: CaseCardProps): React.JSX.Element {
   const [expanded, setExpanded] = useState(false)
   const [pickerVisible, setPickerVisible] = useState(false)
 
@@ -125,9 +126,16 @@ export function CaseCard({ item, onDelete, onStatusChange, onEdit }: CaseCardPro
               <Text style={s.noDetails}>Няма добавено описание</Text>
             )}
 
-            <TouchableOpacity style={s.editBtn} onPress={() => onEdit(item)} activeOpacity={0.8}>
-              <Text style={s.editBtnText}>✏️  Редактирай</Text>
-            </TouchableOpacity>
+            <View style={s.actionRow}>
+              <TouchableOpacity style={[s.editBtn, s.editBtnHalf]} onPress={() => onEdit(item)} activeOpacity={0.8}>
+                <Text style={s.editBtnText}>✏️  Редактирай</Text>
+              </TouchableOpacity>
+              {onViewDocuments && (
+                <TouchableOpacity style={[s.editBtn, s.editBtnHalf, s.docsBtn]} onPress={() => onViewDocuments(item)} activeOpacity={0.8}>
+                  <Text style={s.docsBtnText}>📋  Документи</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         )}
       </View>
@@ -218,12 +226,16 @@ const s = StyleSheet.create({
   detailValue: { fontSize: 13, color: '#1C2B3A', textAlign: 'right', flex: 1 },
   detailWrap: { textAlign: 'left', flex: 1 },
   noDetails: { fontSize: 13, color: '#9AB0BF', fontStyle: 'italic', textAlign: 'center', paddingVertical: 4 },
+  actionRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
   editBtn: {
-    marginTop: 4, backgroundColor: '#E8F4F8', borderRadius: 10,
+    backgroundColor: '#E8F4F8', borderRadius: 10,
     paddingVertical: 10, alignItems: 'center',
     borderWidth: 0.5, borderColor: '#B8CDD8',
   },
+  editBtnHalf: { flex: 1 },
   editBtnText: { fontSize: 14, color: '#1A4A6B', fontWeight: '600' },
+  docsBtn: { backgroundColor: '#1A4A6B', borderColor: '#1A4A6B' },
+  docsBtnText: { fontSize: 14, color: '#fff', fontWeight: '600' },
 
   // Status picker modal
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
