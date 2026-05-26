@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   View, Text, StyleSheet, ActivityIndicator, RefreshControl, SectionList,
-  TouchableOpacity, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert, TextInput,
+  TouchableOpacity, Modal, KeyboardAvoidingView, ScrollView, Alert, TextInput,
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system/legacy'
@@ -258,7 +258,7 @@ export default function DocumentsScreen(): React.JSX.Element {
       <Modal visible={showModal} transparent animationType="slide" onRequestClose={closeModal}>
         <KeyboardAvoidingView
           style={s.overlay}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior="padding"
         >
           <TouchableOpacity style={s.backdrop} activeOpacity={1} onPress={closeModal} />
 

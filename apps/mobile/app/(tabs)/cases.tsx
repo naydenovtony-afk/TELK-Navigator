@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl,
-  TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput,
+  TouchableOpacity, Modal, KeyboardAvoidingView, TextInput,
   Alert, ScrollView,
 } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -216,7 +216,7 @@ export default function CasesScreen(): React.JSX.Element {
       <Modal visible={showModal} transparent animationType="slide" onRequestClose={closeModal}>
         <KeyboardAvoidingView
           style={s.overlay}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior="padding"
         >
           <TouchableOpacity style={s.backdrop} activeOpacity={1} onPress={closeModal} />
           <View style={s.sheet}>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking,
-  TextInput, ActivityIndicator, Alert, Share, KeyboardAvoidingView, Platform,
+  TextInput, ActivityIndicator, Alert, Share, KeyboardAvoidingView,
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
@@ -133,7 +133,7 @@ export default function AppealScreen(): React.JSX.Element {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: '#E8F4F8' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
     >
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>

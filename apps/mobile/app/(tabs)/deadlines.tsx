@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl,
-  TouchableOpacity, Modal, TextInput, Alert, KeyboardAvoidingView, Platform,
+  TouchableOpacity, Modal, TextInput, Alert, KeyboardAvoidingView,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -208,7 +208,7 @@ export default function DeadlinesScreen(): React.JSX.Element {
       <Modal visible={showAdd} transparent animationType="slide" onRequestClose={() => setShowAdd(false)}>
         <KeyboardAvoidingView
           style={s.modalBackdrop}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior="padding"
         >
           <TouchableOpacity style={s.modalDismiss} activeOpacity={1} onPress={() => setShowAdd(false)} />
           <View style={[s.sheet, { paddingBottom: insets.bottom + 16 }]}>
