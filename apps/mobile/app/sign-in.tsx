@@ -5,15 +5,24 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native'
+import { KeyboardAwareScrollView as _KASVBase } from 'react-native-keyboard-aware-scroll-view'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import * as Linking from 'expo-linking'
 import { useAuth } from '../lib/auth'
 import { login, register } from '../lib/api'
+
+type KASVProps = {
+  style?: object
+  contentContainerStyle?: object
+  enableOnAndroid?: boolean
+  extraScrollHeight?: number
+  keyboardShouldPersistTaps?: 'handled' | 'always' | 'never'
+  children?: React.ReactNode
+}
+const KeyboardAwareScrollView = _KASVBase as unknown as React.ComponentType<KASVProps>
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -108,11 +117,13 @@ export default function SignIn(): React.JSX.Element {
   }
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={styles.screen}
-      behavior="padding"
+      contentContainerStyle={styles.scroll}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid
+      extraScrollHeight={20}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.appName}>ТЕЛК Навигатор</Text>
@@ -235,8 +246,7 @@ export default function SignIn(): React.JSX.Element {
             С влизането си приемате условията за обработка на лични данни съгласно GDPR.
           </Text>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   )
 }
 

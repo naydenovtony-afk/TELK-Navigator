@@ -1,13 +1,23 @@
 import React, { useState } from 'react'
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking,
-  TextInput, ActivityIndicator, Alert, Share, KeyboardAvoidingView,
+  View, Text, TouchableOpacity, StyleSheet, Linking,
+  TextInput, ActivityIndicator, Alert, Share,
 } from 'react-native'
+import { KeyboardAwareScrollView as _KASVBase } from 'react-native-keyboard-aware-scroll-view'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../lib/auth'
 import { generateMobileAppeal, type AppealInput } from '../lib/api'
+
+type KASVProps = {
+  contentContainerStyle?: object
+  enableOnAndroid?: boolean
+  extraScrollHeight?: number
+  keyboardShouldPersistTaps?: 'handled' | 'always' | 'never'
+  children?: React.ReactNode
+}
+const KeyboardAwareScrollView = _KASVBase as unknown as React.ComponentType<KASVProps>
 
 const STEPS = [
   {
@@ -131,10 +141,7 @@ export default function AppealScreen(): React.JSX.Element {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#E8F4F8' }}
-      behavior="padding"
-    >
+    <View style={{ flex: 1, backgroundColor: '#E8F4F8' }}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Text style={styles.back}>‹ Табло</Text>
@@ -142,7 +149,12 @@ export default function AppealScreen(): React.JSX.Element {
         <Text style={styles.headerTitle}>Обжалване</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid
+        extraScrollHeight={20}
+      >
 
         {/* 14-day warning */}
         <View style={styles.alert}>
@@ -341,8 +353,8 @@ export default function AppealScreen(): React.JSX.Element {
           </View>
         ) : null}
 
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
+    </View>
   )
 }
 

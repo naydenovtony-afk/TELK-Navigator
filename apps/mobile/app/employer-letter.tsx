@@ -1,11 +1,20 @@
 import React, { useState } from 'react'
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, KeyboardAvoidingView, Alert,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,
 } from 'react-native'
+import { KeyboardAwareScrollView as _KASVBase } from 'react-native-keyboard-aware-scroll-view'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
+type KASVProps = {
+  contentContainerStyle?: object
+  enableOnAndroid?: boolean
+  extraScrollHeight?: number
+  keyboardShouldPersistTaps?: 'handled' | 'always' | 'never'
+  children?: React.ReactNode
+}
+const KeyboardAwareScrollView = _KASVBase as unknown as React.ComponentType<KASVProps>
 
 export default function EmployerLetterScreen(): React.JSX.Element {
   const router = useRouter()
@@ -49,7 +58,7 @@ ${name}
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <View style={{ flex: 1 }}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
           <Text style={styles.back}>‹ Табло</Text>
@@ -57,7 +66,12 @@ ${name}
         <Text style={styles.headerTitle}>Писмо до работодател</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.content}
+        enableOnAndroid
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
+      >
         {!generated ? (
           <View style={styles.form}>
             <Text style={styles.formTitle}>Попълнете данните</Text>
@@ -97,8 +111,8 @@ ${name}
             </TouchableOpacity>
           </View>
         )}
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
+    </View>
   )
 }
 
