@@ -35,11 +35,11 @@ export async function GET(req: NextRequest) {
 
 const createSchema = z.object({
   title: z.string().min(1).max(200),
-  caseType: z.enum(['initial', 'reexamination', 'appeal']).optional(),
-  diagnoses: z.string().max(1000).optional(),
-  previousPercent: z.number().int().min(0).max(100).optional(),
-  appealReason: z.string().max(1000).optional(),
-  commissionDecision: z.string().max(1000).optional(),
+  caseType: z.enum(['initial', 'reexamination', 'appeal']).nullable().optional(),
+  diagnoses: z.string().max(1000).nullable().optional(),
+  previousPercent: z.number().int().min(0).max(100).nullable().optional(),
+  appealReason: z.string().max(1000).nullable().optional(),
+  commissionDecision: z.string().max(1000).nullable().optional(),
 })
 
 export async function POST(req: NextRequest) {

@@ -73,7 +73,8 @@ async function request<T>(path: string, options: RequestInit, token?: string): P
     }
     throw new Error(msg)
   }
-  if (!res.ok) throw new Error((json as { error?: string }).error ?? `HTTP ${res.status}`)
+  const errField = (json as { error?: unknown }).error
+  if (!res.ok) throw new Error(typeof errField === 'string' ? errField : `HTTP ${res.status}`)
   return json as T
 }
 
