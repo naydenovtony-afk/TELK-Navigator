@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuth } from '../../lib/auth'
 import {
-  getDocuments, getCases, presignUpload, createDocument, triggerAnalysis, createCase,
+  getDocuments, getCases, presignUpload, createDocument, deleteDocument, triggerAnalysis, createCase,
   type Document, type Case,
 } from '../../lib/api'
 import { DocumentRow } from '../../components/DocumentRow'
@@ -103,6 +103,27 @@ export default function DocumentsScreen(): React.JSX.Element {
     } finally {
       setCreatingCase(false)
     }
+  }
+
+  function handleDelete(doc: Document): void {
+    Alert.alert(
+      'Изтриване на документ',
+      `Сигурни ли сте, че искате да изтриете „${doc.fileName}"?`,
+      [
+        { text: 'Отказ', style: 'cancel' },
+        {
+          text: 'Изтрий', style: 'destructive',
+          onPress: async () => {
+            if (!token) return
+            setSections((prev) => prev
+              .map((sec) => ({ ...sec, data: sec.data.filter((d) => d.id !== doc.id) }))
+              .filter((sec) => sec.data.length > 0)
+            )
+            try { await deleteDocument(token, doc.id) } catch { load(true) }
+          },
+        },
+      ]
+    )
   }
 
   function closeModal(): void {
@@ -227,6 +248,7 @@ export default function DocumentsScreen(): React.JSX.Element {
               onPress={() => router.push(
                 `/document-detail?id=${item.id}&name=${encodeURIComponent(item.fileName)}&fileUrl=${encodeURIComponent(item.fileUrl ?? '')}&mimeType=${encodeURIComponent(item.mimeType)}` as never
               )}
+              onDelete={handleDelete}
             />
           )}
         />

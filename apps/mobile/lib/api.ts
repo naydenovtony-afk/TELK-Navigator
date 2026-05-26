@@ -184,6 +184,10 @@ export function createDocument(
   }, token)
 }
 
+export function deleteDocument(token: string, id: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/mobile/documents/${id}`, { method: 'DELETE' }, token)
+}
+
 export function triggerAnalysis(token: string, documentId: string): Promise<unknown> {
   return request<unknown>(`/api/mobile/documents/${documentId}/analyse`, { method: 'POST' }, token)
 }

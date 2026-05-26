@@ -37,9 +37,10 @@ const DOC_TYPE_ICON: Record<DocumentType, string> = {
 interface DocumentRowProps {
   item: Document
   onPress: () => void
+  onDelete?: (doc: Document) => void
 }
 
-export function DocumentRow({ item, onPress }: DocumentRowProps): React.JSX.Element {
+export function DocumentRow({ item, onPress, onDelete }: DocumentRowProps): React.JSX.Element {
   const typeLabel = item.documentType ? DOC_TYPE_LABEL[item.documentType] : null
   const typeIcon  = item.documentType ? DOC_TYPE_ICON[item.documentType] : '📄'
   const isReady   = item.status === 'ready'
@@ -61,6 +62,11 @@ export function DocumentRow({ item, onPress }: DocumentRowProps): React.JSX.Elem
           </View>
           {isReady && <Text style={s.viewHint}>Виж →</Text>}
         </View>
+        {onDelete && (
+          <TouchableOpacity onPress={() => onDelete(item)} hitSlop={12} style={s.deleteBtn}>
+            <Text style={s.deleteBtnText}>✕</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   )
@@ -82,4 +88,6 @@ const s = StyleSheet.create({
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   badgeText: { fontSize: 11, fontWeight: '600' },
   viewHint: { fontSize: 11, color: '#1A4A6B', fontWeight: '600' },
+  deleteBtn: { padding: 4, marginLeft: 4 },
+  deleteBtnText: { fontSize: 15, color: '#B8CDD8', fontWeight: '600' },
 })
