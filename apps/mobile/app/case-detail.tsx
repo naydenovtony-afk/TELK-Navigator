@@ -53,7 +53,7 @@ export default function CaseDetailScreen(): React.JSX.Element {
     <View style={s.container}>
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Случаи</Text>
+          <Text style={s.back}>← Случаи</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle} numberOfLines={1}>{caseTitle}</Text>
         <View style={s.headerSpacer} />
@@ -121,7 +121,7 @@ const s = StyleSheet.create({
     alignItems: 'flex-end',
     gap: 12,
   },
-  back: { color: '#B8D8E8', fontSize: 14, flexShrink: 0 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600', flexShrink: 0 },
   headerTitle: { flex: 1, color: '#fff', fontSize: 17, fontWeight: '700', textAlign: 'center' },
   headerSpacer: { width: 40 },
 

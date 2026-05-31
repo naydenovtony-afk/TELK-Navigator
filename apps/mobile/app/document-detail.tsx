@@ -58,7 +58,7 @@ export default function DocumentDetailScreen(): React.JSX.Element {
     <View style={s.container}>
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Документи</Text>
+          <Text style={s.back}>← Документи</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle} numberOfLines={1}>{name ?? 'Документ'}</Text>
       </View>
@@ -191,7 +191,7 @@ const s = StyleSheet.create({
   center: { paddingVertical: 32, justifyContent: 'center', alignItems: 'center' },
 
   header: { backgroundColor: '#5A3D6B', paddingHorizontal: 16, paddingBottom: 16, gap: 4 },
-  back: { color: '#D4B8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
 
   scroll: { padding: 16, gap: 14, paddingBottom: 40 },

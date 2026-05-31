@@ -126,7 +126,7 @@ export default function DeadlinesScreen(): React.JSX.Element {
     <View style={s.container}>
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Табло</Text>
+          <Text style={s.back}>← Табло</Text>
         </TouchableOpacity>
         <View style={s.headerRow}>
           <Text style={s.headerTitle}>Срокове</Text>
@@ -289,7 +289,7 @@ const s = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E8F4F8' },
 
   header: { backgroundColor: '#1A4A6B', paddingHorizontal: 16, paddingBottom: 14, gap: 4 },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '500' },
   addBtn: {

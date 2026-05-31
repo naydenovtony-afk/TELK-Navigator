@@ -206,7 +206,7 @@ export default function DocumentsScreen(): React.JSX.Element {
       {/* Header */}
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Табло</Text>
+          <Text style={s.back}>← Табло</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle}>Документи</Text>
         <TouchableOpacity style={s.addBtn} onPress={openModal} hitSlop={8}>
@@ -414,7 +414,7 @@ const s = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   addBtn: { backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10 },
   addBtnText: { color: '#fff', fontSize: 14, fontWeight: '600' },

@@ -16,6 +16,13 @@ type KASVProps = {
 }
 const KeyboardAwareScrollView = _KASVBase as unknown as React.ComponentType<KASVProps>
 
+function clampPct(v: string): string {
+  const digits = v.replace(/[^0-9]/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return n > 100 ? '100' : digits
+}
+
 export default function EmployerLetterScreen(): React.JSX.Element {
   const router = useRouter()
   const insets = useSafeAreaInsets()
@@ -61,7 +68,7 @@ ${name}
     <View style={{ flex: 1 }}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={styles.back}>‹ Табло</Text>
+          <Text style={styles.back}>← Табло</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Писмо до работодател</Text>
       </View>
@@ -79,7 +86,7 @@ ${name}
               { label: 'Три имена *', value: name, setter: setName, placeholder: 'Иван Иванов Иванов' },
               { label: 'Фирма *', value: company, setter: setCompany, placeholder: 'ЕООД/АД' },
               { label: 'Длъжност', value: position, setter: setPosition, placeholder: 'Счетоводител' },
-              { label: 'Процент нетрудоспособност *', value: percent, setter: setPercent, placeholder: '70', keyboard: 'numeric' },
+              { label: 'Процент нетрудоспособност *', value: percent, setter: setPercent, placeholder: '70', keyboard: 'number-pad' },
               { label: 'Дата на решение', value: date, setter: setDate, placeholder: '01.01.2025' },
             ].map((f) => (
               <View key={f.label} style={styles.field}>
@@ -87,10 +94,11 @@ ${name}
                 <TextInput
                   style={styles.input}
                   value={f.value}
-                  onChangeText={f.setter}
+                  onChangeText={(v) => f.setter((f as { keyboard?: string }).keyboard === 'number-pad' ? clampPct(v) : v)}
                   placeholder={f.placeholder}
                   placeholderTextColor="#7A95A8"
-                  keyboardType={(f as { keyboard?: string }).keyboard === 'numeric' ? 'numeric' : 'default'}
+                  keyboardType={(f as { keyboard?: string }).keyboard === 'number-pad' ? 'number-pad' : 'default'}
+                  maxLength={(f as { keyboard?: string }).keyboard === 'number-pad' ? 3 : undefined}
                 />
               </View>
             ))}
@@ -121,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
   content: { padding: 16, gap: 16, backgroundColor: '#E8F4F8', flexGrow: 1 },
   form: { gap: 12 },

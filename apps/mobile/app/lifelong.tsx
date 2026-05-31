@@ -5,6 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type Result = { eligible: boolean; title: string; desc: string; basis: string }
 
+function clampPct(v: string): string {
+  const digits = v.replace(/[^0-9]/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return n > 100 ? '100' : digits
+}
+
 function check(pct: number): Result {
   if (pct >= 90) {
     return {
@@ -46,7 +53,7 @@ export default function LifelongScreen(): React.JSX.Element {
     <View style={{ flex: 1, backgroundColor: '#E8F4F8' }}>
       <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={styles.back}>‹ Табло</Text>
+          <Text style={styles.back}>← Табло</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Пожизнена помощ</Text>
       </View>
@@ -58,7 +65,7 @@ export default function LifelongScreen(): React.JSX.Element {
             <TextInput
               style={styles.input}
               value={input}
-              onChangeText={setInput}
+              onChangeText={(v) => setInput(clampPct(v))}
               keyboardType="numeric"
               placeholder="0 – 100"
               placeholderTextColor="#7A95A8"
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
   content: { padding: 16, gap: 14 },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 20, borderWidth: 0.5, borderColor: '#B8CDD8', gap: 14 },

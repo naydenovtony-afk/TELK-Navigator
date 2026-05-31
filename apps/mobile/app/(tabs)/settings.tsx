@@ -17,6 +17,13 @@ function Row({ label, value }: { label: string; value: string }): React.JSX.Elem
   )
 }
 
+function clampPct(v: string): string {
+  const digits = v.replace(/[^0-9]/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return n > 100 ? '100' : digits
+}
+
 export default function SettingsScreen(): React.JSX.Element {
   const { token } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -255,7 +262,7 @@ export default function SettingsScreen(): React.JSX.Element {
                 placeholder="0–100"
                 placeholderTextColor="#9AB0BF"
                 value={percentInput}
-                onChangeText={setPercentInput}
+                onChangeText={(v) => setPercentInput(clampPct(v))}
                 maxLength={3}
                 autoFocus
                 returnKeyType="done"

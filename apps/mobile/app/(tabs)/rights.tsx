@@ -8,6 +8,13 @@ import { getTelkPercent, saveTelkPercent } from '../../lib/prefs'
 import { BenefitCard } from '../../components/BenefitCard'
 import type { BenefitItem } from '../../components/BenefitCard'
 
+function clampPct(v: string): string {
+  const digits = v.replace(/[^0-9]/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return n > 100 ? '100' : digits
+}
+
 type Benefit = BenefitItem
 
 const ALL_BENEFITS: (Benefit & { minPercent: number })[] = [
@@ -107,7 +114,7 @@ export default function RightsScreen(): React.JSX.Element {
       {/* Header — matches lifelong */}
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Табло</Text>
+          <Text style={s.back}>← Табло</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle}>Моите права</Text>
       </View>
@@ -143,7 +150,7 @@ export default function RightsScreen(): React.JSX.Element {
                 placeholder="0 – 100"
                 placeholderTextColor="#7A95A8"
                 value={input}
-                onChangeText={setInput}
+                onChangeText={(v) => setInput(clampPct(v))}
                 maxLength={3}
                 autoFocus={editing}
                 returnKeyType="done"
@@ -213,7 +220,7 @@ const s = StyleSheet.create({
     backgroundColor: '#1A4A6B', padding: 16,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
 
   /* Input card — same structure as lifelong.tsx */

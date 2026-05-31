@@ -14,6 +14,13 @@ import {
 import { CaseCard } from '../../components/CaseCard'
 import { EmptyState } from '../../components/EmptyState'
 
+function clampPct(v: string): string {
+  const digits = v.replace(/[^0-9]/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return n > 100 ? '100' : digits
+}
+
 type CaseType = 'initial' | 'reexamination' | 'appeal'
 
 const CASE_TYPE_OPTIONS: { value: CaseType; label: string; icon: string }[] = [
@@ -171,7 +178,7 @@ export default function CasesScreen(): React.JSX.Element {
     <View style={s.container}>
       <View style={[s.header, { paddingTop: insets.top + 14 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={s.back}>‹ Табло</Text>
+          <Text style={s.back}>← Табло</Text>
         </TouchableOpacity>
         <Text style={s.headerTitle}>Моите случаи</Text>
         <TouchableOpacity style={s.addBtn} onPress={openCreate} hitSlop={8}>
@@ -278,7 +285,7 @@ export default function CasesScreen(): React.JSX.Element {
                       placeholder="напр. 75"
                       placeholderTextColor="#9AB0BF"
                       value={form.previousPercent}
-                      onChangeText={(v) => setForm((f) => ({ ...f, previousPercent: v.replace(/[^0-9]/g, '') }))}
+                      onChangeText={(v) => setForm((f) => ({ ...f, previousPercent: clampPct(v) }))}
                       keyboardType="number-pad"
                       maxLength={3}
                     />
@@ -349,7 +356,7 @@ const s = StyleSheet.create({
     backgroundColor: '#1A4A6B', paddingHorizontal: 16, paddingBottom: 16,
     flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
   },
-  back: { color: '#B8D8E8', fontSize: 14 },
+  back: { color: '#B8D8E8', fontSize: 16, fontWeight: '600' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   addBtn: { backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10 },
   addBtnText: { color: '#fff', fontSize: 14, fontWeight: '600' },
